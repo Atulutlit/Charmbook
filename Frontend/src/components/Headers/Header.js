@@ -25,6 +25,7 @@ const Header = () => {
   const [schedule, setSchedule] = useState({ start_time: '', end_time: '' });
   const [editStartTime, setEditStartTime] = useState('');
   const [editEndTime, setEditEndTime] = useState('');
+  
   const [holidays, setHolidays] = useState([]);
   const [holidayName, setHolidayName] = useState('');
   const [holidayStartDate, setHolidayStartDate] = useState(null);
@@ -41,8 +42,8 @@ const Header = () => {
       await axios.post(url, 
       {
         holiday_name: holidayName,
-        start_date: holidayStartDate.toISOString(),
-        end_date: holidayEndDate.toISOString()
+        start_date: new Date(holidayStartDate).toISOString(),
+        end_date: new Date(holidayEndDate).toISOString()
       }, 
       {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -283,7 +284,7 @@ const Header = () => {
             <input
               type="date"
               value={holidayStartDate}
-              onChange={date => setHolidayStartDate(date)}
+              onChange={date => setHolidayStartDate(date.target.value)}
               dateFormat="yyyy-MM-dd"
               className="form-control"
             />
@@ -293,7 +294,7 @@ const Header = () => {
             <input
               type="date"
               value={holidayEndDate}
-              onChange={date => setHolidayEndDate(date)}
+              onChange={date => setHolidayEndDate(date.target.value)}
               dateFormat="yyyy-MM-dd"
               className="form-control"
             />

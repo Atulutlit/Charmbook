@@ -27,6 +27,7 @@ import { ADMIN_CLASS } from 'constant/Constant';
 import { ADMIN_CREATE_TIMETABLE } from 'constant/Constant';
 import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const Timetable = () => {
   const [timetablelist, setTimetablelist] = useState([])
@@ -50,6 +51,7 @@ const Timetable = () => {
   const [selectedSubject, setSelectedSubject] = useState(null);
 
   const [period, setPeriod] = useState(1);
+  const navigate = useNavigate();
 
 
 
@@ -63,7 +65,6 @@ const Timetable = () => {
   const fetchClasses = async () => {
     try {
       const url = ADMIN_CLASS;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/class';
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -201,6 +202,12 @@ const Timetable = () => {
   const handleClassChange = (classId) => {
     setSelectedClass(classId);
   };
+  
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    if(!token)
+      navigate("/auth/login")
+    },[])
 
   return (
     <>

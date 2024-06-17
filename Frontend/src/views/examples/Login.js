@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Button,
   Card,
@@ -14,6 +14,7 @@ import {
   Col,
 } from "reactstrap";
 import axios from "axios";
+// import jwtDecode from 'jwtDecode'
 import { Link, useNavigate } from "react-router-dom"; // Import Link from react-router-dom
 import { ADMIN_LOGIN_URL, } from "constant/Constant";
 
@@ -46,6 +47,29 @@ const Login = () => {
       setTimeout(()=>{ setError("");},2000);
     }
   };
+//   const checkTokenValidity = async () => {
+//     try {
+//         const token = await localStorage.getItem('token'); // Replace with your actual token key
+//         if (token) {
+//             const decodedToken = jwtDecode(token);
+//             const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
+
+//             if (decodedToken.exp < currentTime) {
+//                 // Token has expired
+//                 navigate('/auth/login'); // Assuming you want to redirect to the login page
+//             } else {
+//                 // Token is valid, navigate to dashboard
+//                 navigate('/admin/index');
+//             }
+//         }
+//     } catch (error) {
+//         // Handle any errors that might occur during token retrieval
+//         console.error("Error while checking token validity:", error);
+//     }
+// };
+// useEffect(() => {
+//     checkTokenValidity();
+// }, [navigate]);
 
   return (
     <>

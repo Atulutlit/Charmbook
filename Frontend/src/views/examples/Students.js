@@ -13,6 +13,8 @@ const Students = () => {
   const [classOptions, setClassOptions] = useState([]);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [email,setEmail] = useState("");
+  const [phoneNumber,setPhoneNumber]=useState("");
 
   const token = localStorage.getItem('token');
 
@@ -84,7 +86,10 @@ const Students = () => {
       class_id: selectedClassId,
       role: 'STUDENT',
       password: formData.get('password'),
-      confirm_password: formData.get('confirmPassword')
+      confirm_password: formData.get('confirmPassword'),
+      phone_no:formData.get('phoneNumber'),
+      email:formData.get("email")
+
     };
 
     try {
@@ -247,6 +252,14 @@ const Students = () => {
                   <option key={option._id} value={option.id}>{option.class_name} {option._id}</option>
                 ))}
               </Input>
+            </FormGroup>
+            <FormGroup>
+              <Label for="phoneNumber">Mobile Number</Label>
+              <Input type="text" name="phoneNumber" id="phoneNumber" placeholder="Enter Phone Number" />
+            </FormGroup>
+            <FormGroup>
+              <Label for="email">Email Address(optional)</Label>
+              <Input type="text" name="email" id="email" placeholder="Enter Email Address" />
             </FormGroup>
             <Button type="submit" color="primary">Submit</Button>
           </Form>

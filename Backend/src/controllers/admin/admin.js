@@ -214,23 +214,35 @@ exports.createSubject = asyncHandler(async (req, res) => {
 })
 
 exports.updateSubject = asyncHandler(async (req,res)=>{
-    const {id}=req.params;
-    const {subject_name}=req.body;
-    console.log(req.body,id,subject_name,'update Subject')
+    try {
+        const { id } = req.params; // Extract 'id' from request parameters
+        const { subject_name } = req.body; // Extract 'subject_name' from request body
+    
+        // Check if the subject exists
+        const data = await tables.Subject.findOne({
+            where: { id }
+        });
+        console.log(data,'data')
+        if (!data) {
+            return res.status(500).send({ status: false, message: error.message });
+            // Throw an error if the subject does not exist
+        }
 
-    // const data = await tables.Subject.findOne({
-    //     where: { id },
-    // });
-
-    // if (!data) throw error.VALIDATION_ERROR("There is no data.Please refresh it.");
-
-    // Subject.update({
-    //     subject_name:subject_name 
-    // })
-
-    // delete admin.dataValues.password;
-
-    // return res.send({ status: true, statusCode: 200, message: "Admin login Successfully", admin });
+    
+        // Update the subject
+        await tables.Subject.update(
+            { subject_name }, // Updated values
+            { where: { id } } // Where clause
+        );
+    
+        // Send a successful response
+        return res.status(200).send({ status: true, message: "Subject updated successfully" });
+    } catch (error) {
+        console.error(error); // Log the error
+        // Send an error response
+        return res.status(500).send({ status: false, message: error.message });
+    }    
+    
 })
 exports.getUsersCount = asyncHandler(async (req, res) => {
 
@@ -308,7 +320,6 @@ exports.deleteSubject = asyncHandler(async (req, res) => {
 
 
 exports.createHoliday = asyncHandler(async (req, res) => {
-
     const { start_date, end_date, holiday_name } = req.body;
 
     if (!start_date) throw error.VALIDATION_ERROR("Start date is required");
@@ -316,7 +327,6 @@ exports.createHoliday = asyncHandler(async (req, res) => {
     if (!end_date) throw error.VALIDATION_ERROR("End date is required");
 
     if (!holiday_name) throw error.VALIDATION_ERROR("Holiday name is required");
-
     const dates = await findDatesBetween(start_date, end_date);
 
     for (let i = 0; i < dates.length; i++) {
@@ -441,7 +451,6 @@ exports.createTimeTable = asyncHandler(async (req, res) => {
     const timeTableData = {
         ...req.body
     }
-
     await tables.TimeTable.create(timeTableData);
 
     return res.send({

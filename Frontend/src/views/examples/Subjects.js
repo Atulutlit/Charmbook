@@ -18,7 +18,6 @@ const Subjects = () => {
 
   const fetchSubjects = async () => {
     try {
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/subject'
       const url = ADMIN_GET_SUBJECT;
       const response = await fetch(url, {
         headers: {
@@ -53,7 +52,6 @@ const Subjects = () => {
 
     try {
       const url = ADMIN_CREATE_SUBJECT;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/subject'
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -78,7 +76,6 @@ const Subjects = () => {
   const handleDelete = async (id) => {
     try {
       const url = `${ADMIN_DELETE_SUBJECT}/${id}`;
-      // const url = `https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/subject/${id}`
       const response = await fetch(url, {
         method: 'DELETE',
         headers: {
@@ -106,31 +103,23 @@ const Subjects = () => {
     toggleEditModal();
       };
   
-  // not working 12/06/2024
   const saveChanges = async () => {
     const updatedSubject = {
       subject_name: editedSubject.subject_name
     };
-
+  
     try {
-      // const url = `https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/subject/${editedSubject.id}`
-      const url = `${ADMIN_GET_SUBJECT}/${editedSubject.id}`
+      const url = `${ADMIN_GET_SUBJECT}/${editedSubject.id}`;
       const token = localStorage.getItem('token');
-      console.log(url,token,'many more things')
-      const response = await fetch(url, {
-        method: 'put',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: updatedSubject
+      const response = await axios.put(url,updatedSubject,{ headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
       });
-      
       const data = await response.json();
-      console.log(data,'get subject')
-      if (data.status) {
+      console.log(data, 'get subject');
+      if (response.ok) {
         console.log('Subject updated successfully:', data.message);
-        fetchSubjects();
+        fetchSubjects(); // Uncomment if you need to refresh the subjects list
         toggleEditModal();
       } else {
         console.error('Failed to update subject:', data.message);
@@ -139,6 +128,7 @@ const Subjects = () => {
       console.error('Error updating subject:', error);
     }
   };
+  
 
   return (
     <>

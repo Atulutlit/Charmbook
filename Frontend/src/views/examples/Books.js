@@ -25,6 +25,7 @@ import {
 } from 'reactstrap';
 import Header from 'components/Headers/Header.js';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {ADMIN_CLASS,ADMIN_GET_BOOK,ADMIN_UPLOAD_IMAGE,ADMIN_UPLOAD_DOC,ADMIN_CREATE_BOOK, ADMIN_GET_SUBJECT,} from './../../constant/Constant'
 
 const Books = () => {
@@ -55,6 +56,8 @@ const Books = () => {
   const toggleModal = () => setModalOpen(!modalOpen);
   const toggleEditModal = () => setEditModalOpen(!editModalOpen);
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     fetchClasses();
     fetchSubjects();
@@ -69,7 +72,6 @@ const Books = () => {
   const fetchClasses = async () => {
     try {
       const url = ADMIN_CLASS;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/class'
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -84,7 +86,6 @@ const Books = () => {
 
   const fetchSubjects = async () => {
     try {
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/subject';
       const url =ADMIN_GET_SUBJECT;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -196,6 +197,11 @@ const Books = () => {
     toggleEditModal();
   };
 
+  useEffect(()=>{
+  const token = localStorage.getItem('token');
+  if(!token)
+    navigate("/auth/login")
+  },[])
 
   return (
     <>
