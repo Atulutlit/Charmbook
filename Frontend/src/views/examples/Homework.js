@@ -17,7 +17,8 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  ModalFooter
 } from 'reactstrap';
 
 import Header from "components/Headers/Header.js";
@@ -38,6 +39,8 @@ const Homework = () => {
   const [error, setError] = useState("");
   const [homeworks, setHomeworks] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [deleteBox,setDeleteBox]=useState(false);
+  
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -273,6 +276,7 @@ const Homework = () => {
                 value={selectedModalClass}
                 onChange={(e) => setSelectedModalClass(e.target.value)}
               >
+                <option value={-1}>select class</option>
                 {classes.map(clazz => (
                   <option key={clazz.id} value={clazz.id}>
                     {clazz.class_name}
@@ -289,6 +293,7 @@ const Homework = () => {
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
               >
+                <option value={-1}>select subjects</option>
                 {subjects.map(subject => (
                   <option key={subject.id} value={subject.id}>
                     {subject.subject_name}
@@ -305,6 +310,7 @@ const Homework = () => {
                 value={selectedTeacher}
                 onChange={(e) => setSelectedTeacher(e.target.value)}
               >
+                <option value={-1}>select teacher</option>
                 {teachers.map(teacher => (
                   <option key={teacher.id} value={teacher.id}>
                     {teacher.first_name} {teacher.last_name}
@@ -330,6 +336,17 @@ const Homework = () => {
           {error}
         </div>
       )}
+ {/* Delete Box */}
+<Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
+        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+        <ModalBody>
+            <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+        </ModalBody>
+        <ModalFooter>
+            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
+            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDeleteHomework();}}>Delete</Button>
+            </ModalFooter>
+      </Modal>
     </>
   );
 };

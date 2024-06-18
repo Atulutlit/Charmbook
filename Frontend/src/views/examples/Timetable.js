@@ -19,20 +19,22 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  ModalFooter
 } from 'reactstrap';
 
 import Header from "components/Headers/Header.js";
 import { ADMIN_CLASS } from 'constant/Constant';
 import { ADMIN_CREATE_TIMETABLE } from 'constant/Constant';
-import { toast,ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import TimeTableExcel from 'Excel/TimetableExcel';
 
 const Timetable = () => {
   const [timetablelist, setTimetablelist] = useState([])
   const [timeTable, setTimeTable] = useState([])
-  
+
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(1);
   const [selectedModalClass, setSelectedModalClass] = useState(1);
@@ -53,7 +55,7 @@ const Timetable = () => {
   const [period, setPeriod] = useState(1);
   const navigate = useNavigate();
 
-
+  const [deleteBox, setDeleteBox] = useState(false);
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -72,7 +74,7 @@ const Timetable = () => {
       });
       if (response.data.status) {
         setClasses(response.data.data);
-        console.log(response.data.data[0]?.id,'response');
+        console.log(response.data.data[0]?.id, 'response');
         setSelectedClass(response.data.data[0]?.id); // Select the first class by default or ID 1
         setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
         fetchTimetable(response.data.data[0]?.id);
@@ -109,12 +111,12 @@ const Timetable = () => {
       console.error('Error fetching subjects:', error);
     }
   };
-  useEffect(()=>{
-  fetchClasses();
-  fetchSubjects();
-  fetchTeachers();
-  fetchTimetable();
-  },[])
+  useEffect(() => {
+    fetchClasses();
+    fetchSubjects();
+    fetchTeachers();
+    fetchTimetable();
+  }, [])
 
   const fetchTimetable = async (id) => {
     try {
@@ -123,7 +125,7 @@ const Timetable = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.status) {
-        console.log(response.data.data,'timetable......')
+        console.log(response.data.data, 'timetable......')
         setTimeTable(response.data.data);
 
       } else {
@@ -134,9 +136,9 @@ const Timetable = () => {
       setTimetablelist([]);
     }
   };
-  useEffect(()=>{
-  fetchTimetable(selectedClass);
-  },[selectedClass])
+  useEffect(() => {
+    fetchTimetable(selectedClass);
+  }, [selectedClass])
 
   const updateTimetable = async () => {
     try {
@@ -188,7 +190,7 @@ const Timetable = () => {
         period_no: period,
         teacher_id: selectedTeacher
       }
-      console.log(data,'data at create timetable')
+      console.log(data, 'data at create timetable')
       await axios.post(url, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -197,21 +199,21 @@ const Timetable = () => {
       console.error('Error creating timetable:', error);
     }
   };
-  const [showEdit,setShowEdit]=useState(false);
-  const [editData,setEditData]=useState({});
+  const [showEdit, setShowEdit] = useState(false);
+  const [editData, setEditData] = useState({});
   const handleClassChange = (classId) => {
     setSelectedClass(classId);
   };
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     const token = localStorage.getItem('token');
-    if(!token)
+    if (!token)
       navigate("/auth/login")
-    },[])
+  }, [])
 
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">
@@ -274,7 +276,7 @@ const Timetable = () => {
                         <Button
                           color="primary"
                           size="sm"
-                          onClick={()=>{console.log(item,'item');setEditData(item);setShowEdit(true);}}
+                          onClick={() => { console.log(item, 'item'); setEditData(item); setShowEdit(true); }}
                         >
                           Update
                         </Button>
@@ -295,6 +297,10 @@ const Timetable = () => {
           </Col>
         </Row>
       </Container>
+      
+      {/* Download Excel  */}
+      <div className="d-flex justify-content-end" style={{marginRight:"140px",marginTop:"20px"}}><TimeTableExcel client={timeTable}/></div>
+
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Timetable</ModalHeader>
         <ModalBody>
@@ -308,6 +314,7 @@ const Timetable = () => {
                 value={selectedModalClass}
                 onChange={(e) => setSelectedModalClass(e.target.value)}
               >
+               <option value={-1}>select class</option>
                 {classes.map(clazz => (
                   <option key={clazz.id} value={clazz.id}>
                     {clazz.class_name}
@@ -324,6 +331,7 @@ const Timetable = () => {
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
               >
+                <option value={-1}>select subject</option>
                 {subjects.map(subject => (
                   <option key={subject.id} value={subject.id}>
                     {subject.subject_name}
@@ -355,6 +363,7 @@ const Timetable = () => {
                 value={selectedTeacher}
                 onChange={(e) => setSelectedTeacher(e.target.value)}
               >
+                <option value={-1}>select teacher</option>
                 {teachers.map(teacher => (
                   <option key={teacher.id} value={teacher.id}>
                     {teacher.first_name} {teacher.last_name}
@@ -367,8 +376,8 @@ const Timetable = () => {
           </Form>
         </ModalBody>
       </Modal>
-      <Modal isOpen={showEdit} toggle={()=>{setShowEdit(false);}} centered>
-        <ModalHeader toggle={()=>{setShowEdit(false)}}>Edit Timetable</ModalHeader>
+      <Modal isOpen={showEdit} toggle={() => { setShowEdit(false); }} centered>
+        <ModalHeader toggle={() => { setShowEdit(false) }}>Edit Timetable</ModalHeader>
         <ModalBody>
           <Form onSubmit={updateTimetable}>
             <FormGroup>
@@ -378,8 +387,9 @@ const Timetable = () => {
                 name="class"
                 id="class"
                 value={editData.classId}
-                onChange={(e) => { setEditData((prev)=>{const inputdata={...prev};inputdata['classId']=e.target.value;return inputdata})}}
+                onChange={(e) => { setEditData((prev) => { const inputdata = { ...prev }; inputdata['classId'] = e.target.value; return inputdata }) }}
               >
+                <option value={-1}>select class</option>
                 {classes.map(clazz => (
                   <option key={clazz.id} value={clazz.id}>
                     {clazz.class_name}
@@ -394,8 +404,8 @@ const Timetable = () => {
                 name="subject"
                 id="subject"
                 value={editData.subject}
-                onChange={(e) => { setEditData((prev)=>{const inputdata={...prev};inputdata['subject']=e.target.value;return inputdata})}}              >
-                
+                onChange={(e) => { setEditData((prev) => { const inputdata = { ...prev }; inputdata['subject'] = e.target.value; return inputdata }) }}              >
+                <option value={-1}>Select Subject</option>
                 {subjects.map(subject => (
                   <option key={subject.id} value={subject.id}>
                     {subject.subject_name}
@@ -407,18 +417,18 @@ const Timetable = () => {
             <FormGroup>
               <Label for="subject">Start Time</Label>
               <Input name="class" id="class" type="time" value={editData.start_time}
-                onChange={(e) => { setEditData((prev)=>{const inputdata={...prev};inputdata['start_time']=e.target.value;return inputdata})}} />
+                onChange={(e) => { setEditData((prev) => { const inputdata = { ...prev }; inputdata['start_time'] = e.target.value; return inputdata }) }} />
             </FormGroup>
 
             <FormGroup>
               <Label for="subject">End Time</Label>
               <Input type="time" name="class" id="class" value={editData.end_time}
-              onChange={(e) => { setEditData((prev)=>{const inputdata={...prev};inputdata['end_time']=e.target.value;return inputdata})}} />
+                onChange={(e) => { setEditData((prev) => { const inputdata = { ...prev }; inputdata['end_time'] = e.target.value; return inputdata }) }} />
             </FormGroup>
             <FormGroup>
               <Label for="subject">Period</Label>
               <Input type="number" name="class" id="class" value={editData.period_no}
-              onChange={(e) => { setEditData((prev)=>{const inputdata={...prev};inputdata['period_no']=e.target.value;return inputdata})}} />  
+                onChange={(e) => { setEditData((prev) => { const inputdata = { ...prev }; inputdata['period_no'] = e.target.value; return inputdata }) }} />
             </FormGroup>
 
             <FormGroup>
@@ -428,8 +438,8 @@ const Timetable = () => {
                 name="teacher"
                 id="teacher"
                 value={editData.teacher_id}
-                onChange={(e) => { setEditData((prev)=>{const inputdata={...prev};inputdata['teacher_id']=e.target.value;return inputdata})}} >
-              
+                onChange={(e) => { setEditData((prev) => { const inputdata = { ...prev }; inputdata['teacher_id'] = e.target.value; return inputdata }) }} >
+
                 {teachers.map(teacher => (
                   <option key={teacher.id} value={teacher.id}>
                     {teacher.first_name} {teacher.last_name}
@@ -447,6 +457,19 @@ const Timetable = () => {
           {error}
         </div>
       )}
+
+
+      {/* Delete Box */}
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(!deleteBox) }} centered>
+        <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Teacher</ModalHeader>
+        <ModalBody>
+          <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+        </ModalBody>
+        <ModalFooter>
+          <Button type="submit" color="secondary" onClick={() => { setDeleteBox(false); }}>Cancel</Button>
+          <Button type="submit" style={{ backgroundColor: "red", color: "white" }} onClick={() => { deleteTimetable(); }}>Delete</Button>
+        </ModalFooter>
+      </Modal>
     </>
   )
 }

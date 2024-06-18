@@ -14,6 +14,7 @@ import {
   Container,
   Row,
   Col,
+  ModalFooter
 } from 'reactstrap';
 
 import Header from "components/Headers/Header.js";
@@ -27,6 +28,8 @@ const Classes = () => {
   const [classes, setClasses] = useState([]);
   const [newClassName, setNewClassName] = useState("");
   const [error, setError] = useState("");
+
+  const [deleteBox,setDeleteBox]=useState(false);
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -45,7 +48,8 @@ const Classes = () => {
         setClasses(response.data.data.map(c => ({ id: c.id, name: c.class_name })));
       }
     } catch (error) {
-      setError("Failed to fetch classes.");
+      // setError("Failed to fetch classes.");
+      toast.error('Failed to fetch class');
     }
   };
 
@@ -57,7 +61,6 @@ const Classes = () => {
     e.preventDefault();
     try {
       const url = ADMIN_CREATE_CLASS;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/class/create'
       await axios.post(url, 
       { class_name: newClassName }, 
       {
@@ -68,8 +71,10 @@ const Classes = () => {
       setNewClassName("");
       toggleModal();
       fetchClasses();
+      toast.success('Class Created Successfully!!');
     } catch (error) {
-      setError("Failed to create class.");
+      // setError("Failed to create class.");
+      toast.warn(error);
     }
   };
   const [showEditBox,setShowEditBox]=useState(false)
@@ -90,8 +95,7 @@ const Classes = () => {
       fetchClasses();
     } catch (error) {
       console.log(error,'error');
-      toast.error("Failed to Create Class!!");
-      setError("Failed to create class.");
+      toast.error("Failed to Delete Class!!");
     }
   }
   const updateClass = async(e)=>{
@@ -106,7 +110,7 @@ const Classes = () => {
       toast.success("successfully updated class!!.")
       fetchClasses();
     } catch (error) {
-      setError("Failed to create class.");
+      toast.error('Failed to update class!!');
     }
   }
     
@@ -121,11 +125,12 @@ const Classes = () => {
    setSelectedId(id);
   }
 
+
   return (
     <>
       <ToastContainer/>
       <Header />
-      <Container className="mt--7" fluid>
+      <Container className="mt--7 mb-5" fluid>
         <Row className="mt-5 justify-content-center">
           <Col className="mb-5 mb-xl-0" xl="10">
             <Card className="shadow">
@@ -161,7 +166,7 @@ const Classes = () => {
                       <td>
                         <div className="d-flex">
                           <i className="fas fa-edit text-info mr-3" title="Edit" onClick={() => handleEdit(clazz)} style={{ cursor: 'pointer' }}></i>
-                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => handleDelete(clazz.id)} style={{ cursor: 'pointer' }}></i>
+                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => {handleDelete(clazz._id);}} style={{ cursor: 'pointer' }}></i>
                         </div>
                       </td>
                     </tr>
@@ -194,16 +199,6 @@ const Classes = () => {
         </ModalBody>
       </Modal>
 
-      {/* -----------Delete Modal Box-------------- */}
-      <Modal isOpen={showDeleteBox} toggle={()=>{setShowDeleteBox(false);}} centered>
-        <ModalHeader toggle={()=>{showDeleteBox(false);}}>Are you sure want to delete the class?</ModalHeader>
-        <ModalBody>
-        <div className="d-flex">
-        <Button type="submit" color="primary" onClick={()=>{showDeleteBox(false)}}>Cancel</Button>
-        <Button type="submit" color="primary" onClick={()=>{deleteClass();}}>Delete</Button>
-        </div>
-        </ModalBody>
-      </Modal>
 
       {/* ------------------- Update Class ------------------------- */}
       
@@ -226,6 +221,18 @@ const Classes = () => {
             <Button type="submit" color="primary">Submit</Button>
           </Form>
         </ModalBody>
+      </Modal>
+
+  {/* Delete Box */}
+  <Modal isOpen={showDeleteBox} toggle={()=>{setShowDeleteBox(!deleteBox)}} centered>
+        <ModalHeader toggle={()=>{setShowDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+        <ModalBody>
+            <div className='text-l font-semibold'>Are You Sure Want to Delete Class?</div>
+        </ModalBody>
+        <ModalFooter>
+            <Button type="submit" color="secondary" onClick={()=>{setShowDeleteBox(false);}}>Cancel</Button>
+            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{deleteClass();}}>Delete</Button>
+            </ModalFooter>
       </Modal>
 
       {error && (

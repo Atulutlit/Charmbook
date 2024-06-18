@@ -4,6 +4,9 @@ import { Card, CardHeader, Table, Container, Row, Col } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import { ADMIN_GET_SUBJECT,ADMIN_CREATE_SUBJECT,ADMIN_DELETE_SUBJECT} from 'constant/Constant';
 import axios from 'axios';
+import { toast,ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Subjects = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -13,6 +16,9 @@ const Subjects = () => {
     id: null,
     name: ''
   });
+  // handle delete subject
+  const [deleteBox,setDeleteBox]=useState(false);
+  const [deletedId,setDeletedId]=useState(-1);
 
   const token = localStorage.getItem('token');
 
@@ -65,17 +71,21 @@ const Subjects = () => {
         console.log('Subject created successfully:', data.message);
         toggleModal();
         fetchSubjects();
+        toast.success("Subject Created Successfully!!");
       } else {
         console.error('Failed to create subject:', data.message);
+        toast.warn(data.message);
       }
+      
     } catch (error) {
       console.error('Error creating subject:', error);
+      toast.error(error);
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
-      const url = `${ADMIN_DELETE_SUBJECT}/${id}`;
+      const url = `${ADMIN_DELETE_SUBJECT}/${deletedId}`;
       const response = await fetch(url, {
         method: 'DELETE',
         headers: {
@@ -85,12 +95,17 @@ const Subjects = () => {
       const data = await response.json();
       if (data.status) {
         console.log('Subject deleted successfully:', data.message);
-        setSubjects(subjects.filter(subject => subject.id !== id));
+        setSubjects(subjects.filter(subject => subject.id !== deletedId));
+        toast.success("Subject Deleted Successfully!!");
       } else {
         console.error('Failed to delete subject:', data.message);
+        toast.warn(data.message);
       }
+      setDeleteBox(false);
     } catch (error) {
       console.error('Error deleting subject:', error);
+      toast.error(error);
+      setDeleteBox(false);
     }
   };
 
@@ -119,6 +134,7 @@ const Subjects = () => {
       console.log(data, 'get subject');
       if (response.ok) {
         console.log('Subject updated successfully:', data.message);
+        toast("Subject Updated Successfully!!");
         fetchSubjects(); // Uncomment if you need to refresh the subjects list
         toggleEditModal();
       } else {
@@ -132,6 +148,7 @@ const Subjects = () => {
 
   return (
     <>
+    <ToastContainer/>
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">
@@ -163,7 +180,7 @@ const Subjects = () => {
                       <td>
                         <div className="d-flex">
                           <i className="fas fa-edit text-info mr-3" title="Edit" onClick={() => handleEdit(subject)} style={{ cursor: 'pointer' }}></i>
-                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => handleDelete(subject.id)} style={{ cursor: 'pointer' }}></i>
+                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => {setDeletedId(subject.id);setDeleteBox(true);}} style={{ cursor: 'pointer' }}></i>
                         </div>
                       </td>
                     </tr>
@@ -200,6 +217,19 @@ const Subjects = () => {
           <Button color="primary" onClick={saveChanges}>Save</Button>{' '}
           <Button color="secondary" onClick={toggleEditModal}>Cancel</Button>
         </ModalFooter>
+      </Modal>
+
+      
+       {/* Delete Box */}
+<Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
+        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+        <ModalBody>
+            <div className='text-l font-semibold'>Are You Sure Want to Delete Subject?</div>
+        </ModalBody>
+        <ModalFooter>
+            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
+            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDelete();}}>Delete</Button>
+            </ModalFooter>
       </Modal>
     </>
   );

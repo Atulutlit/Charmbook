@@ -8,14 +8,20 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
-    class_id: {
-      type: DataTypes.INTEGER
+    enrollment_no:{
+      type: DataTypes.STRING
     },
-    student_id: {
-      type: DataTypes.INTEGER
+    class_name: {
+      type: DataTypes.STRING
+    },
+    student_name: {
+      type: DataTypes.STRING
     },
     date:{
-      type: DataTypes.DATE
+      type: DataTypes.STRING
+    },
+    time:{
+      type: DataTypes.STRING
     },
     status: {
       type: DataTypes.ENUM(['PRESENT', 'ABSENT','HOLIDAY','PENDING']),

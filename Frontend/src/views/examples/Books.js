@@ -26,7 +26,7 @@ import {
 import Header from 'components/Headers/Header.js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {ADMIN_CLASS,ADMIN_GET_BOOK,ADMIN_UPLOAD_IMAGE,ADMIN_UPLOAD_DOC,ADMIN_CREATE_BOOK, ADMIN_GET_SUBJECT,} from './../../constant/Constant'
+import { ADMIN_CLASS, ADMIN_GET_BOOK, ADMIN_UPLOAD_IMAGE, ADMIN_UPLOAD_DOC, ADMIN_CREATE_BOOK, ADMIN_GET_SUBJECT, } from './../../constant/Constant'
 
 const Books = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -55,6 +55,9 @@ const Books = () => {
 
   const toggleModal = () => setModalOpen(!modalOpen);
   const toggleEditModal = () => setEditModalOpen(!editModalOpen);
+
+  // delete
+  const [deleteBox, setDeleteBox] = useState(false);
 
   const navigate = useNavigate()
 
@@ -86,7 +89,7 @@ const Books = () => {
 
   const fetchSubjects = async () => {
     try {
-      const url =ADMIN_GET_SUBJECT;
+      const url = ADMIN_GET_SUBJECT;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -197,11 +200,11 @@ const Books = () => {
     toggleEditModal();
   };
 
-  useEffect(()=>{
-  const token = localStorage.getItem('token');
-  if(!token)
-    navigate("/auth/login")
-  },[])
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token)
+      navigate("/auth/login")
+  }, [])
 
   return (
     <>
@@ -295,7 +298,7 @@ const Books = () => {
         <ModalBody>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
-              <Label for="cover">Upload Cover Image</Label>
+              <Label for="cover">Upload Cover Image(jpg or jpeg format only)</Label>
               <Input
                 type="file"
                 name="cover"
@@ -352,22 +355,32 @@ const Books = () => {
           <FormGroup>
             <Label for="subject">Subject</Label>
             <Input
+              type="select"
+              name="subject"
               id="subject"
-              type="text"
               value={editedBook.subject?.subject_name}
               onChange={(e) => setEditedBook({ ...editedBook, subject: e.target.value })}
-              placeholder="Enter subject"
-            />
+            >
+              <option value="">Select Subject</option>
+              {subjects.map(sub => (
+                <option key={sub.id} value={sub.id}>{sub.subject_name}</option>
+              ))}
+            </Input>
           </FormGroup>
           <FormGroup>
             <Label for="class">Class</Label>
             <Input
+              type="select"
+              name="class"
               id="class"
-              type="text"
               value={editedBook.class?.class_name}
               onChange={(e) => setEditedBook({ ...editedBook, class: e.target.value })}
-              placeholder="Enter class"
-            />
+            >
+              <option value="">Select Class</option>
+              {classes.map(cls => (
+                <option key={cls.id} value={cls.id}>{cls.class_name}</option>
+              ))}
+            </Input>
           </FormGroup>
         </ModalBody>
         <ModalFooter>
@@ -375,6 +388,19 @@ const Books = () => {
           <Button color="secondary" onClick={toggleEditModal}>Cancel</Button>
         </ModalFooter>
       </Modal>
+
+      {/* Delete Box */}
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(!deleteBox) }} centered>
+        <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Teacher</ModalHeader>
+        <ModalBody>
+          <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+        </ModalBody>
+        <ModalFooter>
+          <Button type="submit" color="secondary" onClick={() => { setDeleteBox(false); }}>Cancel</Button>
+          <Button type="submit" style={{ backgroundColor: "red", color: "white" }} onClick={() => { handleDelete(); }}>Delete</Button>
+        </ModalFooter>
+      </Modal>
+
     </>
   );
 };

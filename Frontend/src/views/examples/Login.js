@@ -14,7 +14,7 @@ import {
   Col,
 } from "reactstrap";
 import axios from "axios";
-// import jwtDecode from 'jwtDecode'
+import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from "react-router-dom"; // Import Link from react-router-dom
 import { ADMIN_LOGIN_URL, } from "constant/Constant";
 
@@ -24,6 +24,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState(false); // State to track login success
   const navigate = useNavigate();
+  const [rememberMe,setRememberMe]=useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,6 +38,14 @@ const Login = () => {
         localStorage.setItem("token", response.data.admin.token);
         // Set login success state to true
         setLoginSuccess(true);
+        if(rememberMe)
+        {
+          localStorage.setItem('email',email);
+          localStorage.setItem('password',password);
+        }else{
+          localStorage.removeItem('email');
+          localStorage.removeItem('password');
+        }
         navigate("/admin/index");
       } else {
         setError("Login failed. Please check your credentials.");
@@ -47,29 +56,37 @@ const Login = () => {
       setTimeout(()=>{ setError("");},2000);
     }
   };
-//   const checkTokenValidity = async () => {
-//     try {
-//         const token = await localStorage.getItem('token'); // Replace with your actual token key
-//         if (token) {
-//             const decodedToken = jwtDecode(token);
-//             const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
+  
+  useEffect(()=>{
+  const email=localStorage.getItem('email');
+  const password = localStorage.getItem('password');
+  email && setEmail(email);
+  password && setPassword(password);
+  },[])
 
-//             if (decodedToken.exp < currentTime) {
-//                 // Token has expired
-//                 navigate('/auth/login'); // Assuming you want to redirect to the login page
-//             } else {
-//                 // Token is valid, navigate to dashboard
-//                 navigate('/admin/index');
-//             }
-//         }
-//     } catch (error) {
-//         // Handle any errors that might occur during token retrieval
-//         console.error("Error while checking token validity:", error);
-//     }
-// };
-// useEffect(() => {
-//     checkTokenValidity();
-// }, [navigate]);
+  const checkTokenValidity = async () => {
+    try {
+        const token = await localStorage.getItem('token'); // Replace with your actual token key
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
+
+            if (decodedToken.exp < currentTime) {
+                // Token has expired
+                navigate('/auth/login'); // Assuming you want to redirect to the login page
+            } else {
+                // Token is valid, navigate to dashboard
+                navigate('/admin/index');
+            }
+        }
+    } catch (error) {
+        // Handle any errors that might occur during token retrieval
+        console.error("Error while checking token validity:", error);
+    }
+};
+useEffect(() => {
+    checkTokenValidity();
+}, [navigate]);
 
   return (
     <>
@@ -77,43 +94,10 @@ const Login = () => {
         <Card className="bg-secondary shadow border-0">
           <CardHeader className="bg-transparent pb-5">
             <div className="text-muted text-center mt-2 mb-3">
-              <small>Sign in with</small>
-            </div>
-            <div className="btn-wrapper text-center">
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={require("../../assets/img/icons/common/github.svg").default}
-                  />
-                </span>
-                <span className="btn-inner--text">Github</span>
-              </Button>
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={require("../../assets/img/icons/common/google.svg").default}
-                  />
-                </span>
-                <span className="btn-inner--text">Google</span>
-              </Button>
+              <div className="text-xl">Sign in</div>
             </div>
           </CardHeader>
           <CardBody className="px-lg-5 py-lg-5">
-            <div className="text-center text-muted mb-4">
-              <small>Or sign in with credentials</small>
-            </div>
             <Form role="form" onSubmit={handleLogin}>
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
@@ -152,6 +136,8 @@ const Login = () => {
                   className="custom-control-input"
                   id="customCheckLogin"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={()=>{setRememberMe(!rememberMe);}}
                 />
                 <label
                   className="custom-control-label"
@@ -173,7 +159,7 @@ const Login = () => {
             </Form>
           </CardBody>
         </Card>
-        <Row className="mt-3">
+        {/* <Row className="mt-3">
           <Col xs="6">
             <a className="text-light" href="#pablo" onClick={(e) => e.preventDefault()}>
               <small>Forgot password?</small>
@@ -184,7 +170,7 @@ const Login = () => {
               <small>Create new account</small>
             </a>
           </Col>
-        </Row>
+        </Row> */}
         {/* {loginSuccess && (
           <div className="text-center mt-3">
             <Link to="/admin/index">

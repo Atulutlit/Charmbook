@@ -17,7 +17,8 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  ModalFooter
 } from 'reactstrap';
 
 import Header from "components/Headers/Header.js";
@@ -39,6 +40,7 @@ const Test = () => {
   const [error, setError] = useState("");
   const [tests, setTests] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [deleteBox,setDeleteBox]=useState(false);
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -335,6 +337,19 @@ const Test = () => {
           {error}
         </div>
       )}
+
+      
+       {/* Delete Box */}
+<Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
+        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+        <ModalBody>
+            <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+        </ModalBody>
+        <ModalFooter>
+            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
+            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDeleteTest();}}>Delete</Button>
+            </ModalFooter>
+      </Modal>
     </>
   );
 };

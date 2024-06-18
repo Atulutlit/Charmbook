@@ -74,13 +74,13 @@ var routes = [
     component: <Test />,
     layout: "/admin",
   },
-  {
-    path: "/login",
-    name: "Login",
-    icon: "ni ni-circle-08 text-info",
-    component: <Login />,
-    layout: "/auth",
-  },
+  // {
+  //   path: "/login",
+  //   name: "Login",
+  //   icon: "ni ni-circle-08 text-info",
+  //   component: <Login />,
+  //   layout: "/auth",
+  // },
   {
     path: "/timetable",
     name: "Timetable",
