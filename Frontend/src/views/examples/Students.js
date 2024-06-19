@@ -7,6 +7,7 @@ import { ADMIN_REMOVE_STUDENT } from 'constant/Constant';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StudentExcel from 'Excel/StudentExcel';
+import { ADMIN_UPDATE_USER } from 'constant/Constant';
 
 const Students = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -47,8 +48,13 @@ const Students = () => {
       const data = await response.json();
       console.log(data, "fetch students", selectedClassId);
       if (data.status) {
+        if(classId==-1){
+        setStudents(data.data);
+        setData(data.data);
+        }else{
         setStudents(data.data.filter(student => student.class_id == classId));
         setData(data.data.filter(student => student.class_id == classId));
+        }
       } else {
         console.error('Failed to fetch students:', data.message);
       }
@@ -68,8 +74,7 @@ const Students = () => {
       const data = await response.json();
       if (data.status) {
         setClassOptions(data.data);
-        setSelectedClassId(data.data[0]?.id || ''); // Select the first class by default
-        fetchStudents(data.data[0]?.id || '');
+        fetchStudents(selectedClassId);
       } else {
         console.error('Failed to fetch classes:', data.message);
       }
@@ -209,14 +214,39 @@ useEffect(() => {
     return { "valid": true, "message": "successfully" };
   }
 
-  const filterFunction = () => {
-    students.filter(() => {
+ 
+  const [editId,setEditId]=useState(-1);
 
-    })
-  }
-  const handleEditStudent=()=>{
+  const handleEditStudent = async (event) => {
+    event.preventDefault(); // Prevent default form submission
 
-  }
+    try {
+      const url = `${ADMIN_UPDATE_USER}/${editId}`;
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editData) // Stringify the data
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        console.log('Student updated successfully:', data.message);
+        toast.success('Student Updated Successfully!!');
+        fetchStudents(selectedClassId); // Refresh student list
+        setModalEditOpen(false); // Close the modal
+      } else {
+        console.error('Failed to update student:', data.message);
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error updating student:', error);
+      toast.error('An error occurred while updating the student.');
+    }
+  };
+
 
   // minimum function
   const min = (a, b) => {
@@ -266,6 +296,9 @@ useEffect(() => {
                         {classOptions.find(c => c.id === selectedClassId)?.class_name || 'Select Class'}
                       </DropdownToggle>
                       <DropdownMenu>
+                      <DropdownItem key={0} onClick={() => handleClassSelect(-1)}>
+                            select class
+                          </DropdownItem>
                         {classOptions.map(c => (
                           <DropdownItem key={c.id} onClick={() => handleClassSelect(c.id)}>
                             {c.class_name}
@@ -282,6 +315,7 @@ useEffect(() => {
                     <th scope="col" className='d-none'>Img</th>
                     <th scope="col">Enrollment</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Class</th>
                     <th scope="col">PhoneNo</th>
                     <th scope='col'>Email</th>
                     <th scope='col'>Status</th>
@@ -295,6 +329,7 @@ useEffect(() => {
                       </td>
                       <td>{student?.enrollment_no}</td>
                       <td>{student?.first_name}{student?.last_name}</td>
+                      <td>{student.class_id}</td>
                       <td>{student?.phone_no}</td>
                       <td>{student?.email}</td>
                       <td>{student?.status}</td>
@@ -303,7 +338,7 @@ useEffect(() => {
                         <div className="row gx-2">
                           <i className="fas fa-edit text-primary p-2"
                             title="Update"
-                            onClick={() => {setEditData(student);setModalEditOpen(true);}}
+                            onClick={() => {setEditData(student);setEditId(student.id);setModalEditOpen(true);}}
                             style={{ cursor: "pointer" }}>
                           </i>
                           <i
@@ -342,7 +377,7 @@ useEffect(() => {
 
           {/* Bottom part */}
           <div className="col-md-4 d-flex justify-content-center mt-3 mt-md-0">
-            Showing 0 to 10 of 246 entries
+            {/* Showing 0 to 10 of 246 entries */}
           </div>
 
           {/* Right part */}
@@ -418,14 +453,10 @@ useEffect(() => {
       </Modal>
 
       {/* Edit Modal */}
-      <Modal isOpen={modalEditOpen} toggle={()=>{setModalEditOpen(false);}} centered>
-      <ModalHeader toggle={()=>{setModalEditOpen(false)}}>Create Student</ModalHeader>
+    <Modal isOpen={modalEditOpen} toggle={() => setModalEditOpen(false)} centered>
+      <ModalHeader toggle={() => setModalEditOpen(false)}>Edit Student Details</ModalHeader>
       <ModalBody>
         <Form onSubmit={handleEditStudent}>
-          <FormGroup className="d-none">
-            <Label for="profilePhoto">Upload Profile Photo</Label>
-            <Input type="file" name="profilePhoto" id="profilePhoto" />
-          </FormGroup>
           <FormGroup>
             <Label for="firstName">First Name</Label>
             <Input
@@ -433,7 +464,8 @@ useEffect(() => {
               name="firstName"
               id="firstName"
               placeholder="Enter First Name"
-              value={editData?.firstName || ''}
+              value={editData?.first_name || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, first_name: e.target.value }))}
             />
           </FormGroup>
           <FormGroup>
@@ -443,7 +475,8 @@ useEffect(() => {
               name="lastName"
               id="lastName"
               placeholder="Enter Last Name"
-              value={editData?.lastName || ''}
+              value={editData?.last_name || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, last_name: e.target.value }))}
             />
           </FormGroup>
           <FormGroup>
@@ -454,16 +487,7 @@ useEffect(() => {
               id="password"
               placeholder="Enter Password"
               value={editData?.password || ''}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="confirmPassword">Confirm Password</Label>
-            <Input
-              type="password"
-              name="confirmPassword"
-              id="confirmPassword"
-              placeholder="Confirm Password"
-              value={editData?.confirmPassword || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, password: e.target.value }))}
             />
           </FormGroup>
           <FormGroup>
@@ -472,11 +496,12 @@ useEffect(() => {
               type="select"
               name="class"
               id="class"
-              value={editData?.class || ''}
+              value={editData?.class_id || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, class_id: e.target.value }))}
             >
               <option value={-1}>Select Class</option>
               {classOptions.map((option) => (
-                <option key={option._id} value={option._id}>{option.class_name}</option>
+                <option key={option._id} value={option.id}>{option.class_name}</option>
               ))}
             </Input>
           </FormGroup>
@@ -487,7 +512,8 @@ useEffect(() => {
               name="phoneNumber"
               id="phoneNumber"
               placeholder="Enter Phone Number"
-              value={editData?.phoneNumber || ''}
+              value={editData?.phone_no || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, phone_no: e.target.value }))}
             />
           </FormGroup>
           <FormGroup>
@@ -498,6 +524,7 @@ useEffect(() => {
               id="email"
               placeholder="Enter Email Address"
               value={editData?.email || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, email: e.target.value }))}
             />
           </FormGroup>
           <Button type="submit" color="primary">Submit</Button>

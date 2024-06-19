@@ -83,6 +83,7 @@ const Holiday = () => {
 
     const deleteHoliday = async () => {
         try {
+          console.log("holiday id",holidayId)
           const url = `${ADMIN_DELETE_HOLIDAY}/${holidayId}`
           await axios.delete(url, 
           {
@@ -93,6 +94,7 @@ const Holiday = () => {
           fetchHolidays();
         } catch (error) {
           console.error('Error creating holiday:', error);
+          toast.error(error);
         }
     };
     useEffect(()=>{
@@ -209,6 +211,7 @@ const Holiday = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
       {/*   ----------------- Create Holiday ------------- */}
       <Modal show={showCreate} onHide={handleCloseCreate} centered>
         <Modal.Header closeButton>
@@ -273,7 +276,7 @@ const Holiday = () => {
 
           {/* Bottom part */}
           <div className="col-md-4 d-flex justify-content-center mt-3 mt-md-0">
-            Showing 0 to 10 of 246 entries
+            {/* Showing 0 to 10 of 246 entries */}
           </div>
 
           {/* Right part */}

@@ -36,10 +36,10 @@ const Timetable = () => {
   const [timeTable, setTimeTable] = useState([])
 
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(1);
+  const [selectedClass, setSelectedClass] = useState(-1);
   const [selectedModalClass, setSelectedModalClass] = useState(1);
   const [teachers, setTeachers] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState(-1);
 
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -162,6 +162,7 @@ const Timetable = () => {
       }
     } catch (error) {
       console.error('Error updating timetable:', error);
+      toast.error(error);
     }
   };
 
@@ -175,6 +176,7 @@ const Timetable = () => {
       fetchTimetable();
     } catch (error) {
       console.error('Error fetching delete timetable:', error);
+      toast.error(error);
     }
   }
 
@@ -194,11 +196,14 @@ const Timetable = () => {
       await axios.post(url, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      toast.success("Timetable Created Successfully");
       fetchTimetable();
     } catch (error) {
       console.error('Error creating timetable:', error);
+      toast.error(error);
     }
   };
+
   const [showEdit, setShowEdit] = useState(false);
   const [editData, setEditData] = useState({});
   const handleClassChange = (classId) => {

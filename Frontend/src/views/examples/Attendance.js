@@ -26,6 +26,8 @@ import {
 import Header from "components/Headers/Header.js";
 import { ADMIN_CLASS } from 'constant/Constant';
 import AttendanceExcel from 'Excel/AttendanceExcel';
+import {toast,ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
@@ -43,7 +45,11 @@ const Attendance = () => {
   // handle delete
   const [deleteBox, setDeleteBox] = useState(false);
   const [deletedId, setDeletedId] = useState(-1);
+  // handle Search
   const [searchText,setSearchText] = useState("");
+  const [data,setData]=useState([]);
+  // edit data
+  const [editData,setEditData]=useState(null);
 
 
   const toggleModal = () => {
@@ -56,6 +62,8 @@ const Attendance = () => {
 
   const handleClassChange = (classId) => {
     setSelectedClass(classId);
+    console.log(classId);
+    fetchAttendance();
   };
 
   const fetchClasses = async () => {
@@ -80,7 +88,7 @@ const Attendance = () => {
     fetchAttendance();
   }, [])
 
-  const fetchAttendance = async (classId) => {
+  const fetchAttendance = async () => {
     try {
       const date = '2024-06-12';
       const url = `${ADMIN_GET_ATTENDANCE}?date=${date}&&class_id=${selectedClass}`
@@ -90,8 +98,10 @@ const Attendance = () => {
       if (response.data.status) {
         console.log(response.data.data, 'data fetch attendacnce')
         setAttendance(response.data.data);
+        setData(response.data.data);
       } else {
         setAttendance([]);
+        setData([]);
       }
     } catch (error) {
       console.error('Error fetching attendance:', error);
@@ -109,43 +119,47 @@ const Attendance = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (response.data.status) {
-        console.log("successfully mark the attendance!!");
+        toast.success("successfully mark the attendance!!");
+        fetchAttendance();
       }
+      toggleModal();
     } catch (error) {
       console.error('Error marking attendance:', error);
+      toast.error(error);
     }
   };
   useEffect(() => {
     fetchAttendance();
   }, [])
 
-  const search = (students, searchText) => {
+  const search = (attendance, searchText) => {
     const searchResults = [];
 
-    for (let i = 0; i < students.length; i++) {
-      const student = students[i];
-      if (student.enrollment_no === searchText ||
-        student.name == searchText ||
-        student.email == searchText) {
-        searchResults.push(student);
+    for (let i = 0; i < attendance.length; i++) {
+      const item = attendance[i];
+      if (item.enrollment_no == searchText ||
+        item.class_name == searchText ||
+        item.student_name == searchText || item.status == searchText) {
+        searchResults.push(item);
       }
     }
-
+    setData(searchResults);
   };
   
-  const handleDeleteAttendance=()=>{
+  const handleDeleteAttendance =()=>{
 
   }
 
   return (
     <>
+      <ToastContainer/>
       <Header />
       <Container className="mt--7" fluid>
         <div className="container">
           <div className="row">
             <div className="col-md-6 mx-auto">
               <div className="d-flex align-items-center justify-content-between search-container">
-                <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student Attendance On the Basis of Enrollment Number,Class or Name" value={searchText} onChange={(e) => { setSearchText(e.target.value); }} />
+                <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student Attendance on the basis of Enrollment No." value={searchText} onChange={(e) => { setSearchText(e.target.value); }} />
                 <button className="search-button btn btn-primary" onClick={() => { search(attendance, searchText); }}>Search</button>
               </div>
             </div>
@@ -190,7 +204,7 @@ const Attendance = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {attendance && attendance.map((item, index) => (
+                  {data && data.map((item, index) => (
                     <tr key={item?.id}>
                       <td>{index + 1}</td>
                       <td>{item?.enrollment_no}</td>
@@ -203,16 +217,9 @@ const Attendance = () => {
                         <Button
                           color="primary"
                           size="sm"
-                          onClick={() => { setAttendanceId(item.id); setModalOpen(true); }}
+                          onClick={() => { setAttendanceId(item.id);setEditData(item); setModalOpen(true); }}
                         >
                           Edit
-                        </Button>
-                        <Button
-                          color="primary"
-                          size="sm"
-                          onClick={() => { setDeleteBox(true); setDeletedId(item.id); }}
-                        >
-                          Delete
                         </Button>
                       </td>
                     </tr>
@@ -226,6 +233,7 @@ const Attendance = () => {
       {/* Download ExcelSheet */}
       <div className="d-flex justify-content-end" style={{marginRight:"140px",marginTop:"20px",marginBottom:"20px"}}><AttendanceExcel client={attendance} /></div>
 
+      {/* Mark Attendance */}
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Mark Attendance</ModalHeader>
         <ModalBody>
@@ -236,8 +244,7 @@ const Attendance = () => {
                 type="number"
                 name="class"
                 id="class"
-                value={attendanceId}
-                onChange={(e) => setAttendanceId(e.target.value)}
+                value={editData?.enrollment_no}
               >
               </Input>
             </FormGroup>
@@ -256,8 +263,6 @@ const Attendance = () => {
                 <option key={4} value="PENDING">PENDING</option>
               </Input>
             </FormGroup>
-
-
             <Button color="primary" onClick={markAttendance}>Submit</Button>
           </Form>
         </ModalBody>
@@ -267,11 +272,11 @@ const Attendance = () => {
       <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(!deleteBox) }} centered>
         <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Teacher</ModalHeader>
         <ModalBody>
-          <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+          <div className='text-l font-semibold'>Are You Sure Want to Delete Attendance?</div>
         </ModalBody>
         <ModalFooter>
           <Button type="submit" color="secondary" onClick={() => { setDeleteBox(false); }}>Cancel</Button>
-          <Button type="submit" style={{ backgroundColor: "red", color: "white" }} onClick={() => {  }}>Delete</Button>
+          <Button type="submit" style={{ backgroundColor: "red", color: "white" }} onClick={() => { handleDeleteAttendance() }}>Delete</Button>
         </ModalFooter>
       </Modal>
 

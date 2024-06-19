@@ -101,6 +101,45 @@ exports.createUser = asyncHandler(async (req, res) => {
 
 });
 
+exports.updateUser = asyncHandler(async (req, res) => {
+    try {
+        const { email, phone_no, password, confirm_password, role, class_id } = req.body;
+        const { User } = tables;
+        const {id} = req.params;
+        const user_id=id;
+        
+
+        if (!user_id) {
+            throw error.VALIDATION_ERROR("User ID is required");
+        }
+
+        // Find the user by ID first
+        const user = await User.findOne({ where: { id: user_id } });
+
+        if (!user) {
+            throw error.VALIDATION_ERROR("User not found");
+        }
+
+        // Update the user
+        await User.update(
+            {
+                email: email,
+                phone_no: phone_no,
+                role: role,
+                class_id: class_id,
+                password: password,  // Ensure password is hashed before storing
+                confirm_password: confirm_password // Ensure passwords match and are hashed
+            },
+            { where: { id: user_id } }
+        );
+
+        return res.status(200).send({ status: true, statusCode: 200, message: `${role} has been updated successfully.` });
+    } catch (err) {
+        console.error(err);
+        return res.status(400).send({ status: false, statusCode: 400, message: err.message || "An error occurred" });
+    }
+});
+
 
 
 exports.createClass = asyncHandler(async (req, res) => {
@@ -130,33 +169,29 @@ exports.deleteClass = asyncHandler(async (req,res)=>{
     return res.send({ status: true, statusCode: 200, message: "Class has deleted successfully." });
 })
 
-// required to check the logic
-exports.updateClass = asyncHandler(async (req,res)=>{
+// logic of updated class
+exports.updateClass = asyncHandler(async (req, res) => {
     try {
-        const { name,id } = req.body;
-        let class_name=name;
-        if (!id) throw error.VALIDATION_ERROR("Class id is required");
-            
-        
-        try {
-            const data = await tables.Class.findOne({ where: { id: id } });
-            console.log(data,'data')
-            if (!data) throw error.VALIDATION_ERROR("Class not found");
-            await Class.update({
-                class_name
-            })
-        } catch (error) {
-            console.log(error,'error')
-        }
-       
-    
-        return res.send({ status: true, statusCode: 200, message: "Class updated successfully" }); 
-    } catch (error) {
-        console.log(error,'error')
-    }
-    
+        const { name, id } = req.body;
 
-})
+        if (!id) {
+            throw error.VALIDATION_ERROR("Class id is required");
+        }
+
+        const data = await tables.Class.findOne({ where: { id: id } });
+
+        if (!data) {
+            throw error.VALIDATION_ERROR("Class not found");
+        }
+
+        await tables.Class.update({ class_name: name }, { where: { id: id } });
+
+        return res.send({ status: true, statusCode: 200, message: "Class updated successfully" });
+    } catch (err) {
+        console.error(err);
+        return res.status(400).send({ status: false, statusCode: 400, message: err.message || "An error occurred" });
+    }
+});
 
 
 exports.createSchoolSchedule = asyncHandler(async (req, res) => {
@@ -525,7 +560,7 @@ exports.removeHomework = asyncHandler(async (req, res) => {
 exports.createTest = asyncHandler(async (req, res) => {
 
     const body = req.body;
-
+   console.log(req.body,'create test')
     const { date, class_id, subject_id, test_file_url, teacher_id } = body;
 
     if (!teacher_id) throw error.VALIDATION_ERROR("Teacher id is required");

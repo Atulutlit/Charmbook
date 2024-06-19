@@ -30,17 +30,19 @@ import 'react-toastify/dist/ReactToastify.css';
 const Test = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(1);
+  const [selectedClass, setSelectedClass] = useState(-1);
   const [selectedModalClass, setSelectedModalClass] = useState(1);
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedSubject, setSelectedSubject] = useState(-1);
   const [teachers, setTeachers] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState(-1);
   const [fileUrl, setFileUrl] = useState("");
   const [error, setError] = useState("");
   const [tests, setTests] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  // deleted
   const [deleteBox,setDeleteBox]=useState(false);
+  const [deletedId,setDeletedId]=useState(-1);
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -104,13 +106,13 @@ const Test = () => {
   const fetchTests = async (classId) => {
     try {
       const url = `${ADMIN_GET_TEST}/${classId}`
-      // const url = `https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/tests/${classId}`
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.data.status) {
+        console.log(response.data.data,'data')
         setTests(response.data.data);
       }
     } catch (error) {
@@ -136,7 +138,6 @@ const Test = () => {
       const formData = new FormData();
       formData.append('doc', file);
       const url = ADMIN_UPLOAD_DOC;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/doc'
       const response = await axios.post(ADMIN_UPLOAD_DOC, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -156,16 +157,19 @@ const Test = () => {
           class_id: selectedModalClass,
           subject_id: selectedSubject,
           test_file_url: fileUrl,
-          teacher_id: selectedTeacher
+          teacher_id: selectedTeacher,
+          Date:new Date().toDateString
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
       setFileUrl("");
       toggleModal();
+      toast.success('Test Created Successfully!!');
       fetchTests(selectedClass);
     } catch (error) {
       console.error('Error creating test:', error);
+      toast.error(error);
     }
   };
 
@@ -173,10 +177,9 @@ const Test = () => {
     setSelectedClass(classId);
   };
 
-  const handleDeleteTest = async (id) => {
+  const handleDeleteTest = async () => {
     try {
-      const url = `${ADMIN_DELETE_TEST}/${id}`
-      // const url = `https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/test/${id}`
+      const url = `${ADMIN_DELETE_TEST}/${deletedId}`
       await axios.delete(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -184,8 +187,10 @@ const Test = () => {
       });
       toast.success("Deleted Successfully!!");
       fetchTests(selectedClass);
+      setDeleteBox(false);
     } catch (error) {
       console.error('Error deleting test:', error);
+      toast.error(error);
     }
   };
 
@@ -246,7 +251,7 @@ const Test = () => {
                         <Button
                           color="primary"
                           size="sm"
-                          onClick={() => window.open(test.file_url, '_blank')}
+                          onClick={() => window.open(test.test_file_url, '_blank')}
                         >
                           View
                         </Button>
@@ -254,7 +259,7 @@ const Test = () => {
                         <Button
                           color="danger"
                           size="sm"
-                          onClick={() => handleDeleteTest(test.id)}
+                          onClick={() => {setDeleteBox(true);setDeletedId(test.id);}}
                         >
                           Delete
                         </Button>
@@ -280,6 +285,9 @@ const Test = () => {
                 value={selectedModalClass}
                 onChange={(e) => setSelectedModalClass(e.target.value)}
               >
+                 <option key={-1} value={-1}>
+                  select class
+                  </option>
                 {classes.map(clazz => (
                   <option key={clazz.id} value={clazz.id}>
                     {clazz.class_name}
@@ -296,6 +304,9 @@ const Test = () => {
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
               >
+                <option key={-1} value={-1}>
+                  select subject
+                  </option>
                 {subjects.map(subject => (
                   <option key={subject.id} value={subject.id}>
                     {subject.subject_name}
@@ -312,6 +323,9 @@ const Test = () => {
                 value={selectedTeacher}
                 onChange={(e) => setSelectedTeacher(e.target.value)}
               >
+                 <option key={-1} value={-1}>
+                  select subject
+                  </option>
                 {teachers.map(teacher => (
                   <option key={teacher.id} value={teacher.id}>
                     {teacher.first_name} {teacher.last_name}
@@ -343,7 +357,7 @@ const Test = () => {
 <Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
         <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
         <ModalBody>
-            <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+            <div className='text-l font-semibold'>Are You Sure Want to Delete Test?</div>
         </ModalBody>
         <ModalFooter>
             <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>

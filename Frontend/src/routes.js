@@ -27,14 +27,14 @@ var routes = [
   },
   {
     path: "/students",
-    name: "students",
+    name: "Students",
     icon: "fas fa-user text-blue",
     component: <Students />,
     layout: "/admin", 
   },
   {
     path: "/teachers",
-    name: "teachers",
+    name: "Teachers",
     icon: "fa fa-users text-blue",
     component: <Teachers />,
     layout: "/admin", 
@@ -74,13 +74,7 @@ var routes = [
     component: <Test />,
     layout: "/admin",
   },
-  // {
-  //   path: "/login",
-  //   name: "Login",
-  //   icon: "ni ni-circle-08 text-info",
-  //   component: <Login />,
-  //   layout: "/auth",
-  // },
+ 
   {
     path: "/timetable",
     name: "Timetable",
@@ -91,16 +85,23 @@ var routes = [
   {
     path: "/holiday",
     name: "Holiday",
-    icon: "ni ni-check-bold text-info",
+    icon: "ni ni-air-baloon text-info",
     component: <Holiday />,
     layout: "/admin",
   },
   {
     path: "/attendance",
     name: "Attendance",
-    icon: "ni ni-check-bold text-info",
+    icon: "ni ni-calendar-grid-58 text-info",
     component: <Attendance />,
     layout: "/admin",
+  },
+  {
+    path: "/login",
+    name: "Login",
+    icon: "ni ni-circle-08 text-info",
+    component: <Login />,
+    layout: "/auth",
   },
   
  

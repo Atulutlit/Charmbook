@@ -26,7 +26,10 @@ import {
 import Header from 'components/Headers/Header.js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ADMIN_CLASS, ADMIN_GET_BOOK, ADMIN_UPLOAD_IMAGE, ADMIN_UPLOAD_DOC, ADMIN_CREATE_BOOK, ADMIN_GET_SUBJECT, } from './../../constant/Constant'
+import { ADMIN_CLASS, ADMIN_GET_BOOK, ADMIN_UPLOAD_IMAGE, ADMIN_UPLOAD_DOC, ADMIN_DELETE_BOOK, ADMIN_CREATE_BOOK, ADMIN_GET_SUBJECT, ADMIN_UPDATE_BOOK, } from './../../constant/Constant'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ValidationError } from 'ajv';
 
 const Books = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,7 +37,7 @@ const Books = () => {
   const [books, setBooks] = useState([]);
   const [classes, setClasses] = useState([]);
   const [subjects, setSubjects] = useState([]);
-  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedClass, setSelectedClass] = useState(-1);
   const [newBook, setNewBook] = useState({
     cover: '',
     file: null,
@@ -53,11 +56,16 @@ const Books = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
+  // edit
   const toggleModal = () => setModalOpen(!modalOpen);
   const toggleEditModal = () => setEditModalOpen(!editModalOpen);
+  const [editId,setEditId]=useState(-1);
 
   // delete
   const [deleteBox, setDeleteBox] = useState(false);
+  const [deletedId, setDeletedId] = useState(-1);
+
+  
 
   const navigate = useNavigate()
 
@@ -80,7 +88,6 @@ const Books = () => {
       });
       if (response.data.status) {
         setClasses(response.data.data);
-        setSelectedClass(response.data.data[0].id); // Select the first class by default
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -103,7 +110,6 @@ const Books = () => {
 
   const fetchBooks = async (classId) => {
     try {
-      // const url = `https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/books/${classId}`
       const url = `${ADMIN_GET_BOOK}/${classId}`
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -125,10 +131,10 @@ const Books = () => {
       const formData = new FormData();
       formData.append('image', file);
       const url = ADMIN_UPLOAD_IMAGE;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/image'
       const response = await axios.post(url, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      console.log(response.data.data,'handle image upload')
       setNewBook({ ...newBook, cover_url: response.data.data });
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -140,7 +146,6 @@ const Books = () => {
       const file = e.target.files[0];
       const formData = new FormData();
       formData.append('doc', file);
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/doc';
       const url = ADMIN_UPLOAD_DOC;
       const response = await axios.post(url, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -151,6 +156,25 @@ const Books = () => {
     }
   };
 
+  const validateUrl = (url, url1) => {
+    const parsedUrl = new URL(url); // Parse the URL
+    const path = parsedUrl.pathname; // Get the pathname
+
+    const imageRegex = /\.(jpg|jpeg|JPG|JPEG)$/i;
+    const pdfRegex = /\.pdf$/i;
+
+    if(!imageRegex.test(path)){
+       console.log(path,'url')
+       return {"status":false,"message":"Image must be in jpg or Jpeg format"};
+    }
+    
+    if(!pdfRegex.test(url1))
+       return {"status":false,"message":"Book must be in pdf format"};
+    
+    return {"status":true,"message":"correct format"};
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -160,12 +184,16 @@ const Books = () => {
         cover_image_url: newBook.cover_url,
         file_url: newBook.file_url
       };
+      const isValid=validateUrl(newBook.cover_url,newBook.file_url);
+      if(!isValid.status){
+         toast.error(isValid['message']);
+         return;
+      }
       const url = ADMIN_CREATE_BOOK;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/add/book'
       await axios.post(url, newBookData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-
+      toast.success('Book Added Successfully!!');
       setBooks([...books, {
         ...newBook,
         id: books.length + 1,
@@ -183,16 +211,43 @@ const Books = () => {
       toggleModal();
     } catch (error) {
       console.error('Error adding new book:', error);
+      toast.error(error)
     }
   };
 
-  const handleDelete = (id) => {
-    setBooks(books.filter(book => book.id !== id));
+  const handleDelete = async() => {
+    
+    try {
+      const url = `${ADMIN_DELETE_BOOK}?book_id=${deletedId}`;
+      const response = await axios.delete(url, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.data.status) {
+        setBooks(books.filter(book => book.id !== deletedId));
+        toast.success('Book Deleted Successfully!!');
+        setDeleteBox(false);
+      }
+    } catch (error) {
+      console.error('Error at Deleting Book:', error);
+      toast.error(error);
+    }
   };
 
-  const handleEdit = (book) => {
-    setEditedBook(book);
-    toggleEditModal();
+  const handleEdit = async() => {
+    try {
+      const url = `${ADMIN_UPDATE_BOOK}`;
+      console.log(editedBook,'editedBook');
+      const response = await axios.put(url, editedBook,{
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.data.status) {
+        toast.success('Book Edited Successfully!!');
+        toggleEditModal();
+      }
+    } catch (error) {
+      console.error('Error at Deleting Book:', error);
+      toast.error(error);
+    }
   };
 
   const saveChanges = () => {
@@ -208,6 +263,7 @@ const Books = () => {
 
   return (
     <>
+     <ToastContainer/>
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">
@@ -224,6 +280,9 @@ const Books = () => {
                         {classes.find(cls => cls.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
                       <DropdownMenu>
+                      <DropdownItem value={-1} onClick={() => setSelectedClass(-1)}>
+                            select class
+                          </DropdownItem>
                         {classes.map(cls => (
                           <DropdownItem key={cls.id} onClick={() => setSelectedClass(cls.id)}>
                             {cls.class_name}
@@ -268,16 +327,16 @@ const Books = () => {
                       <td>{book.class?.class_name}</td>
                       <td>
                         <div className="d-flex">
-                          <i
+                          {/* <i
                             className="fas fa-edit text-info mr-3"
                             title="Edit"
-                            onClick={() => handleEdit(book)}
+                            onClick={() => {toggleEditModal();setEditedBook(book); console.log(book);}}
                             style={{ cursor: 'pointer' }}
-                          ></i>
+                          ></i> */}
                           <i
                             className="fas fa-trash-alt text-danger"
                             title="Delete"
-                            onClick={() => handleDelete(book.id)}
+                            onClick={() =>{setDeleteBox(true);setDeletedId(book.id);}}
                             style={{ cursor: 'pointer' }}
                           ></i>
                           <a href={book.file_url} download>
@@ -293,6 +352,8 @@ const Books = () => {
           </Col>
         </Row>
       </Container>
+
+      {/* Create Book */}
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Book</ModalHeader>
         <ModalBody>
@@ -349,43 +410,69 @@ const Books = () => {
           </Form>
         </ModalBody>
       </Modal>
+      
+      {/* Edit Book */}
       <Modal isOpen={editModalOpen} toggle={toggleEditModal}>
         <ModalHeader toggle={toggleEditModal}>Edit Book</ModalHeader>
         <ModalBody>
+        {/* <FormGroup>
+              <Label for="cover">Upload Cover Image(jpg or jpeg format only)</Label>
+              <Input
+                type="file"
+                name="cover"
+                id="cover"
+                onChange={handleImageUpload}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="file">Upload Book File(Pdf Format Only)</Label>
+              <Input
+                type="file"
+                name="file"
+                id="file"
+                onChange={handleFileUpload}
+              />
+            </FormGroup> */}
           <FormGroup>
-            <Label for="subject">Subject</Label>
-            <Input
-              type="select"
-              name="subject"
-              id="subject"
-              value={editedBook.subject?.subject_name}
-              onChange={(e) => setEditedBook({ ...editedBook, subject: e.target.value })}
-            >
-              <option value="">Select Subject</option>
-              {subjects.map(sub => (
-                <option key={sub.id} value={sub.id}>{sub.subject_name}</option>
-              ))}
-            </Input>
-          </FormGroup>
+          <Label for="subject">Subject</Label>
+          <Input
+            type="select"
+            name="subject"
+            id="subject"
+            value={editedBook.subject}
+            onChange={(e) => {
+              const selectedSubject = JSON.parse(e.target.value); // Parse the selected value
+              setEditedBook({ ...editedBook, subject: selectedSubject });
+              console.log(selectedSubject, 'selected subject'); // Log the selected subject
+            }}
+          >
+            <option value="">Select Subject</option>
+            {subjects.map(sub => (
+              <option key={sub.id} value={JSON.stringify(sub)}>
+                {sub.subject_name}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
           <FormGroup>
             <Label for="class">Class</Label>
             <Input
               type="select"
               name="class"
               id="class"
-              value={editedBook.class?.class_name}
-              onChange={(e) => setEditedBook({ ...editedBook, class: e.target.value })}
+              value={editedBook.class}
+              onChange={(e) => setEditedBook({ ...editedBook, class: JSON.parse(e.target.value) })}
             >
               <option value="">Select Class</option>
               {classes.map(cls => (
-                <option key={cls.id} value={cls.id}>{cls.class_name}</option>
+                <option key={cls.id} value={JSON.stringify(cls)}>{cls.class_name}</option>
               ))}
             </Input>
           </FormGroup>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={saveChanges}>Save</Button>{' '}
-          <Button color="secondary" onClick={toggleEditModal}>Cancel</Button>
+          <Button color="primary" onClick={toggleEditModal}>Cancel</Button>{' '}
+          <Button color="secondary" onClick={()=>{handleEdit();}}>Update</Button>
         </ModalFooter>
       </Modal>
 

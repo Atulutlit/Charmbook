@@ -52,6 +52,9 @@ router.delete('/student/:id',adminAuthMiddleware,adminController.removeStudent);
 // For Remove teacher
 router.delete('/teacher/:id',adminAuthMiddleware,adminController.removeTeacher);  
 
+// update detail of student and teacher
+router.put('/user/:id',adminAuthMiddleware,adminController.updateUser);
+
 // holidays
 router.post("/holidays", adminAuthMiddleware, adminController.createHoliday);
 router.get("/holidays", adminAuthMiddleware, adminController.getHoliday)
@@ -92,7 +95,7 @@ router.get("/tests/:class_id",adminAuthMiddleware, teacherController.getTests);
 //book
 router.get("/subject", adminAuthMiddleware, adminController.getSubject);
 router.post("/add/book", adminAuthMiddleware, teacherController.createBook);
-router.delete("/book", adminAuthMiddleware, teacherController.removeBook);
+router.delete("/book/", adminAuthMiddleware, teacherController.removeBook);
 router.put("/update/book", adminAuthMiddleware, teacherController.updateBook);
 router.post("/add/chapter", adminAuthMiddleware, teacherController.addChapter);
 router.get("/books/:class_id", adminAuthMiddleware, teacherController.getAllBooks);

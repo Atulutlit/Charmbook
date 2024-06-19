@@ -7,6 +7,7 @@ import { ADMIN_TEACHER,ADMIN_CREATE_USER,ADMIN_REMOVE_TEACHER } from 'constant/C
 import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TeacherExcel from 'Excel/TeacherExcel';
+import { ADMIN_UPDATE_USER } from 'constant/Constant';
 
 
 const Teachers = () => {
@@ -54,18 +55,18 @@ const Teachers = () => {
   const toggleModal = () => {
     setModalOpen(!modalOpen);
   };
-  const search = (students, searchText) => {
+  const search = (teachers, searchText) => {
     const searchResults = [];
 
-    for (let i = 0; i < students.length; i++) {
-        const student = students[i];
-        if (student.enrollment_no === searchText ||
-            student.name==searchText ||
-            student.email==searchText) {
-            searchResults.push(student);
+    for (let i = 0; i < teachers.length; i++) {
+        const teacher = teachers[i];
+        if (teacher.enrollment_no == searchText ||
+            teacher.name==searchText ||
+            teacher.email==searchText) {
+            searchResults.push(teacher);
         }
     }
-   
+    setData(searchResults);
   };
 
   const handleSubmit = async (e) => {
@@ -139,6 +140,41 @@ const Teachers = () => {
   }
 
   const [data,setData]=useState([])
+  // Edit Teacher Details
+  const [modalEditOpen,setModalEditOpen]=useState(false);
+  const [editData,setEditData]=useState(null);
+  const [editId,setEditId]=useState(-1);
+
+  // handleEditTeacher
+  const handleEditTeacherDetail=async(event)=>{
+    event.preventDefault(); // Prevent default form submission
+
+    try {
+      const url = `${ADMIN_UPDATE_USER}/${editId}`;
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editData) // Stringify the data
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        console.log('Student updated successfully:', data.message);
+        toast.success('Student Updated Successfully!!');
+        fetchTeachers();
+        setModalEditOpen(false); // Close the modal
+      } else {
+        console.error('Failed to update student:', data.message);
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error updating student:', error);
+      toast.error('An error occurred while updating the student.');
+    }
+  }
 
   // all logic of pagination
 useEffect(() => {
@@ -154,15 +190,15 @@ useEffect(() => {
       
       <Container className="mt--7" fluid>
       <div className="container">
-                    <div className="row">
-                      <div className="col-md-6 mx-auto">
-                        <div className="d-flex align-items-center justify-content-between search-container">
-                          <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student" value={searchText} onChange={(e)=>{setSearchText(e.target.value);}} />
-                          <button className="search-button btn btn-primary" onClick={()=>{search(teachers,searchText);}}>Search</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+        <div className="row">
+          <div className="col-md-6 mx-auto">
+            <div className="d-flex align-items-center justify-content-between search-container">
+              <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student" value={searchText} onChange={(e)=>{setSearchText(e.target.value);}} />
+              <button className="search-button btn btn-primary" onClick={()=>{search(teachers,searchText);}}>Search</button>
+            </div>
+          </div>
+        </div>
+      </div>
         <Row className="mt-5 justify-content-center">
           <Col className="mb-5 mb-xl-0" xl="10">
             <Card className="shadow">
@@ -187,7 +223,7 @@ useEffect(() => {
                   <tr>
                     <th scope="col" className='d-none'>Img</th>
                     <th scope="col">Enrollment No.</th>
-                    <th scope="col">Last Name</th>
+                    <th scope="col">Name</th>
                     <th scope="col">Mobile No.</th>
                     <th scope="col">Email</th>
                     <th scope='col'>Class</th>
@@ -216,7 +252,7 @@ useEffect(() => {
                       <td>{teacher?.status}</td>
                       <td>
                         <div className="d-flex">
-                          <i className="fas fa-edit p-1"></i>
+                          <i className="fas fa-edit p-1" style={{cursor:"pointer"}} onClick={()=>{setModalEditOpen(true);setEditId(teacher.id);setEditData(teacher);}}></i>
                           <i className="fas fa-trash-alt text-danger p-1" title="Delete" onClick={() =>{setDeleteBox(true);setDeletedId(teacher.id);}} style={{ cursor: "pointer" }}></i>
                         </div>
                       </td>
@@ -250,7 +286,7 @@ useEffect(() => {
 
           {/* Bottom part */}
           <div className="col-md-4 d-flex justify-content-center mt-3 mt-md-0">
-            Showing 0 to 10 of 246 entries
+            {/* Showing 0 to 10 of 246 entries */}
           </div>
 
           {/* Right part */}
@@ -325,6 +361,87 @@ useEffect(() => {
             <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDelete();}}>Delete</Button>
             </ModalFooter>
       </Modal>
+
+        {/* Edit Modal */}
+    <Modal isOpen={modalEditOpen} toggle={() => setModalEditOpen(false)} centered>
+      <ModalHeader toggle={() => setModalEditOpen(false)}>Edit Student Details</ModalHeader>
+      <ModalBody>
+        <Form onSubmit={handleEditTeacherDetail}>
+          <FormGroup>
+            <Label for="firstName">First Name</Label>
+            <Input
+              type="text"
+              name="firstName"
+              id="firstName"
+              placeholder="Enter First Name"
+              value={editData?.first_name || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, first_name: e.target.value }))}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="lastName">Last Name</Label>
+            <Input
+              type="text"
+              name="lastName"
+              id="lastName"
+              placeholder="Enter Last Name"
+              value={editData?.last_name || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, last_name: e.target.value }))}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="password">Password</Label>
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Enter Password"
+              value={editData?.password || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, password: e.target.value }))}
+            />
+          </FormGroup>
+          {/* we will handle class later */}
+          {/* <FormGroup>
+            <Label for="class">Class</Label>
+            <Input
+              type="select"
+              name="class"
+              id="class"
+              value={editData?.class_id || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, class_id: e.target.value }))}
+            >
+              <option value={-1}>Select Class</option>
+              {classOptions.map((option) => (
+                <option key={option._id} value={option.id}>{option.class_name}</option>
+              ))}
+            </Input>
+          </FormGroup> */}
+          <FormGroup>
+            <Label for="phoneNumber">Mobile Number</Label>
+            <Input
+              type="text"
+              name="phoneNumber"
+              id="phoneNumber"
+              placeholder="Enter Phone Number"
+              value={editData?.phone_no || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, phone_no: e.target.value }))}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="email">Email Address</Label>
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Enter Email Address"
+              value={editData?.email || ''}
+              onChange={(e) => setEditData((prevData) => ({ ...prevData, email: e.target.value }))}
+            />
+          </FormGroup>
+          <Button type="submit" color="primary">Submit</Button>
+        </Form>
+      </ModalBody>
+    </Modal>
     </>
   );
 };

@@ -45,10 +45,10 @@ const Classes = () => {
         }
       });
       if (response.data.status) {
+        console.log(response.data.data,'data')
         setClasses(response.data.data.map(c => ({ id: c.id, name: c.class_name })));
       }
     } catch (error) {
-      // setError("Failed to fetch classes.");
       toast.error('Failed to fetch class');
     }
   };
@@ -73,17 +73,17 @@ const Classes = () => {
       fetchClasses();
       toast.success('Class Created Successfully!!');
     } catch (error) {
-      // setError("Failed to create class.");
       toast.warn(error);
     }
   };
   const [showEditBox,setShowEditBox]=useState(false)
-  const [selectedId,setSelectedId]=useState(null);
+  const [selectedId,setSelectedId]=useState(-1);
   const [showDeleteBox,setShowDeleteBox]=useState(false);
   const [editData,setEditData]=useState(null)
 
   const deleteClass=async()=>{
     try {
+      console.log(selectedId,'selected id');
       const url = `${ADMIN_DELETE_CLASS}/${selectedId}`;
       await axios.delete(url,{
         headers: {
@@ -123,6 +123,7 @@ const Classes = () => {
   const handleDelete=(id)=>{
    setShowDeleteBox(true);
    setSelectedId(id);
+   console.log(id,'id')
   }
 
 
@@ -166,7 +167,7 @@ const Classes = () => {
                       <td>
                         <div className="d-flex">
                           <i className="fas fa-edit text-info mr-3" title="Edit" onClick={() => handleEdit(clazz)} style={{ cursor: 'pointer' }}></i>
-                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => {handleDelete(clazz._id);}} style={{ cursor: 'pointer' }}></i>
+                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => {handleDelete(clazz.id);}} style={{ cursor: 'pointer' }}></i>
                         </div>
                       </td>
                     </tr>

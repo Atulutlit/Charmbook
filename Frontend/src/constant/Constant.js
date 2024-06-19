@@ -4,6 +4,7 @@ const BASE_URL='http://localhost:5000'
 // admin api
 export const ADMIN_LOGIN_URL=BASE_URL + "/api/admin/login";
 export const ADMIN_CREATE_USER=BASE_URL + "/api/admin/user/create";  // create both student and teacher
+export const ADMIN_UPDATE_USER=BASE_URL + "/api/admin/user";  // update both student and teacher data
 export const ADMIN_CREATE_SUBJECT=BASE_URL + "/api/admin/subject";
 export const ADMIN_USER_COUNT=BASE_URL + "/api/admin/users/count";
 
@@ -61,7 +62,7 @@ export const ADMIN_GET_TEST = BASE_URL + "/api/admin/tests";
 // book management
 export const ADMIN_GET_SUBJECT1= BASE_URL + "/api/admin/subject";
 export const ADMIN_CREATE_BOOK = BASE_URL + "/api/admin/add/book";
-export const ADMIN_DELETE_BOOK = BASE_URL + "/api/admin/update/book";
+export const ADMIN_DELETE_BOOK = BASE_URL + "/api/admin/book";
 export const ADMIN_UPDATE_BOOK = BASE_URL + "/api/admin/update/book";
 export const ADMIN_ADD_CHAPTER = BASE_URL + "/api/admin/add/chapter";
 export const ADMIN_GET_BOOK = BASE_URL + "/api/admin/books";

@@ -18,12 +18,15 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  ModalFooter
+  ModalFooter,
+  Toast
 } from 'reactstrap';
 
 import Header from "components/Headers/Header.js";
 import axios from 'axios';
 import {ADMIN_CLASS,ADMIN_GET_SUBJECT,ADMIN_TEACHER,ADMIN_GET_HOMEWORK,ADMIN_UPLOAD_DOC,ADMIN_CREATE_HOMEWORK,ADMIN_DELETE_HOMEWORK} from './../../constant/Constant'
+import { toast,ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Homework = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -161,9 +164,11 @@ const Homework = () => {
         });
       setFileUrl("");
       toggleModal();
+      toast.success("Homework Created Successfully");
       fetchHomeworks(selectedClass);
     } catch (error) {
       console.error('Error creating homework:', error);
+      toast.error(error);
     }
   };
 
@@ -179,14 +184,17 @@ const Homework = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
+      toast.success("Homework Deleted Successfully!!");
       fetchHomeworks(selectedClass);
     } catch (error) {
       console.error('Error deleting homework:', error);
+      toast.error(error);
     }
   };
 
   return (
     <>
+      <ToastContainer/>
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">

@@ -16,6 +16,7 @@ const Subjects = () => {
     id: null,
     name: ''
   });
+
   // handle delete subject
   const [deleteBox,setDeleteBox]=useState(false);
   const [deletedId,setDeletedId]=useState(-1);
@@ -116,7 +117,7 @@ const Subjects = () => {
   const handleEdit = (subject) => {
     setEditedSubject(subject);
     toggleEditModal();
-      };
+  };
   
   const saveChanges = async () => {
     const updatedSubject = {
@@ -126,22 +127,24 @@ const Subjects = () => {
     try {
       const url = `${ADMIN_GET_SUBJECT}/${editedSubject.id}`;
       const token = localStorage.getItem('token');
-      const response = await axios.put(url,updatedSubject,{ headers: {
+      const data = await axios.put(url,updatedSubject,{ headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
       });
-      const data = await response.json();
       console.log(data, 'get subject');
-      if (response.ok) {
+      if (data) {
         console.log('Subject updated successfully:', data.message);
         toast("Subject Updated Successfully!!");
         fetchSubjects(); // Uncomment if you need to refresh the subjects list
         toggleEditModal();
       } else {
         console.error('Failed to update subject:', data.message);
+        toast.error(data.message);
       }
     } catch (error) {
       console.error('Error updating subject:', error);
+      toast.error(error);
+      toggleEditModal();
     }
   };
   
