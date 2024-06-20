@@ -12,12 +12,13 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BIGINT,
       allowNull: false
     },
+    subject_id:{
+      type: DataTypes.BIGINT,
+      allowNull: false
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: true
-    },
-    book_id: {
-      type: DataTypes.INTEGER,
     },
     test_file_url:{
       type: DataTypes.STRING,

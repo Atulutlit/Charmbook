@@ -570,18 +570,13 @@ exports.createTest = asyncHandler(async (req, res) => {
 
     if (!subject_id) throw error.VALIDATION_ERROR("Subject id is required");
 
-    // const book = await tables.Book.findOne({ where: { subject_id, class_id }, raw: true });
-
-    // if (!book) throw error.VALIDATION_ERROR("Book not found");
-
     const testData = {
-        // book_id: 55,
         ...body
     }
     if (date) testData.date = new Date(date);
-    
-    const detail=await tables.Test.create(testData);
 
+    const detail=await tables.Test.create(testData);
+        
     return res.send({
         status: true,
         statusCode: 201,

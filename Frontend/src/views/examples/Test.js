@@ -247,9 +247,9 @@ const Test = () => {
                       {/* <td>
                         <img src={test.book.cover_image_url} alt="Cover" width="50" />
                       </td> */}
-                      <td>{test?.teacher_id}</td>
+                      <td>{test?.user?.first_name}</td>
                       <td>{test?.class?.class_name}</td>
-                      <td>{test?.book?.subject?.subject_name}</td>
+                      <td>{test?.subject?.subject_name}</td>
                       <td>
                         <Button
                           color="primary"

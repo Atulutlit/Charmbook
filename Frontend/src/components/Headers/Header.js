@@ -224,7 +224,7 @@ const Header = () => {
                           Schedule
                         </CardTitle>
                         <span className="h4 font-weight-bold mb-0">
-                          {schedule.start_time ? formatTime(schedule.start_time) : ''} - {schedule.end_time ? formatTime(schedule.end_time) : ''}
+                          {schedule?.start_time ? formatTime(schedule?.start_time) : ''} - {schedule?.end_time ? formatTime(schedule?.end_time) : ''}
                         </span>
                       </div>
                       <Col className="col-auto">

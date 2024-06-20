@@ -350,12 +350,9 @@ exports.getTests = asyncHandler(async (req, res) => {
             attributes: ['id', 'test_file_url', 'date','class_id','teacher_id'],
             include: [
                 {
-                    model: tables.Book,
-                    attributes: ['cover_image_url'],
-                    include: {
-                        model: tables.Subject,
-                        attributes: ['id', 'subject_name']
-                    }
+                    model: tables.Subject,
+                    attributes: ['id', 'subject_name']
+                    
                 },
                 {
                     model: tables.Class,
