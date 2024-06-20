@@ -26,6 +26,13 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/class",
+    name: "Classes",
+    icon: "ri-school-line text-yellow",
+    component: <Class />,
+    layout: "/admin",
+  },
+  {
     path: "/students",
     name: "Students",
     icon: "fas fa-user text-blue",
@@ -39,13 +46,7 @@ var routes = [
     component: <Teachers />,
     layout: "/admin", 
   },
-  {
-    path: "/books",
-    name: "Books",
-    icon: "fa fa-book text-orange",
-    component: <Books />,
-    layout: "/admin",
-  },
+  ,
   {
     path: "/subjects",
     name: "Subjects",
@@ -54,12 +55,13 @@ var routes = [
     layout: "/admin", 
   },
   {
-    path: "/class",
-    name: "Classes",
-    icon: "ri-school-line text-yellow",
-    component: <Class />,
+    path: "/books",
+    name: "Books",
+    icon: "fa fa-book text-orange",
+    component: <Books />,
     layout: "/admin",
   },
+  
   {
     path: "/homework",
     name: "Homework",

@@ -56,7 +56,6 @@ const Homework = () => {
   const fetchClasses = async () => {
     try {
       const url=ADMIN_CLASS;
-      // const url='https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/class'
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -112,6 +111,7 @@ const Homework = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
+      console.log(response.data,'fetch homework')
       if (response.data.status) {
         setHomeworks(response.data.data);
       }
@@ -151,7 +151,7 @@ const Homework = () => {
     e.preventDefault();
     try {
       const url = ADMIN_CREATE_HOMEWORK;
-      await axios.post(url,
+      const response = await axios.post(url,
         {
           class_id: selectedModalClass,
           subject_id: selectedSubject,
@@ -164,6 +164,7 @@ const Homework = () => {
         });
       setFileUrl("");
       toggleModal();
+      console.log(response,'response')
       toast.success("Homework Created Successfully");
       fetchHomeworks(selectedClass);
     } catch (error) {
@@ -243,14 +244,14 @@ const Homework = () => {
                     <tr key={homework.id}>
                       <td>{index + 1}</td>
                       <td>
-                        <img src={homework.book.cover_image_url} alt="Cover" width="50" />
+                        <img src={homework?.book?.cover_image_url} alt="Cover" width="50" />
                       </td>
-                      <td>{homework.book.subject.subject_name}</td>
+                      <td>{homework?.book?.subject?.subject_name}</td>
                       <td>
                         <Button
                           color="primary"
                           size="sm"
-                          onClick={() => window.open(homework.file_url, '_blank')}
+                          onClick={() => window.open(homework?.file_url, '_blank')}
                         >
                           View
                         </Button>
@@ -258,7 +259,7 @@ const Homework = () => {
                         <Button
                           color="danger"
                           size="sm"
-                          onClick={() => handleDeleteHomework(homework.id)}
+                          onClick={() => handleDeleteHomework(homework?.id)}
                         >
                           Delete
                         </Button>
@@ -302,9 +303,9 @@ const Homework = () => {
                 onChange={(e) => setSelectedSubject(e.target.value)}
               >
                 <option value={-1}>select subjects</option>
-                {subjects.map(subject => (
-                  <option key={subject.id} value={subject.id}>
-                    {subject.subject_name}
+                {subjects && subjects.map(subject => (
+                  <option key={subject.id} value={subject?.id}>
+                    {subject?.subject_name}
                   </option>
                 ))}
               </Input>
@@ -321,7 +322,7 @@ const Homework = () => {
                 <option value={-1}>select teacher</option>
                 {teachers.map(teacher => (
                   <option key={teacher.id} value={teacher.id}>
-                    {teacher.first_name} {teacher.last_name}
+                    {teacher?.first_name} {teacher?.last_name}
                   </option>
                 ))}
               </Input>

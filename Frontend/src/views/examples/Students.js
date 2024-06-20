@@ -39,7 +39,7 @@ const Students = () => {
 
   const fetchStudents = async (classId) => {
     try {
-      const url = ADMIN_STUDENTS;
+      const url = `${ADMIN_STUDENTS}?class_id=${classId}`;
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -74,7 +74,8 @@ const Students = () => {
       const data = await response.json();
       if (data.status) {
         setClassOptions(data.data);
-        fetchStudents(selectedClassId);
+        setSelectedClassId(data?.data[0]?.id);
+        fetchStudents(data?.data[0]?.id);
       } else {
         console.error('Failed to fetch classes:', data.message);
       }
@@ -181,7 +182,8 @@ useEffect(() => {
       const student = students[i];
       if (student.enrollment_no === searchText ||
         student.name == searchText ||
-        student.email == searchText) {
+        student.email == searchText || 
+        student.phone_no == searchText) {
         searchResults.push(student);
       }
     }
@@ -264,7 +266,7 @@ useEffect(() => {
         <div className="row">
           <div className="col-md-6 mx-auto">
             <div className="d-flex align-items-center justify-content-between search-container">
-              <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student" value={searchText} onChange={(e)=>{setSearchText(e.target.value);}} />
+              <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student on the basis of Enrollment and Name" value={searchText} onChange={(e)=>{setSearchText(e.target.value);}} />
               <button className="search-button btn btn-primary" onClick={()=>{search(data,searchText);}}>Search</button>
             </div>
           </div>
@@ -280,18 +282,7 @@ useEffect(() => {
                   </div>
 
                   <div className="col text-right">
-                    <Button
-                      color="primary"
-                      onClick={toggleModal}
-                      size="sm"
-                    >
-                      Create <i className='fas fa-plus'></i>
-                    </Button>
-                  </div>
-                </Row>
-                <Row className="align-items-center mt-2">
-                  <div className="col">
-                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                  <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
                       <DropdownToggle caret>
                         {classOptions.find(c => c.id === selectedClassId)?.class_name || 'Select Class'}
                       </DropdownToggle>
@@ -306,6 +297,13 @@ useEffect(() => {
                         ))}
                       </DropdownMenu>
                     </Dropdown>
+                    <Button
+                      color="primary"
+                      onClick={toggleModal}
+                      size="sm"
+                    >
+                      Create <i className='fas fa-plus'></i>
+                    </Button>
                   </div>
                 </Row>
               </CardHeader>
@@ -329,7 +327,7 @@ useEffect(() => {
                       </td>
                       <td>{student?.enrollment_no}</td>
                       <td>{student?.first_name}{student?.last_name}</td>
-                      <td>{student.class_id}</td>
+                      <td>{student.class.class_name}</td>
                       <td>{student?.phone_no}</td>
                       <td>{student?.email}</td>
                       <td>{student?.status}</td>

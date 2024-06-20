@@ -7,13 +7,16 @@ import { ADMIN_TEACHER,ADMIN_CREATE_USER,ADMIN_REMOVE_TEACHER } from 'constant/C
 import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TeacherExcel from 'Excel/TeacherExcel';
-import { ADMIN_UPDATE_USER } from 'constant/Constant';
+import { ADMIN_UPDATE_USER ,ADMIN_CLASS} from 'constant/Constant';
 
 
 const Teachers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [teachers, setTeachers] = useState([]);
   const token = localStorage.getItem('token');
+  // class
+  const [selectedClass,setSelectedClass]=useState(null);
+  const [classOptions,setClassOptions]=useState([])
 
   // handle delete
   const [deleteBox,setDeleteBox]=useState(false);
@@ -69,6 +72,29 @@ const Teachers = () => {
     setData(searchResults);
   };
 
+  const fetchClasses = async () => {
+    try {
+      const url = ADMIN_CLASS;
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (data.status) {
+        setClassOptions(data.data);
+      } else {
+        console.error('Failed to fetch classes:', data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching classes:', error);
+    }
+  };
+
+  useEffect(()=>{
+  fetchClasses();
+  },[])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -79,7 +105,8 @@ const Teachers = () => {
       email: formData.get('email'),
       password: formData.get('password'),
       confirm_password: formData.get('confirmPassword'),
-      phone_no: formData.get('mobileNo')
+      phone_no: formData.get('mobileNo'),
+      class_id: formData.get('class')
     };
 
     try {
@@ -226,7 +253,7 @@ useEffect(() => {
                     <th scope="col">Name</th>
                     <th scope="col">Mobile No.</th>
                     <th scope="col">Email</th>
-                    <th scope='col'>Class</th>
+                    <th scope="col">Class</th>
                     <th scope='col'>Status</th>
                     <th scope="col">Actions</th>
                   </tr>
@@ -248,7 +275,7 @@ useEffect(() => {
                       <td>{teacher?.first_name} {teacher?.last_name}</td>
                       <td>{teacher?.phone_no}</td>
                       <td>{teacher?.email}</td>
-                      <td></td>
+                      <td>{teacher?.class?.class_name}</td>
                       <td>{teacher?.status}</td>
                       <td>
                         <div className="d-flex">
@@ -344,6 +371,15 @@ useEffect(() => {
             <FormGroup>
               <Label for="confirmPassword">Confirm Password</Label>
               <Input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" />
+            </FormGroup>
+            <FormGroup>
+              <Label for="class">Class</Label>
+              <Input type="select" name="class" id="class" value={selectedClass} onChange={(e) => { console.log(e.target.value); setSelectedClass(e.target.value) }}>
+                <option value={-1}>Select Class</option>
+                {classOptions.map((option) => (
+                  <option key={option._id} value={option.id}>{option.class_name} {option._id}</option>
+                ))}
+              </Input>
             </FormGroup>
             <Button type="submit" color="primary">Submit</Button>
           </Form>

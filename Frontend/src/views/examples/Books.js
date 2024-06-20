@@ -194,7 +194,7 @@ const Books = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       toast.success('Book Added Successfully!!');
-      setBooks([...books, {
+            setBooks([...books, {
         ...newBook,
         id: books.length + 1,
         class: classes.find(cls => cls.id === newBook.class),
@@ -216,7 +216,6 @@ const Books = () => {
   };
 
   const handleDelete = async() => {
-    
     try {
       const url = `${ADMIN_DELETE_BOOK}?book_id=${deletedId}`;
       const response = await axios.delete(url, {
@@ -478,9 +477,9 @@ const Books = () => {
 
       {/* Delete Box */}
       <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(!deleteBox) }} centered>
-        <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Teacher</ModalHeader>
+        <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Book</ModalHeader>
         <ModalBody>
-          <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+          <div className='text-l font-semibold'>Are You Sure Want to Delete Book?</div>
         </ModalBody>
         <ModalFooter>
           <Button type="submit" color="secondary" onClick={() => { setDeleteBox(false); }}>Cancel</Button>

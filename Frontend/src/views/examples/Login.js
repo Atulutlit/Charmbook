@@ -30,6 +30,10 @@ const Login = () => {
     e.preventDefault();
     try {
       const url = ADMIN_LOGIN_URL;
+      if(password!="12345"){
+        setError("Please Enter Correct Password!!");
+        return ;
+      }
       const response = await axios.post(
         url,{ email, password }
       );

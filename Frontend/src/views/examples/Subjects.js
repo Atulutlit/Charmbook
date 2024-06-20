@@ -225,7 +225,7 @@ const Subjects = () => {
       
        {/* Delete Box */}
 <Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
-        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Subject</ModalHeader>
         <ModalBody>
             <div className='text-l font-semibold'>Are You Sure Want to Delete Subject?</div>
         </ModalBody>

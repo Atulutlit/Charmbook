@@ -140,7 +140,8 @@ const Timetable = () => {
     fetchTimetable(selectedClass);
   }, [selectedClass])
 
-  const updateTimetable = async () => {
+  const updateTimetable = async (event) => {
+    event.preventDefault();
     try {
       const url = ADMIN_UPDATE_TIMETABLE;
       const token = localStorage.getItem('token')
@@ -181,7 +182,8 @@ const Timetable = () => {
   }
 
 
-  const createTimetable = async () => {
+  const createTimetable = async (event) => {
+    event.preventDefault();
     try {
       const url = ADMIN_CREATE_TIMETABLE;
       const data = {
@@ -271,7 +273,7 @@ const Timetable = () => {
                     <tr key={item.id}>
                       <td>{index + 1}</td>
 
-                      <td>{item?.class.id}</td>
+                      <td>{item?.class.class_name}</td>
                       <td>{item?.subject?.subject_name}</td>
                       <td>{item?.start_time}</td>
                       <td>{item?.end_time}</td>

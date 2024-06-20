@@ -164,7 +164,7 @@ const Header = () => {
           <div className="header-body">
             {/* Card stats */}
             <Row>
-              <Col lg="6" xl="3">
+              <Col lg="6" xl="4">
                 <Card className="card-stats mb-4 py-3 mb-xl-0">
                   <CardBody>
                     <Row>
@@ -188,7 +188,7 @@ const Header = () => {
                   </CardBody>
                 </Card>
               </Col>
-              <Col lg="6" xl="3">
+              <Col lg="6" xl="4">
                 <Card className="card-stats mb-4 py-3 mb-xl-0">
                   <CardBody>
                     <Row>
@@ -212,7 +212,7 @@ const Header = () => {
                   </CardBody>
                 </Card>
               </Col>
-              <Col lg="6" xl="3">
+              <Col lg="6" xl="4">
                 <Card className="card-stats mb-4 py-3 mb-xl-0">
                   <CardBody>
                     <Row>
@@ -236,7 +236,7 @@ const Header = () => {
                   </CardBody>
                 </Card>
               </Col>
-              <Col lg="6" xl="3">
+              {/* <Col lg="6" xl="3">
                 <Card className="card-stats mb-4 py-3 mb-xl-0">
                   <CardBody>
                     <Row>
@@ -259,7 +259,7 @@ const Header = () => {
                     </Row>
                   </CardBody>
                 </Card>
-              </Col>
+              </Col> */}
             </Row>
           </div>
         </Container>

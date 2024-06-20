@@ -226,7 +226,7 @@ const Classes = () => {
 
   {/* Delete Box */}
   <Modal isOpen={showDeleteBox} toggle={()=>{setShowDeleteBox(!deleteBox)}} centered>
-        <ModalHeader toggle={()=>{setShowDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+        <ModalHeader toggle={()=>{setShowDeleteBox(!deleteBox);}}>Delete Class</ModalHeader>
         <ModalBody>
             <div className='text-l font-semibold'>Are You Sure Want to Delete Class?</div>
         </ModalBody>

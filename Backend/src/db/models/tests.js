@@ -18,7 +18,6 @@ module.exports = function (sequelize, DataTypes) {
     },
     book_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
     },
     test_file_url:{
       type: DataTypes.STRING,

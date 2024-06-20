@@ -8,14 +8,14 @@ const asyncHandler = require("../../utils/asyncHandler.js");
 
 //homework
 
-exports.addHomework = asyncHandler(async (req, res) => {
-
+exports.addHomework = asyncHandler(async (req, res) => {  
+try {
     const body = req.body;
 
     const { date, class_id, subject_id, file_url, teacher_id } = body;
     
     // const teacherId = req.user.id;
-
+    
     if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
 
     if (!subject_id) throw error.VALIDATION_ERROR("Subject id is required");
@@ -26,7 +26,7 @@ exports.addHomework = asyncHandler(async (req, res) => {
 
     const book = await tables.Book.findOne({ where: { subject_id, class_id }, raw: true });
     
-    if (!book) throw error.VALIDATION_ERROR("Book not found");
+        if (!book) throw error.VALIDATION_ERROR("Book not found");
 
     const bookId = book.id;
 
@@ -45,6 +45,14 @@ exports.addHomework = asyncHandler(async (req, res) => {
         message: "Homework has created successfully."
     });
 
+} catch (error) {
+    return res.send({
+        status: false,
+        statusCode: 500,
+        message: error
+    });
+}
+    
 });
 
 

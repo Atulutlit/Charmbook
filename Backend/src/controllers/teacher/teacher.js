@@ -338,35 +338,53 @@ exports.removeTest = asyncHandler(async (req, res) => {
 });
 
 exports.getTests = asyncHandler(async (req, res) => {
+    try {
+        const { class_id } = req.params;
 
-    const { class_id } = req.params;
-
-    if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
-
-    const data = await tables.Test.findAll({
-        where: {
-            class_id : class_id
-        },
-        attributes: ['id', 'test_file_url', 'date'],
-        include: [
-            {
-                model: tables.Book,
-                attributes: ['cover_image_url'],
-                include: {
-                    model: tables.Subject,
-                    attributes: ['id', 'subject_name']
+        if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
+    
+        const data = await tables.Test.findAll({
+            where: {
+                class_id : class_id
+            },
+            attributes: ['id', 'test_file_url', 'date','class_id','teacher_id'],
+            include: [
+                {
+                    model: tables.Book,
+                    attributes: ['cover_image_url'],
+                    include: {
+                        model: tables.Subject,
+                        attributes: ['id', 'subject_name']
+                    }
+                },
+                {
+                    model: tables.Class,
+                    attributes: ['id', 'class_name']
+                    
+                },
+                {
+                    model: tables.User,
+                    attributes: ['id', 'first_name','last_name']
+                    
                 }
-            }
-        ]
-    });
-
-
-    return res.send({
-        status: true,
-        statusCode: 200,
-        message: "Test fetched successfully.",
-        data: data
-    })
+            ]
+        });
+    
+        return res.send({
+            status: true,
+            statusCode: 200,
+            message: "Test fetched successfully.",
+            data: data
+        }),200
+    } catch (error) {
+        console.log(error,'error')
+        return res.send({
+            status: 'failed',
+            statusCode: 500,
+            message: error,
+            data: data
+        }),500
+    }  
 });
 
 

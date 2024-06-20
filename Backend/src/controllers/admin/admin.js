@@ -560,7 +560,6 @@ exports.removeHomework = asyncHandler(async (req, res) => {
 exports.createTest = asyncHandler(async (req, res) => {
 
     const body = req.body;
-   console.log(req.body,'create test')
     const { date, class_id, subject_id, test_file_url, teacher_id } = body;
 
     if (!teacher_id) throw error.VALIDATION_ERROR("Teacher id is required");
@@ -571,18 +570,17 @@ exports.createTest = asyncHandler(async (req, res) => {
 
     if (!subject_id) throw error.VALIDATION_ERROR("Subject id is required");
 
-    const book = await tables.Book.findOne({ where: { subject_id, class_id }, raw: true });
+    // const book = await tables.Book.findOne({ where: { subject_id, class_id }, raw: true });
 
-    if (!book) throw error.VALIDATION_ERROR("Book not found");
+    // if (!book) throw error.VALIDATION_ERROR("Book not found");
 
     const testData = {
-        book_id: book.id,
+        // book_id: 55,
         ...body
     }
-
     if (date) testData.date = new Date(date);
-
-    await tables.Test.create(testData);
+    
+    const detail=await tables.Test.create(testData);
 
     return res.send({
         status: true,

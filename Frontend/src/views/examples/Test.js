@@ -234,7 +234,8 @@ const Test = () => {
                 <thead className="thead-light">
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Cover Image</th>
+                    <th scope="col">Teacher Name</th>
+                    <th scope="col">Class Name</th>
                     <th scope="col">Subject Name</th>
                     <th scope="col">Actions</th>
                   </tr>
@@ -243,10 +244,12 @@ const Test = () => {
                   {tests.map((test, index) => (
                     <tr key={test.id}>
                       <td>{index + 1}</td>
-                      <td>
+                      {/* <td>
                         <img src={test.book.cover_image_url} alt="Cover" width="50" />
-                      </td>
-                      <td>{test.book.subject.subject_name}</td>
+                      </td> */}
+                      <td>{test?.teacher_id}</td>
+                      <td>{test?.class?.class_name}</td>
+                      <td>{test?.book?.subject?.subject_name}</td>
                       <td>
                         <Button
                           color="primary"

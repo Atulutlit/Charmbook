@@ -79,6 +79,13 @@ exports.getTeachers = asyncHandler(async (req, res) => {
    
     const teachers = await User.findAll({
         where: { role: "TEACHER", status: "ACTIVE" },
+        include: [
+            {
+              model: Class,
+              as: 'class',
+              attributes: ['id', 'class_name'] // Specify required class attributes
+            }
+          ],
         //  below line comment for now 
         // attributes: ["id", "first_name", "last_name", "email"],
     });
@@ -87,9 +94,16 @@ exports.getTeachers = asyncHandler(async (req, res) => {
 
 });
 exports.getStudents = asyncHandler(async (req, res) => {
-
+    const {class_id}=req.query;
     const students = await User.findAll({
-        where: { role: "STUDENT", status: "ACTIVE" },
+        where: { role: "STUDENT", status: "ACTIVE" ,class_id:class_id },
+        include: [
+            {
+              model: Class,
+              as: 'class',
+              attributes: ['id', 'class_name'] // Specify required class attributes
+            }
+          ],
     });
 
     return res.send({ status: true, statusCode: 200, message: "Students fetched successfully.", data: students });
