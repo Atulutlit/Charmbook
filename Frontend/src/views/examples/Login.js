@@ -13,6 +13,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import logo from '../../assets/img/brand/argon-react.png'
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from "react-router-dom"; // Import Link from react-router-dom
@@ -96,12 +97,12 @@ useEffect(() => {
     <>
       <Col lg="5" md="7">
         <Card className="bg-secondary shadow border-0">
-          <CardHeader className="bg-transparent pb-5">
-            <div className="text-muted text-center mt-2 mb-3">
-              <div className="text-xl">Sign in</div>
-            </div>
+          <CardHeader className="bg-transparent ">
+          <Row className="justify-content-center">
+                <img src={logo} alt="logo" style={{"height":"70px"}}/>
+              </Row>
           </CardHeader>
-          <CardBody className="px-lg-5 py-lg-5">
+          <CardBody className="px-lg-5 ">
             {/* <Form role="form" onSubmit={handleLogin}> */}
             <Form role="form" >
               <FormGroup className="mb-3">
