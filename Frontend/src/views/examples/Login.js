@@ -26,40 +26,40 @@ const Login = () => {
   const navigate = useNavigate();
   const [rememberMe,setRememberMe]=useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const url = ADMIN_LOGIN_URL;
-      if(password!="12345"){
-        setError("Please Enter Correct Password!!");
-        return ;
-      }
-      const response = await axios.post(
-        url,{ email, password }
-      );
-      if (response.data.status) {
-        // Save the token in local storage
-        localStorage.setItem("token", response.data.admin.token);
-        // Set login success state to true
-        setLoginSuccess(true);
-        if(rememberMe)
-        {
-          localStorage.setItem('email',email);
-          localStorage.setItem('password',password);
-        }else{
-          localStorage.removeItem('email');
-          localStorage.removeItem('password');
-        }
-        navigate("/admin/index");
-      } else {
-        setError("Login failed. Please check your credentials.");
-        setTimeout(()=>{ setError(""); },2000);
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again.");
-      setTimeout(()=>{ setError("");},2000);
-    }
-  };
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const url = ADMIN_LOGIN_URL;
+  //     if(password!="12345"){
+  //       setError("Please Enter Correct Password!!");
+  //       return ;
+  //     }
+  //     const response = await axios.post(
+  //       url,{ email, password }
+  //     );
+  //     if (response.data.status) {
+  //       // Save the token in local storage
+  //       localStorage.setItem("token", response.data.admin.token);
+  //       // Set login success state to true
+  //       setLoginSuccess(true);
+  //       if(rememberMe)
+  //       {
+  //         localStorage.setItem('email',email);
+  //         localStorage.setItem('password',password);
+  //       }else{
+  //         localStorage.removeItem('email');
+  //         localStorage.removeItem('password');
+  //       }
+  //       navigate("/admin/index");
+  //     } else {
+  //       setError("Login failed. Please check your credentials.");
+  //       setTimeout(()=>{ setError(""); },2000);
+  //     }
+  //   } catch (error) {
+  //     setError("An error occurred. Please try again.");
+  //     setTimeout(()=>{ setError("");},2000);
+  //   }
+  // };
   
   useEffect(()=>{
   const email=localStorage.getItem('email');
@@ -102,7 +102,8 @@ useEffect(() => {
             </div>
           </CardHeader>
           <CardBody className="px-lg-5 py-lg-5">
-            <Form role="form" onSubmit={handleLogin}>
+            {/* <Form role="form" onSubmit={handleLogin}> */}
+            <Form role="form" >
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">

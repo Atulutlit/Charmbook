@@ -1,0 +1,45 @@
+.my-dashboard {
+    top: 5rem;
+  }
+  
+  .image-box {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    width: 120px;
+    cursor: pointer;
+    margin: 10px auto;
+    transition: background-color 0.3s ease;
+    border-radius: 13px;
+    background-color: inherit;
+  }
+  
+  .boex {
+    padding: 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(233, 233, 233, 0.705);
+    margin: 15px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .image-icon {
+    height: 80px;
+    width: 80px;
+  }
+  
+  .image-title {
+    margin-top: 10px;
+    font-size: 20px;
+    display: block;
+  }
+  
+  .boex:hover  {
+    background-color: var(--hover-color);
+  }
+  

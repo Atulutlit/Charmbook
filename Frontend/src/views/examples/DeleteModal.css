@@ -1,0 +1,20 @@
+@media (min-width: 576px) {
+    .custom-delete-modal {
+        max-width: 280px;
+        margin: 1.75rem auto;
+    }
+
+    .modal-body {
+        position: relative;
+        flex: 1 1 auto;
+        padding: 0;
+    }
+
+    .custom-header {
+        padding: 13px;
+    }
+
+    .custom-footer {
+        padding: 6px;
+    }
+}
