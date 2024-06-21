@@ -1,44 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Label, Input, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Label, Input, ModalFooter, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Card, CardHeader, Table, Container, Row, Col } from "reactstrap";
 import Header from "components/Headers/Header.js";
-import { ADMIN_TEACHER,ADMIN_CREATE_USER,ADMIN_REMOVE_TEACHER } from 'constant/Constant';
-import { toast,ToastContainer } from 'react-toastify';
+import { ADMIN_TEACHER, ADMIN_CREATE_USER, ADMIN_REMOVE_TEACHER } from 'constant/Constant';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TeacherExcel from 'Excel/TeacherExcel';
-import { ADMIN_UPDATE_USER ,ADMIN_CLASS} from 'constant/Constant';
+import { ADMIN_UPDATE_USER, ADMIN_CLASS } from 'constant/Constant';
 
 
 const Teachers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [teachers, setTeachers] = useState([]);
   const token = localStorage.getItem('token');
+
   // class
-  const [selectedClass,setSelectedClass]=useState(null);
-  const [classOptions,setClassOptions]=useState([])
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [classOptions, setClassOptions] = useState([])
 
   // handle delete
-  const [deleteBox,setDeleteBox]=useState(false);
-  const [deletedId,setDeletedId]=useState(-1);
-  const [searchText,setSearchText]=useState("");
+  const [deleteBox, setDeleteBox] = useState(false);
+  const [deletedId, setDeletedId] = useState(-1);
+  const [searchText, setSearchText] = useState("");
 
+  // pagination 
   const [pageSize, setPageSize] = useState(25);
   const [NumberBox, setNumberBox] = useState([1, 2]);
   const [indexNumber, setIndexNumber] = useState(0);
   const [activeColor, setActiveColor] = useState(0);
 
+  const [data, setData] = useState([])
 
+  // Edit Teacher Details
+  const [modalEditOpen, setModalEditOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [editId, setEditId] = useState(-1);
 
+  // Fetch all teacher
   const fetchTeachers = async () => {
     try {
       const url = ADMIN_TEACHER;
       const response = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${token}`}
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
       if (data.status) {
-        console.log(data,'teacher data');
+        console.log(data, 'teacher data');
         setTeachers(data.data);
         toast.success("Successfully fetch the data");
       } else {
@@ -58,20 +66,8 @@ const Teachers = () => {
   const toggleModal = () => {
     setModalOpen(!modalOpen);
   };
-  const search = (teachers, searchText) => {
-    const searchResults = [];
 
-    for (let i = 0; i < teachers.length; i++) {
-        const teacher = teachers[i];
-        if (teacher.enrollment_no == searchText ||
-            teacher.name==searchText ||
-            teacher.email==searchText) {
-            searchResults.push(teacher);
-        }
-    }
-    setData(searchResults);
-  };
-
+  // Fetch all classes
   const fetchClasses = async () => {
     try {
       const url = ADMIN_CLASS;
@@ -91,10 +87,11 @@ const Teachers = () => {
     }
   };
 
-  useEffect(()=>{
-  fetchClasses();
-  },[])
+  useEffect(() => {
+    fetchClasses();
+  }, [])
 
+  // Create Teacher
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -135,10 +132,11 @@ const Teachers = () => {
     }
   };
 
+  // Remove Teacher
   const handleDelete = async () => {
     try {
       const url = `${ADMIN_REMOVE_TEACHER}/${deletedId}`;
-      const response = await fetch(url ,{
+      const response = await fetch(url, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -166,14 +164,10 @@ const Teachers = () => {
     else return b;
   }
 
-  const [data,setData]=useState([])
-  // Edit Teacher Details
-  const [modalEditOpen,setModalEditOpen]=useState(false);
-  const [editData,setEditData]=useState(null);
-  const [editId,setEditId]=useState(-1);
+
 
   // handleEditTeacher
-  const handleEditTeacherDetail=async(event)=>{
+  const handleEditTeacherDetail = async (event) => {
     event.preventDefault(); // Prevent default form submission
 
     try {
@@ -204,28 +198,57 @@ const Teachers = () => {
   }
 
   // all logic of pagination
-useEffect(() => {
-  setNumberBox(Array(parseInt(teachers.length / pageSize + 1)).fill(1))
-  let data = teachers.slice(parseInt(indexNumber) * parseInt(pageSize), min(parseInt(teachers.length), (parseInt(indexNumber) + 1) * parseInt(pageSize)));
-  setData(data);
-}, [JSON.stringify(teachers),indexNumber])
+  useEffect(() => {
+    setNumberBox(Array(parseInt(teachers.length / pageSize + 1)).fill(1))
+    let data = teachers.slice(parseInt(indexNumber) * parseInt(pageSize), min(parseInt(teachers.length), (parseInt(indexNumber) + 1) * parseInt(pageSize)));
+    setData(data);
+  }, [JSON.stringify(teachers), indexNumber])
+
+  // Search component
+  // Debounce function
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  };
+
+
+  useEffect(() => {
+    const handleSearch = () => {
+      if (!searchText) {
+        setData(teachers);
+      } else {
+        const lowerCaseQuery = searchText.toLowerCase();
+        const filteredItems = teachers.filter(item =>
+          Object.keys(item).some(key =>
+            item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
+          )
+        );
+        setData(filteredItems);
+      }
+    };
+
+    const debouncedSearch = debounce(handleSearch, 300);
+    debouncedSearch();
+
+    // Cleanup function to cancel the timeout if the component unmounts or query changes
+    return () => {
+      if (debouncedSearch.timeoutId) {
+        clearTimeout(debouncedSearch.timeoutId);
+      }
+    };
+  }, [searchText]);
 
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <Header />
-      
+
       <Container className="mt--7" fluid>
-      <div className="container">
-        <div className="row">
-          <div className="col-md-6 mx-auto">
-            <div className="d-flex align-items-center justify-content-between search-container">
-              <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student" value={searchText} onChange={(e)=>{setSearchText(e.target.value);}} />
-              <button className="search-button btn btn-primary" onClick={()=>{search(teachers,searchText);}}>Search</button>
-            </div>
-          </div>
-        </div>
-      </div>
         <Row className="mt-5 justify-content-center">
           <Col className="mb-5 mb-xl-0" xl="10">
             <Card className="shadow">
@@ -234,6 +257,18 @@ useEffect(() => {
                   <div className="col">
                     <h3 className="mb-0">Teachers</h3>
                   </div>
+                  <Form className="navbar-search navbar-search-dark bg-primary rounded-pill form-inline mr-3 d-none d-md-flex ml-lg-auto">
+                    <FormGroup className="mb-0">
+                      <InputGroup className="input-group-alternative">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="fas fa-search" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input placeholder="Search" type="text" value={searchText} onChange={(e) => { setSearchText(e.target.value); }} />
+                      </InputGroup>
+                    </FormGroup>
+                  </Form>
                   <div className="col text-right">
                     <Button
                       color="primary"
@@ -245,6 +280,8 @@ useEffect(() => {
                   </div>
                 </Row>
               </CardHeader>
+
+              {/* Show Teacher Data */}
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
                   <tr>
@@ -263,11 +300,11 @@ useEffect(() => {
                     <tr key={teacher.id}>
                       <td className='d-none'>
                         <Link to="/teacher-profile">
-                          <img 
-                            src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/avatar-icon.png" 
-                            alt="Avatar" 
-                            className="avatar-img" 
-                            style={{ width: "40px", height: "40px", cursor: "pointer" }} 
+                          <img
+                            src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/avatar-icon.png"
+                            alt="Avatar"
+                            className="avatar-img"
+                            style={{ width: "40px", height: "40px", cursor: "pointer" }}
                           />
                         </Link>
                       </td>
@@ -279,8 +316,8 @@ useEffect(() => {
                       <td>{teacher?.status}</td>
                       <td>
                         <div className="d-flex">
-                          <i className="fas fa-edit p-1" style={{cursor:"pointer"}} onClick={()=>{setModalEditOpen(true);setEditId(teacher.id);setEditData(teacher);}}></i>
-                          <i className="fas fa-trash-alt text-danger p-1" title="Delete" onClick={() =>{setDeleteBox(true);setDeletedId(teacher.id);}} style={{ cursor: "pointer" }}></i>
+                          <i className="fas fa-edit p-1" style={{ cursor: "pointer" }} onClick={() => { setModalEditOpen(true); setEditId(teacher.id); setEditData(teacher); }}></i>
+                          <i className="fas fa-trash-alt text-danger p-1" title="Delete" onClick={() => { setDeleteBox(true); setDeletedId(teacher.id); }} style={{ cursor: "pointer" }}></i>
                         </div>
                       </td>
                     </tr>
@@ -292,17 +329,12 @@ useEffect(() => {
         </Row>
       </Container>
 
-       {/* Download Excel */}
-       <div className="d-flex justify-content-end" style={{marginRight:"140px",marginTop:"20px"}}>
-  <TeacherExcel client={teachers} />
-</div>
-
       {/* Pagination */}
-      <div className="container" style={{ "margin": "40px" }}>
+      <div className="container my-5" >
         <div className="row align-items-center">
           {/* Left part */}
           <div className="col-md-4 d-flex flex-row align-items-center">
-            <div className="fw-bold ms-3 p-2" style={{ fontSize: '16px' }}>Page&nbsp;Size</div>
+            <div className="fw-bold ms-3" style={{ fontSize: '16px', padding: "10px" }}>Page&nbsp;Size</div>
             <select className="form-select ms-3" value={pageSize} onChange={(e) => { setPageSize(e.target.value); }} style={{ height: '2rem', width: 'auto' }}>
               <option value={25}>25</option>
               <option value={50}>50</option>
@@ -311,12 +343,11 @@ useEffect(() => {
             </select>
           </div>
 
-          {/* Bottom part */}
           <div className="col-md-4 d-flex justify-content-center mt-3 mt-md-0">
-            {/* Showing 0 to 10 of 246 entries */}
+            <div className="d-flex justify-content-end" ><TeacherExcel client={teachers} /></div>
           </div>
 
-          {/* Right part */}
+          {/* Bottom part */}
           <div className="col-md-4 d-flex justify-content-end align-items-center mt-3 mt-md-0">
             <div className="d-flex flex-row gap-2">
               <div className="rounded-circle border border-2 bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
@@ -340,13 +371,13 @@ useEffect(() => {
         </div>
       </div>
 
-     
 
 
-      {/* Create Teacher Modal */}
-      <Modal isOpen={modalOpen} toggle={toggleModal} centered>
+
+      {/*------------------Create Teacher------------------ */}
+      <Modal isOpen={modalOpen} toggle={toggleModal} centered scrollable>
         <ModalHeader toggle={toggleModal}>Create Teacher</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="firstName">First Name</Label>
@@ -386,98 +417,104 @@ useEffect(() => {
         </ModalBody>
       </Modal>
 
-      {/* Delete Box */}
-      <Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
-        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+      {/*------------------ Delete Box ----------------------*/}
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal w-auto">
+        <ModalHeader toggle={() => { setDeleteBox(false); }} className='custom-header'>Delete Teacher</ModalHeader>
         <ModalBody>
-            <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+          <div className='text-center'>
+            <p className=' '>Are you sure you want to delete this teacher?</p>
+          </div>
         </ModalBody>
-        <ModalFooter>
-            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
-            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDelete();}}>Delete</Button>
-            </ModalFooter>
+        <ModalFooter className="d-flex justify-end custom-footer">
+          <Button color="btn btn-secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
+            Cancel
+          </Button>
+          <Button color="btn btn-danger" size='sm' onClick={handleDelete}>
+            Delete
+          </Button>
+        </ModalFooter>
       </Modal>
 
-        {/* Edit Modal */}
-    <Modal isOpen={modalEditOpen} toggle={() => setModalEditOpen(false)} centered>
-      <ModalHeader toggle={() => setModalEditOpen(false)}>Edit Student Details</ModalHeader>
-      <ModalBody>
-        <Form onSubmit={handleEditTeacherDetail}>
-          <FormGroup>
-            <Label for="firstName">First Name</Label>
-            <Input
-              type="text"
-              name="firstName"
-              id="firstName"
-              placeholder="Enter First Name"
-              value={editData?.first_name || ''}
-              onChange={(e) => setEditData((prevData) => ({ ...prevData, first_name: e.target.value }))}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="lastName">Last Name</Label>
-            <Input
-              type="text"
-              name="lastName"
-              id="lastName"
-              placeholder="Enter Last Name"
-              value={editData?.last_name || ''}
-              onChange={(e) => setEditData((prevData) => ({ ...prevData, last_name: e.target.value }))}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="password">Password</Label>
-            <Input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Enter Password"
-              value={editData?.password || ''}
-              onChange={(e) => setEditData((prevData) => ({ ...prevData, password: e.target.value }))}
-            />
-          </FormGroup>
-          {/* we will handle class later */}
-          {/* <FormGroup>
-            <Label for="class">Class</Label>
-            <Input
-              type="select"
-              name="class"
-              id="class"
-              value={editData?.class_id || ''}
-              onChange={(e) => setEditData((prevData) => ({ ...prevData, class_id: e.target.value }))}
-            >
-              <option value={-1}>Select Class</option>
-              {classOptions.map((option) => (
-                <option key={option._id} value={option.id}>{option.class_name}</option>
-              ))}
-            </Input>
-          </FormGroup> */}
-          <FormGroup>
-            <Label for="phoneNumber">Mobile Number</Label>
-            <Input
-              type="text"
-              name="phoneNumber"
-              id="phoneNumber"
-              placeholder="Enter Phone Number"
-              value={editData?.phone_no || ''}
-              onChange={(e) => setEditData((prevData) => ({ ...prevData, phone_no: e.target.value }))}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="email">Email Address</Label>
-            <Input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="Enter Email Address"
-              value={editData?.email || ''}
-              onChange={(e) => setEditData((prevData) => ({ ...prevData, email: e.target.value }))}
-            />
-          </FormGroup>
-          <Button type="submit" color="primary">Submit</Button>
-        </Form>
-      </ModalBody>
-    </Modal>
+
+      {/*------------------- Edit Modal--------------------------- */}
+      <Modal isOpen={modalEditOpen} toggle={() => setModalEditOpen(false)} centered scrollable>
+        <ModalHeader toggle={() => setModalEditOpen(false)}>Edit Student Details</ModalHeader>
+        <ModalBody className='p-4'>
+          <Form onSubmit={handleEditTeacherDetail}>
+            <FormGroup>
+              <Label for="firstName">First Name</Label>
+              <Input
+                type="text"
+                name="firstName"
+                id="firstName"
+                placeholder="Enter First Name"
+                value={editData?.first_name || ''}
+                onChange={(e) => setEditData((prevData) => ({ ...prevData, first_name: e.target.value }))}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="lastName">Last Name</Label>
+              <Input
+                type="text"
+                name="lastName"
+                id="lastName"
+                placeholder="Enter Last Name"
+                value={editData?.last_name || ''}
+                onChange={(e) => setEditData((prevData) => ({ ...prevData, last_name: e.target.value }))}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="password">Password</Label>
+              <Input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Enter Password"
+                value={editData?.password || ''}
+                onChange={(e) => setEditData((prevData) => ({ ...prevData, password: e.target.value }))}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="class">Class</Label>
+              <Input
+                type="select"
+                name="class"
+                id="class"
+                value={editData?.class_id || ''}
+                onChange={(e) => setEditData((prevData) => ({ ...prevData, class_id: e.target.value }))}
+              >
+                <option value={-1}>Select Class</option>
+                {classOptions.map((option) => (
+                  <option key={option._id} value={option.id}>{option.class_name}</option>
+                ))}
+              </Input>
+            </FormGroup>
+            <FormGroup>
+              <Label for="phoneNumber">Mobile Number</Label>
+              <Input
+                type="text"
+                name="phoneNumber"
+                id="phoneNumber"
+                placeholder="Enter Phone Number"
+                value={editData?.phone_no || ''}
+                onChange={(e) => setEditData((prevData) => ({ ...prevData, phone_no: e.target.value }))}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="email">Email Address</Label>
+              <Input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="Enter Email Address"
+                value={editData?.email || ''}
+                onChange={(e) => setEditData((prevData) => ({ ...prevData, email: e.target.value }))}
+              />
+            </FormGroup>
+            <Button type="submit" color="primary">Submit</Button>
+          </Form>
+        </ModalBody>
+      </Modal>
     </>
   );
 };

@@ -30,7 +30,8 @@ const DashboardItems = () => {
   const navigate = useNavigate();
 
   const handleNavigation = (path) => {
-    navigate(path);
+    console.log(path,'path')
+    navigate("/admin/book");
   };
 
   return (

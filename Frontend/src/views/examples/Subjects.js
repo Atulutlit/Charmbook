@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import { Card, CardHeader, Table, Container, Row, Col } from "reactstrap";
 import Header from "components/Headers/Header.js";
-import { ADMIN_GET_SUBJECT,ADMIN_CREATE_SUBJECT,ADMIN_DELETE_SUBJECT} from 'constant/Constant';
+import { ADMIN_GET_SUBJECT, ADMIN_CREATE_SUBJECT, ADMIN_DELETE_SUBJECT } from 'constant/Constant';
 import axios from 'axios';
-import { toast,ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -18,8 +18,8 @@ const Subjects = () => {
   });
 
   // handle delete subject
-  const [deleteBox,setDeleteBox]=useState(false);
-  const [deletedId,setDeletedId]=useState(-1);
+  const [deleteBox, setDeleteBox] = useState(false);
+  const [deletedId, setDeletedId] = useState(-1);
 
   const token = localStorage.getItem('token');
 
@@ -77,7 +77,7 @@ const Subjects = () => {
         console.error('Failed to create subject:', data.message);
         toast.warn(data.message);
       }
-      
+
     } catch (error) {
       console.error('Error creating subject:', error);
       toast.error(error);
@@ -118,18 +118,19 @@ const Subjects = () => {
     setEditedSubject(subject);
     toggleEditModal();
   };
-  
+
   const saveChanges = async () => {
     const updatedSubject = {
       subject_name: editedSubject.subject_name
     };
-  
+
     try {
       const url = `${ADMIN_GET_SUBJECT}/${editedSubject.id}`;
       const token = localStorage.getItem('token');
-      const data = await axios.put(url,updatedSubject,{ headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+      const data = await axios.put(url, updatedSubject, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       });
       console.log(data, 'get subject');
       if (data) {
@@ -147,11 +148,11 @@ const Subjects = () => {
       toggleEditModal();
     }
   };
-  
+
 
   return (
     <>
-    <ToastContainer/>
+      <ToastContainer />
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">
@@ -183,7 +184,7 @@ const Subjects = () => {
                       <td>
                         <div className="d-flex">
                           <i className="fas fa-edit text-info mr-3" title="Edit" onClick={() => handleEdit(subject)} style={{ cursor: 'pointer' }}></i>
-                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => {setDeletedId(subject.id);setDeleteBox(true);}} style={{ cursor: 'pointer' }}></i>
+                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => { setDeletedId(subject.id); setDeleteBox(true); }} style={{ cursor: 'pointer' }}></i>
                         </div>
                       </td>
                     </tr>
@@ -194,9 +195,11 @@ const Subjects = () => {
           </Col>
         </Row>
       </Container>
+
+      {/* Create Subject */}
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Subject</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="subjectName">Subject Name</Label>
@@ -206,9 +209,11 @@ const Subjects = () => {
           </Form>
         </ModalBody>
       </Modal>
+
+      {/* Edit Model */}
       <Modal isOpen={editModalOpen} toggle={toggleEditModal}>
         <ModalHeader toggle={toggleEditModal}>Edit Subject</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form>
             <FormGroup>
               <Label for="subjectName">Subject Name</Label>
@@ -222,18 +227,25 @@ const Subjects = () => {
         </ModalFooter>
       </Modal>
 
-      
-       {/* Delete Box */}
-<Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
-        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Subject</ModalHeader>
+
+      {/* Delete Box */}
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal w-auto">
+        <ModalHeader toggle={() => { setDeleteBox(false); }} className='custom-header'>Delete Subject</ModalHeader>
         <ModalBody>
-            <div className='text-l font-semibold'>Are You Sure Want to Delete Subject?</div>
+          <div className='text-center'>
+            <p className=' '>Are you sure you want to delete this subjects?</p>
+          </div>
         </ModalBody>
-        <ModalFooter>
-            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
-            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDelete();}}>Delete</Button>
-            </ModalFooter>
+        <ModalFooter className="d-flex justify-end custom-footer">
+          <Button color="btn btn-secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
+            Cancel
+          </Button>
+          <Button color="btn btn-danger" size='sm' onClick={handleDelete}>
+            Delete
+          </Button>
+        </ModalFooter>
       </Modal>
+
     </>
   );
 };

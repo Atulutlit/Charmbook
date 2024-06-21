@@ -63,7 +63,7 @@ const TimeTableExcel = (props) => {
 
   return (
     <div className='w-full'>
-      <button className="" style={{backgroundColor:"blue",color:"white",height:"40px",borderRadius:"10px"}} onClick={generateExcel1}>Download Excel</button>
+      <button className="py-2 px-3 border-0 btn-ptimary btn bg-primary rounded-pill text-white"  size="sm" color='primary' onClick={generateExcel1}>Download Excel  <i className='fas fa-download'></i>  </button>
     </div>
   );
 };

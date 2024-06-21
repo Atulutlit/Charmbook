@@ -20,13 +20,14 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  ModalFooter
+  ModalFooter,
+  InputGroup, InputGroupAddon, InputGroupText
 } from 'reactstrap';
 
 import Header from "components/Headers/Header.js";
 import { ADMIN_CLASS } from 'constant/Constant';
 import AttendanceExcel from 'Excel/AttendanceExcel';
-import {toast,ToastContainer} from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Attendance = () => {
@@ -46,10 +47,10 @@ const Attendance = () => {
   const [deleteBox, setDeleteBox] = useState(false);
   const [deletedId, setDeletedId] = useState(-1);
   // handle Search
-  const [searchText,setSearchText] = useState("");
-  const [data,setData]=useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [data, setData] = useState([]);
   // edit data
-  const [editData,setEditData]=useState(null);
+  const [editData, setEditData] = useState(null);
 
 
   const toggleModal = () => {
@@ -132,39 +133,55 @@ const Attendance = () => {
     fetchAttendance();
   }, [])
 
-  const search = (attendance, searchText) => {
-    const searchResults = [];
 
-    for (let i = 0; i < attendance.length; i++) {
-      const item = attendance[i];
-      if (item.enrollment_no == searchText ||
-        item.class_name == searchText ||
-        item.student_name == searchText || item.status == searchText) {
-        searchResults.push(item);
-      }
-    }
-    setData(searchResults);
-  };
-  
-  const handleDeleteAttendance =()=>{
+  const handleDeleteAttendance = () => {
 
   }
 
+  // Search component
+  // Debounce function
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  };
+
+
+  useEffect(() => {
+    const handleSearch = () => {
+      if (!searchText) {
+        setData(attendance);
+      } else {
+        const lowerCaseQuery = searchText.toLowerCase();
+        const filteredItems = attendance.filter(item =>
+          Object.keys(item).some(key =>
+            item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
+          )
+        );
+        setData(filteredItems);
+      }
+    };
+
+    const debouncedSearch = debounce(handleSearch, 300);
+    debouncedSearch();
+
+    // Cleanup function to cancel the timeout if the component unmounts or query changes
+    return () => {
+      if (debouncedSearch.timeoutId) {
+        clearTimeout(debouncedSearch.timeoutId);
+      }
+    };
+  }, [searchText]);
+
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <Header />
       <Container className="mt--7" fluid>
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6 mx-auto">
-              <div className="d-flex align-items-center justify-content-between search-container">
-                <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student Attendance on the basis of Enrollment No." value={searchText} onChange={(e) => { setSearchText(e.target.value); }} />
-                <button className="search-button btn btn-primary" onClick={() => { search(attendance, searchText); }}>Search</button>
-              </div>
-            </div>
-          </div>
-        </div>
         <Row className="mt-5 justify-content-center">
           <Col className="mb-5 mb-xl-0" xl="10">
             <Card className="shadow">
@@ -173,9 +190,20 @@ const Attendance = () => {
                   <div className="col">
                     <h3 className="mb-0">Attendance</h3>
                   </div>
-
+                  <Form className="navbar-search navbar-search-dark bg-primary rounded-pill form-inline mr-3 d-none d-md-flex ml-lg-auto">
+                    <FormGroup className="mb-0">
+                      <InputGroup className="input-group-alternative">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="fas fa-search" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input placeholder="Search" type="text" value={searchText} onChange={(e) => { setSearchText(e.target.value); }} />
+                      </InputGroup>
+                    </FormGroup>
+                  </Form>
                   <div className="col text-right">
-                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} size="sm" color="primary">
                       <DropdownToggle caret>
                         {classes.find(c => c.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
@@ -217,7 +245,7 @@ const Attendance = () => {
                         <Button
                           color="primary"
                           size="sm"
-                          onClick={() => { setAttendanceId(item.id);setEditData(item); setModalOpen(true); }}
+                          onClick={() => { setAttendanceId(item.id); setEditData(item); setModalOpen(true); }}
                         >
                           Edit
                         </Button>
@@ -231,12 +259,12 @@ const Attendance = () => {
         </Row>
       </Container>
       {/* Download ExcelSheet */}
-      <div className="d-flex justify-content-end" style={{marginRight:"140px",marginTop:"20px",marginBottom:"20px"}}><AttendanceExcel client={attendance} /></div>
+      <div className="d-flex justify-content-end" style={{ marginRight: "140px", marginTop: "20px", marginBottom: "20px" }}><AttendanceExcel client={attendance} /></div>
 
       {/* Mark Attendance */}
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Mark Attendance</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form>
             <FormGroup>
               <Label for="class">Enrollment No</Label>

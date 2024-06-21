@@ -23,8 +23,8 @@ import {
 
 import Header from "components/Headers/Header.js";
 import axios from 'axios';
-import {ADMIN_CLASS,ADMIN_GET_SUBJECT,ADMIN_TEACHER,ADMIN_GET_TEST,ADMIN_UPLOAD_DOC,ADMIN_CREATE_TEST,ADMIN_DELETE_TEST} from './../../constant/Constant'
-import { toast,ToastContainer } from 'react-toastify';
+import { ADMIN_CLASS, ADMIN_GET_SUBJECT, ADMIN_TEACHER, ADMIN_GET_TEST, ADMIN_UPLOAD_DOC, ADMIN_CREATE_TEST, ADMIN_DELETE_TEST } from './../../constant/Constant'
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Test = () => {
@@ -41,8 +41,8 @@ const Test = () => {
   const [tests, setTests] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   // deleted
-  const [deleteBox,setDeleteBox]=useState(false);
-  const [deletedId,setDeletedId]=useState(-1);
+  const [deleteBox, setDeleteBox] = useState(false);
+  const [deletedId, setDeletedId] = useState(-1);
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -112,7 +112,7 @@ const Test = () => {
         }
       });
       if (response.data.status) {
-        console.log(response.data.data,'data')
+        console.log(response.data.data, 'data')
         setTests(response.data.data);
       }
     } catch (error) {
@@ -158,7 +158,7 @@ const Test = () => {
           subject_id: selectedSubject,
           test_file_url: fileUrl,
           teacher_id: selectedTeacher,
-          Date:new Date().toDateString
+          Date: new Date().toDateString
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -196,7 +196,7 @@ const Test = () => {
 
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">
@@ -262,7 +262,7 @@ const Test = () => {
                         <Button
                           color="danger"
                           size="sm"
-                          onClick={() => {setDeleteBox(true);setDeletedId(test.id);}}
+                          onClick={() => { setDeleteBox(true); setDeletedId(test.id); }}
                         >
                           Delete
                         </Button>
@@ -277,7 +277,7 @@ const Test = () => {
       </Container>
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Test</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="class">Class</Label>
@@ -288,9 +288,9 @@ const Test = () => {
                 value={selectedModalClass}
                 onChange={(e) => setSelectedModalClass(e.target.value)}
               >
-                 <option key={-1} value={-1}>
+                <option key={-1} value={-1}>
                   select class
-                  </option>
+                </option>
                 {classes.map(clazz => (
                   <option key={clazz.id} value={clazz.id}>
                     {clazz.class_name}
@@ -309,7 +309,7 @@ const Test = () => {
               >
                 <option key={-1} value={-1}>
                   select subject
-                  </option>
+                </option>
                 {subjects.map(subject => (
                   <option key={subject.id} value={subject.id}>
                     {subject.subject_name}
@@ -326,9 +326,9 @@ const Test = () => {
                 value={selectedTeacher}
                 onChange={(e) => setSelectedTeacher(e.target.value)}
               >
-                 <option key={-1} value={-1}>
+                <option key={-1} value={-1}>
                   select subject
-                  </option>
+                </option>
                 {teachers.map(teacher => (
                   <option key={teacher.id} value={teacher.id}>
                     {teacher.first_name} {teacher.last_name}
@@ -355,17 +355,17 @@ const Test = () => {
         </div>
       )}
 
-      
-       {/* Delete Box */}
-<Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
-        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+
+      {/* Delete Box */}
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(!deleteBox) }} centered>
+        <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Teacher</ModalHeader>
         <ModalBody>
-            <div className='text-l font-semibold'>Are You Sure Want to Delete Test?</div>
+          <div className='text-l font-semibold'>Are You Sure Want to Delete Test?</div>
         </ModalBody>
         <ModalFooter>
-            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
-            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDeleteTest();}}>Delete</Button>
-            </ModalFooter>
+          <Button type="submit" color="secondary" onClick={() => { setDeleteBox(false); }}>Cancel</Button>
+          <Button type="submit" style={{ backgroundColor: "red", color: "white" }} onClick={() => { handleDeleteTest(); }}>Delete</Button>
+        </ModalFooter>
       </Modal>
     </>
   );

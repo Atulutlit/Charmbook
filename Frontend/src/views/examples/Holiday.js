@@ -217,7 +217,7 @@ const Holiday = () => {
         <Modal.Header closeButton>
           <Modal.Title>Create Holiday</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className='p-4'>
           <div className="form-group">
             <label htmlFor="holiday_name">Holiday Name:</label>
             <input
@@ -304,15 +304,21 @@ const Holiday = () => {
       </div>
 
      {/* Delete Box */}
-      <Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
-        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal w-auto">
+        <ModalHeader toggle={() => { setDeleteBox(false); }} className='custom-header'>Delete Holiday</ModalHeader>
         <ModalBody>
-            <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+          <div className='text-center'>
+            <p className=' '>Are you sure you want to delete this holiday?</p>
+          </div>
         </ModalBody>
-        <ModalFooter>
-            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
-            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{deleteHoliday();}}>Delete</Button>
-            </ModalFooter>
+        <ModalFooter className="d-flex justify-end custom-footer">
+          <Button color="btn btn-secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
+            Cancel
+          </Button>
+          <Button color="btn btn-danger" size='sm' onClick={deleteHoliday}>
+            Delete
+          </Button>
+        </ModalFooter>
       </Modal>
     </>
   )

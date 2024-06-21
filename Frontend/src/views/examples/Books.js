@@ -59,13 +59,13 @@ const Books = () => {
   // edit
   const toggleModal = () => setModalOpen(!modalOpen);
   const toggleEditModal = () => setEditModalOpen(!editModalOpen);
-  const [editId,setEditId]=useState(-1);
+  const [editId, setEditId] = useState(-1);
 
   // delete
   const [deleteBox, setDeleteBox] = useState(false);
   const [deletedId, setDeletedId] = useState(-1);
 
-  
+
 
   const navigate = useNavigate()
 
@@ -134,7 +134,7 @@ const Books = () => {
       const response = await axios.post(url, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      console.log(response.data.data,'handle image upload')
+      console.log(response.data.data, 'handle image upload')
       setNewBook({ ...newBook, cover_url: response.data.data });
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -163,15 +163,15 @@ const Books = () => {
     const imageRegex = /\.(jpg|jpeg|JPG|JPEG)$/i;
     const pdfRegex = /\.pdf$/i;
 
-    if(!imageRegex.test(path)){
-       console.log(path,'url')
-       return {"status":false,"message":"Image must be in jpg or Jpeg format"};
+    if (!imageRegex.test(path)) {
+      console.log(path, 'url')
+      return { "status": false, "message": "Image must be in jpg or Jpeg format" };
     }
-    
-    if(!pdfRegex.test(url1))
-       return {"status":false,"message":"Book must be in pdf format"};
-    
-    return {"status":true,"message":"correct format"};
+
+    if (!pdfRegex.test(url1))
+      return { "status": false, "message": "Book must be in pdf format" };
+
+    return { "status": true, "message": "correct format" };
   };
 
 
@@ -184,17 +184,17 @@ const Books = () => {
         cover_image_url: newBook.cover_url,
         file_url: newBook.file_url
       };
-      const isValid=validateUrl(newBook.cover_url,newBook.file_url);
-      if(!isValid.status){
-         toast.error(isValid['message']);
-         return;
+      const isValid = validateUrl(newBook.cover_url, newBook.file_url);
+      if (!isValid.status) {
+        toast.error(isValid['message']);
+        return;
       }
       const url = ADMIN_CREATE_BOOK;
       await axios.post(url, newBookData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       toast.success('Book Added Successfully!!');
-            setBooks([...books, {
+      setBooks([...books, {
         ...newBook,
         id: books.length + 1,
         class: classes.find(cls => cls.id === newBook.class),
@@ -215,7 +215,7 @@ const Books = () => {
     }
   };
 
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     try {
       const url = `${ADMIN_DELETE_BOOK}?book_id=${deletedId}`;
       const response = await axios.delete(url, {
@@ -232,11 +232,11 @@ const Books = () => {
     }
   };
 
-  const handleEdit = async() => {
+  const handleEdit = async () => {
     try {
       const url = `${ADMIN_UPDATE_BOOK}`;
-      console.log(editedBook,'editedBook');
-      const response = await axios.put(url, editedBook,{
+      console.log(editedBook, 'editedBook');
+      const response = await axios.put(url, editedBook, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.status) {
@@ -262,7 +262,7 @@ const Books = () => {
 
   return (
     <>
-     <ToastContainer/>
+      <ToastContainer />
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">
@@ -274,14 +274,14 @@ const Books = () => {
                     <h3 className="mb-0">Books</h3>
                   </div>
                   <div className="col text-right">
-                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} size="sm" color="primary">
                       <DropdownToggle caret>
                         {classes.find(cls => cls.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
                       <DropdownMenu>
-                      <DropdownItem value={-1} onClick={() => setSelectedClass(-1)}>
-                            select class
-                          </DropdownItem>
+                        <DropdownItem value={-1} onClick={() => setSelectedClass(-1)}>
+                          select class
+                        </DropdownItem>
                         {classes.map(cls => (
                           <DropdownItem key={cls.id} onClick={() => setSelectedClass(cls.id)}>
                             {cls.class_name}
@@ -335,7 +335,7 @@ const Books = () => {
                           <i
                             className="fas fa-trash-alt text-danger"
                             title="Delete"
-                            onClick={() =>{setDeleteBox(true);setDeletedId(book.id);}}
+                            onClick={() => { setDeleteBox(true); setDeletedId(book.id); }}
                             style={{ cursor: 'pointer' }}
                           ></i>
                           <a href={book.file_url} download>
@@ -355,7 +355,7 @@ const Books = () => {
       {/* Create Book */}
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Book</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="cover">Upload Cover Image(jpg or jpeg format only)</Label>
@@ -409,12 +409,12 @@ const Books = () => {
           </Form>
         </ModalBody>
       </Modal>
-      
+
       {/* Edit Book */}
       <Modal isOpen={editModalOpen} toggle={toggleEditModal}>
         <ModalHeader toggle={toggleEditModal}>Edit Book</ModalHeader>
-        <ModalBody>
-        {/* <FormGroup>
+        <ModalBody className='p-4'>
+          {/* <FormGroup>
               <Label for="cover">Upload Cover Image(jpg or jpeg format only)</Label>
               <Input
                 type="file"
@@ -433,26 +433,26 @@ const Books = () => {
               />
             </FormGroup> */}
           <FormGroup>
-          <Label for="subject">Subject</Label>
-          <Input
-            type="select"
-            name="subject"
-            id="subject"
-            value={editedBook.subject}
-            onChange={(e) => {
-              const selectedSubject = JSON.parse(e.target.value); // Parse the selected value
-              setEditedBook({ ...editedBook, subject: selectedSubject });
-              console.log(selectedSubject, 'selected subject'); // Log the selected subject
-            }}
-          >
-            <option value="">Select Subject</option>
-            {subjects.map(sub => (
-              <option key={sub.id} value={JSON.stringify(sub)}>
-                {sub.subject_name}
-              </option>
-            ))}
-          </Input>
-        </FormGroup>
+            <Label for="subject">Subject</Label>
+            <Input
+              type="select"
+              name="subject"
+              id="subject"
+              value={editedBook.subject}
+              onChange={(e) => {
+                const selectedSubject = JSON.parse(e.target.value); // Parse the selected value
+                setEditedBook({ ...editedBook, subject: selectedSubject });
+                console.log(selectedSubject, 'selected subject'); // Log the selected subject
+              }}
+            >
+              <option value="">Select Subject</option>
+              {subjects.map(sub => (
+                <option key={sub.id} value={JSON.stringify(sub)}>
+                  {sub.subject_name}
+                </option>
+              ))}
+            </Input>
+          </FormGroup>
           <FormGroup>
             <Label for="class">Class</Label>
             <Input
@@ -471,19 +471,25 @@ const Books = () => {
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={toggleEditModal}>Cancel</Button>{' '}
-          <Button color="secondary" onClick={()=>{handleEdit();}}>Update</Button>
+          <Button color="secondary" onClick={() => { handleEdit(); }}>Update</Button>
         </ModalFooter>
       </Modal>
 
       {/* Delete Box */}
-      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(!deleteBox) }} centered>
-        <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Book</ModalHeader>
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal w-auto">
+        <ModalHeader toggle={() => { setDeleteBox(false); }} className='custom-header'>Delete Book</ModalHeader>
         <ModalBody>
-          <div className='text-l font-semibold'>Are You Sure Want to Delete Book?</div>
+          <div className='text-center'>
+            <p className=' '>Are you sure you want to delete this book?</p>
+          </div>
         </ModalBody>
-        <ModalFooter>
-          <Button type="submit" color="secondary" onClick={() => { setDeleteBox(false); }}>Cancel</Button>
-          <Button type="submit" style={{ backgroundColor: "red", color: "white" }} onClick={() => { handleDelete(); }}>Delete</Button>
+        <ModalFooter className="d-flex justify-end custom-footer">
+          <Button color="btn btn-secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
+            Cancel
+          </Button>
+          <Button color="btn btn-danger" size='sm' onClick={handleDelete}>
+            Delete
+          </Button>
         </ModalFooter>
       </Modal>
 

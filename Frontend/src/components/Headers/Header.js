@@ -264,7 +264,7 @@ const Header = () => {
           </div>
         </Container>
       </div>
-      <Modal show={showCreate} onHide={handleCloseCreate} centered>
+      {/* <Modal show={showCreate} onHide={handleCloseCreate} centered>
         <Modal.Header closeButton>
           <Modal.Title>Create Holiday</Modal.Title>
         </Modal.Header>
@@ -308,13 +308,13 @@ const Header = () => {
             Save
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
 
       <Modal show={showEdit} onHide={handleCloseEdit} centered>
         <Modal.Header closeButton>
           <Modal.Title>Edit Schedule</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="p-4">
           <div className="form-group">
             <label htmlFor="edit_start_time">Start Time:</label>
             <input

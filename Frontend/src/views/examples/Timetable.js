@@ -240,7 +240,7 @@ const Timetable = () => {
                     >
                       Create <i className="fas fa-plus"></i>
                     </Button>
-                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} size="sm" color="primary">
                       <DropdownToggle caret>
                         {classes.find(c => c.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
@@ -304,13 +304,13 @@ const Timetable = () => {
           </Col>
         </Row>
       </Container>
-      
+
       {/* Download Excel  */}
-      <div className="d-flex justify-content-end" style={{marginRight:"140px",marginTop:"20px"}}><TimeTableExcel client={timeTable}/></div>
+      <div className="d-flex justify-content-end" style={{ marginRight: "140px", marginTop: "20px" }}><TimeTableExcel client={timeTable} /></div>
 
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Timetable</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={createTimetable}>
             <FormGroup>
               <Label for="class">Class</Label>
@@ -321,7 +321,7 @@ const Timetable = () => {
                 value={selectedModalClass}
                 onChange={(e) => setSelectedModalClass(e.target.value)}
               >
-               <option value={-1}>select class</option>
+                <option value={-1}>select class</option>
                 {classes.map(clazz => (
                   <option key={clazz.id} value={clazz.id}>
                     {clazz.class_name}
@@ -383,9 +383,11 @@ const Timetable = () => {
           </Form>
         </ModalBody>
       </Modal>
+
+      {/* Edit Box */}
       <Modal isOpen={showEdit} toggle={() => { setShowEdit(false); }} centered>
         <ModalHeader toggle={() => { setShowEdit(false) }}>Edit Timetable</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={updateTimetable}>
             <FormGroup>
               <Label for="class">Class</Label>
@@ -467,14 +469,20 @@ const Timetable = () => {
 
 
       {/* Delete Box */}
-      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(!deleteBox) }} centered>
-        <ModalHeader toggle={() => { setDeleteBox(!deleteBox); }}>Delete Teacher</ModalHeader>
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal w-auto">
+        <ModalHeader toggle={() => { setDeleteBox(false); }} className='custom-header'>Delete Timetable</ModalHeader>
         <ModalBody>
-          <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+          <div className='text-center'>
+            <p className=' '>Are you sure you want to delete this timetable?</p>
+          </div>
         </ModalBody>
-        <ModalFooter>
-          <Button type="submit" color="secondary" onClick={() => { setDeleteBox(false); }}>Cancel</Button>
-          <Button type="submit" style={{ backgroundColor: "red", color: "white" }} onClick={() => { deleteTimetable(); }}>Delete</Button>
+        <ModalFooter className="d-flex justify-end custom-footer">
+          <Button color="btn btn-secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
+            Cancel
+          </Button>
+          <Button color="btn btn-danger" size='sm' onClick={deleteTimetable}>
+            Delete
+          </Button>
         </ModalFooter>
       </Modal>
     </>

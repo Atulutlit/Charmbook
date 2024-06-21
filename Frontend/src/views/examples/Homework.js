@@ -24,8 +24,8 @@ import {
 
 import Header from "components/Headers/Header.js";
 import axios from 'axios';
-import {ADMIN_CLASS,ADMIN_GET_SUBJECT,ADMIN_TEACHER,ADMIN_GET_HOMEWORK,ADMIN_UPLOAD_DOC,ADMIN_CREATE_HOMEWORK,ADMIN_DELETE_HOMEWORK} from './../../constant/Constant'
-import { toast,ToastContainer } from 'react-toastify';
+import { ADMIN_CLASS, ADMIN_GET_SUBJECT, ADMIN_TEACHER, ADMIN_GET_HOMEWORK, ADMIN_UPLOAD_DOC, ADMIN_CREATE_HOMEWORK, ADMIN_DELETE_HOMEWORK } from './../../constant/Constant'
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Homework = () => {
@@ -42,8 +42,8 @@ const Homework = () => {
   const [error, setError] = useState("");
   const [homeworks, setHomeworks] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [deleteBox,setDeleteBox]=useState(false);
-  
+  const [deleteBox, setDeleteBox] = useState(false);
+
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -55,7 +55,7 @@ const Homework = () => {
 
   const fetchClasses = async () => {
     try {
-      const url=ADMIN_CLASS;
+      const url = ADMIN_CLASS;
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -111,7 +111,7 @@ const Homework = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      console.log(response.data,'fetch homework')
+      console.log(response.data, 'fetch homework')
       if (response.data.status) {
         setHomeworks(response.data.data);
       }
@@ -157,14 +157,14 @@ const Homework = () => {
           subject_id: selectedSubject,
           file_url: fileUrl,
           teacher_id: selectedTeacher,
-          date:new Date().toDateString()
+          date: new Date().toDateString()
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
       setFileUrl("");
       toggleModal();
-      console.log(response,'response')
+      console.log(response, 'response')
       toast.success("Homework Created Successfully");
       fetchHomeworks(selectedClass);
     } catch (error) {
@@ -195,7 +195,7 @@ const Homework = () => {
 
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mt-5 justify-content-center">
@@ -206,16 +206,16 @@ const Homework = () => {
                   <div className="col">
                     <h3 className="mb-0">Homework</h3>
                   </div>
-                  
+
                   <div className="col text-right">
-                  <Button
+                    <Button
                       color="primary"
                       onClick={toggleModal}
                       size="sm"
                     >
                       Create <i className="fas fa-plus"></i>
                     </Button>
-                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} size="sm" color="primary">
                       <DropdownToggle caret>
                         {classes.find(c => c.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
@@ -274,7 +274,7 @@ const Homework = () => {
       </Container>
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Homework</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="class">Class</Label>
@@ -345,16 +345,24 @@ const Homework = () => {
           {error}
         </div>
       )}
- {/* Delete Box */}
-<Modal isOpen={deleteBox} toggle={()=>{setDeleteBox(!deleteBox)}} centered>
-        <ModalHeader toggle={()=>{setDeleteBox(!deleteBox);}}>Delete Teacher</ModalHeader>
+
+
+      {/* Delete Box */}
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal w-auto">
+        <ModalHeader toggle={() => { setDeleteBox(false); }} className='custom-header'>Delete Homework</ModalHeader>
         <ModalBody>
-            <div className='text-l font-semibold'>Are You Sure Want to Delete Teacher?</div>
+          <div className='text-center'>
+            <p className=' '>Are you sure you want to delete this homework?</p>
+          </div>
         </ModalBody>
-        <ModalFooter>
-            <Button type="submit" color="secondary" onClick={()=>{setDeleteBox(false);}}>Cancel</Button>
-            <Button type="submit" style={{backgroundColor:"red",color:"white"}} onClick={()=>{handleDeleteHomework();}}>Delete</Button>
-            </ModalFooter>
+        <ModalFooter className="d-flex justify-end custom-footer">
+          <Button color="btn btn-secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
+            Cancel
+          </Button>
+          <Button color="btn btn-danger" size='sm' onClick={handleDeleteHomework}>
+            Delete
+          </Button>
+        </ModalFooter>
       </Modal>
     </>
   );

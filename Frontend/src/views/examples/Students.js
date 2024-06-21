@@ -18,7 +18,7 @@ const Students = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   // delete item
-  const [deleteBox, setDeleteBox] = useState(true);
+  const [deleteBox, setDeleteBox] = useState(false);
   const [deletedId, setDeletedId] = useState(-1);
   const token = localStorage.getItem('token');
 
@@ -174,23 +174,6 @@ const Students = () => {
     }
   };
 
-  const search = (students, searchText) => {
-    const searchResults = [];
-    console.log(searchText, 'searchText')
-
-    for (let i = 0; i < students.length; i++) {
-      const student = students[i];
-      if (student.enrollment_no === searchText ||
-        student.name == searchText ||
-        student.email == searchText ||
-        student.phone_no == searchText) {
-        searchResults.push(student);
-      }
-    }
-    setData(searchResults);
-    setStudents(searchResults);
-  };
-
   // Validation Form
   function validateForm(email, mobileNumber, password, confirmPassword) {
 
@@ -256,22 +239,52 @@ const Students = () => {
     else return b;
   }
 
+  // Debounce function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+// Search component
+
+  useEffect(() => {
+    const handleSearch = () => {
+      if (!searchText) {
+        setData(students);
+      } else {
+        const lowerCaseQuery = searchText.toLowerCase();
+        const filteredItems = students.filter(item =>
+          Object.keys(item).some(key =>
+            item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
+          )
+        );
+        setData(filteredItems);
+      }
+    };
+
+    const debouncedSearch = debounce(handleSearch, 300);
+    debouncedSearch();
+
+    // Cleanup function to cancel the timeout if the component unmounts or query changes
+    return () => {
+      if (debouncedSearch.timeoutId) {
+        clearTimeout(debouncedSearch.timeoutId);
+      }
+    };
+  }, [searchText]);
+
 
   return (
     <>
       <ToastContainer />
       <Header />
       <Container className="mt--7" fluid>
-        {/* <div className="container">
-        <div className="row">
-          <div className="col-md-6 mx-auto">
-            <div className="d-flex align-items-center justify-content-between search-container">
-              <input type="text" className="search-input form-control rounded text-center" placeholder="Search Student on the basis of Enrollment and Name" value={searchText} onChange={(e)=>{setSearchText(e.target.value);}} />
-              <button className="search-button btn btn-primary" onClick={()=>{search(data,searchText);}}>Search</button>
-            </div>
-          </div>
-        </div>
-      </div> */}
+        
         <Row className="mt-5 justify-content-center">
           <Col className="mb-5 mb-xl-0" xl="10">
             <Card className="shadow">
@@ -288,7 +301,7 @@ const Students = () => {
                             <i className="fas fa-search" />
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input placeholder="Search" type="text" />
+                        <Input placeholder="Search" type="text" value={searchText} onChange={(e)=>{setSearchText(e.target.value);}} />
                       </InputGroup>
                     </FormGroup>
                   </Form>
@@ -376,57 +389,52 @@ const Students = () => {
         <div className="row align-items-center">
           {/* Left part */}
           <div className="col-md-4 d-flex flex-row align-items-center">
-                 <div className="fw-bold ms-3" style={{ fontSize: '16px', padding: "10px" }}>Page&nbsp;Size</div>
-                 <select className="form-select ms-3" value={pageSize} onChange={(e) => { setPageSize(e.target.value); }} style={{ height: '2rem', width: 'auto' }}>
-                   <option value={25}>25</option>
-                   <option value={50}>50</option>
-                   <option value={75}>75</option>
-                   <option value={100}>100</option>
-                 </select>
-               </div>
-          {/* Bottom part */}
-            <div className="col-md-4 d-flex justify-content-end align-items-center mt-3 mt-md-0">
-              <div className="d-flex flex-row gap-2">
-                <div className="rounded-circle border border-2 bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
-                  <i className="fas fa-arrow-left"></i>
-                </div>
-                {NumberBox.map((item, key) => (
-                  <div
-                    key={key}
-                    className={`rounded-circle border text-center d-flex align-items-center justify-content-center ${activeColor === key ? 'bg-white border-primary' : 'bg-light border-light'} cursor-pointer`}
-                    style={{ width: '32px', height: '32px', fontFamily: 'Ubuntu', fontWeight: 700, fontSize: '16px', color: '#2D5BFF' }}
-                    onClick={() => { setIndexNumber(key); setActiveColor(key); }}
-                  >
-                    {key + 1}
-                  </div>
-                ))}
-                <div className="rounded-circle border border-2 bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
-                  <i className="fas fa-arrow-right"></i>
-                </div>
-              </div>
-            </div>
+            <div className="fw-bold ms-3" style={{ fontSize: '16px', padding: "10px" }}>Page&nbsp;Size</div>
+            <select className="form-select ms-3" value={pageSize} onChange={(e) => { setPageSize(e.target.value); }} style={{ height: '2rem', width: 'auto' }}>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={75}>75</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
+
           <div className="col-md-4 d-flex justify-content-center mt-3 mt-md-0">
             <div className="d-flex justify-content-end" ><StudentExcel client={students} /></div>
-            {/* <Button
-              color="primary"
-              onClick={toggleModal}
-              size="sm"
-            >
-               <i className='fas fa-download'></i>
-               <StudentExcel client={students} />
-               </Button> */}
           </div>
-              
+
+          {/* Bottom part */}
+          <div className="col-md-4 d-flex justify-content-end align-items-center mt-3 mt-md-0">
+            <div className="d-flex flex-row gap-2">
+              <div className="rounded-circle border border-2 bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
+                <i className="fas fa-arrow-left"></i>
+              </div>
+              {NumberBox.map((item, key) => (
+                <div
+                  key={key}
+                  className={`rounded-circle border text-center d-flex align-items-center justify-content-center ${activeColor === key ? 'bg-white border-primary' : 'bg-light border-light'} cursor-pointer`}
+                  style={{ width: '32px', height: '32px', fontFamily: 'Ubuntu', fontWeight: 700, fontSize: '16px', color: '#2D5BFF' }}
+                  onClick={() => { setIndexNumber(key); setActiveColor(key); }}
+                >
+                  {key + 1}
+                </div>
+              ))}
+              <div className="rounded-circle border border-2 bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
+                <i className="fas fa-arrow-right"></i>
+              </div>
+            </div>
+          </div>
+
+
           {/* Right part */}
         </div>
       </div>
 
 
       {/*Create Modal */}
-      <Modal isOpen={modalOpen} toggle={toggleModal} centered>
+      <Modal isOpen={modalOpen} toggle={toggleModal} centered scrollable >
         <ModalHeader toggle={toggleModal}>Create Student</ModalHeader>
-        <ModalBody>
-          <Form onSubmit={handleSubmit}>
+        <ModalBody className='m-4'>
+          <Form onSubmit={handleSubmit} >
             <FormGroup className='d-none'>
               <Label for="profilePhoto">Upload Profile Photo</Label>
               <Input type="file" name="profilePhoto" id="profilePhoto" />
@@ -472,7 +480,7 @@ const Students = () => {
       {/* Edit Modal */}
       <Modal isOpen={modalEditOpen} toggle={() => setModalEditOpen(false)} centered>
         <ModalHeader toggle={() => setModalEditOpen(false)}>Edit Student Details</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={handleEditStudent}>
             <FormGroup>
               <Label for="firstName">First Name</Label>
@@ -550,20 +558,18 @@ const Students = () => {
       </Modal>
 
       {/* Delete Box */}
-      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal">
+      <Modal isOpen={deleteBox} toggle={() => { setDeleteBox(false); }} centered className="custom-delete-modal w-auto">
         <ModalHeader toggle={() => { setDeleteBox(false); }} className='custom-header'>Delete Student</ModalHeader>
         <ModalBody>
           <div className='text-center'>
-            <i className="fas fa-exclamation-triangle fa-2x text-primary mb-3"></i>
-            <p className='fs-4 fw-bold '>Are you sure you want to delete this student?</p>
-            <p className='text-muted fs-5 '>This action cannot be undone.</p>
+            <p className=' '>Are you sure you want to delete this student?</p>
           </div>
         </ModalBody>
-        <ModalFooter className="d-flex justify-content-between custom-footer">
-          <Button color="secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
+        <ModalFooter className="d-flex justify-end custom-footer">
+          <Button color="btn btn-secondary" size='sm' onClick={() => { setDeleteBox(false); }}>
             Cancel
           </Button>
-          <Button color="primary" size='sm' onClick={handleDelete}>
+          <Button color="btn btn-danger" size='sm' onClick={handleDelete}>
             Delete
           </Button>
         </ModalFooter>

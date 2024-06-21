@@ -262,7 +262,7 @@ const Schedule = () => {
       </Container>
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Create Timetable</ModalHeader>
-        <ModalBody>
+        <ModalBody className='p-4'>
           <Form onSubmit={createTimetable}>
             <FormGroup>
               <Label for="class">Class</Label>
