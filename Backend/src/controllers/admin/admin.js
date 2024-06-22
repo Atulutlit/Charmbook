@@ -414,26 +414,32 @@ exports.deleteHoliday = asyncHandler(async (req,res) => {
 // attendance
 exports.getAttendance = asyncHandler(async (req, res) => {
 
-    // const { date, class_id } = req.query;
+    const { date, class_id } = req.query;
 
-    // if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
+    console.log(req.query,'data');
 
-    // if (!date) throw error.VALIDATION_ERROR("Date is required");
+    if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
 
+    if (!date) throw error.VALIDATION_ERROR("Date is required");
 
+    console.log( 
+             {
+                [Op.between]: [`${date}T00:00:00Z`, `${date}T23:59:59Z`],
+            })
     const attendances = await tables.Attendance.findAll({
         where: {
-            // class_id: class_id,
-            // status: ['ABSENT', 'PRESENT', 'PENDING'],
-            // date: {
-            //     [Op.between]: [`${date}T00:00:00Z`, `${date}T23:59:59Z`],
-            // }
+            class_id: class_id,
+            status: ['ABSENT', 'PRESENT', 'PENDING'],
+            date: {
+                [Op.between]: [`${date}T00:00:00Z`, `${date}T23:59:59Z`],
+            }
         },
-        // include: {
-        //     model: tables.User,
-        //     attributes: ['id', 'first_name', 'last_name', 'profile_url']
-        // }
+        include: {
+            model: tables.User,
+            attributes: ['id', 'first_name', 'last_name', 'profile_url','enrollment_no']
+        }
     });
+    console.log(attendances,'attendace')
 
     return res.send({ status: true, statusCode: 200, data: attendances });
 

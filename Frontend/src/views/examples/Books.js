@@ -150,6 +150,7 @@ const Books = () => {
       const response = await axios.post(url, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      console.log(response,'respponse')
       setNewBook({ ...newBook, file_url: response.data.data });
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -184,6 +185,7 @@ const Books = () => {
         cover_image_url: newBook.cover_url,
         file_url: newBook.file_url
       };
+      console.log(newBookData,'new book data')
       const isValid = validateUrl(newBook.cover_url, newBook.file_url);
       if (!isValid.status) {
         toast.error(isValid['message']);

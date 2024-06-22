@@ -48,6 +48,7 @@ const Teachers = () => {
       if (data.status) {
         console.log(data, 'teacher data');
         setTeachers(data.data);
+        setData(data.data);
         toast.success("Successfully fetch the data");
       } else {
         toast.error(data.message);
@@ -201,6 +202,7 @@ const Teachers = () => {
   useEffect(() => {
     setNumberBox(Array(parseInt(teachers.length / pageSize + 1)).fill(1))
     let data = teachers.slice(parseInt(indexNumber) * parseInt(pageSize), min(parseInt(teachers.length), (parseInt(indexNumber) + 1) * parseInt(pageSize)));
+    console.log(data,'data')
     setData(data);
   }, [JSON.stringify(teachers), indexNumber])
 
@@ -219,8 +221,8 @@ const Teachers = () => {
 
   useEffect(() => {
     const handleSearch = () => {
-      if (!searchText) {
-        setData(teachers);
+      if (!searchText || searchText=="") {
+        teachers.length>0 && setData(teachers);
       } else {
         const lowerCaseQuery = searchText.toLowerCase();
         const filteredItems = teachers.filter(item =>

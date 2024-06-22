@@ -11,11 +11,11 @@ module.exports = function (sequelize, DataTypes) {
     enrollment_no:{
       type: DataTypes.STRING
     },
-    class_name: {
-      type: DataTypes.STRING
+    class_id: {
+      type: DataTypes.INTEGER
     },
-    student_name: {
-      type: DataTypes.STRING
+    student_id: {
+      type: DataTypes.INTEGER
     },
     date:{
       type: DataTypes.STRING

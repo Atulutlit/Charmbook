@@ -51,7 +51,16 @@ const Attendance = () => {
   const [data, setData] = useState([]);
   // edit data
   const [editData, setEditData] = useState(null);
+  // choose attendance
+  const getFormattedDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Add 1 because months are 0-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
+  const [selectedDate,setSelectedDate]=useState(getFormattedDate());
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -91,13 +100,13 @@ const Attendance = () => {
 
   const fetchAttendance = async () => {
     try {
-      const date = '2024-06-12';
-      const url = `${ADMIN_GET_ATTENDANCE}?date=${date}&&class_id=${selectedClass}`
+      const url = `${ADMIN_GET_ATTENDANCE}?date=${selectedDate}&&class_id=${selectedClass}`
+      console.log(url,'url')
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      console.log(response,'fetch attendance')
       if (response.data.status) {
-        console.log(response.data.data, 'data fetch attendacnce')
         setAttendance(response.data.data);
         setData(response.data.data);
       } else {
@@ -131,7 +140,7 @@ const Attendance = () => {
   };
   useEffect(() => {
     fetchAttendance();
-  }, [])
+  }, [selectedClass,selectedDate])
 
 
   const handleDeleteAttendance = () => {
@@ -154,7 +163,7 @@ const Attendance = () => {
   useEffect(() => {
     const handleSearch = () => {
       if (!searchText) {
-        setData(attendance);
+        attendance.length>0 && setData(attendance);
       } else {
         const lowerCaseQuery = searchText.toLowerCase();
         const filteredItems = attendance.filter(item =>
@@ -216,6 +225,9 @@ const Attendance = () => {
                       </DropdownMenu>
                     </Dropdown>
                   </div>
+                  <div size="sm" color="primary">
+                    <input type="date" id="date-input" value={selectedDate} onChange={(e)=>{setSelectedDate(e.target.value);}}/>
+                  </div>
                 </Row>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
@@ -223,7 +235,6 @@ const Attendance = () => {
                   <tr>
                     <th scope="col">#</th>
                     <th scope='col'>Enrollment No.</th>
-                    <th scope="col">className</th>
                     <th scope="col">studentName</th>
                     <th scope="col">Date</th>
                     <th scope='col'>Time</th>
@@ -235,11 +246,10 @@ const Attendance = () => {
                   {data && data.map((item, index) => (
                     <tr key={item?.id}>
                       <td>{index + 1}</td>
-                      <td>{item?.enrollment_no}</td>
-                      <td>{item?.class_name}</td>
-                      <td>{item?.student_name}</td>
+                      <td>{item?.user.enrollment_no}</td>
+                      <td>{item?.user.first_name}&nbsp;{item?.user?.last_name}</td>
                       <td>{item?.date?.slice(0, 10)}</td>
-                      <td>{item?.time}</td>
+                      <td>{item?.date?.slice(11,16)}</td>
                       <td>{item?.status}</td>
                       <td>
                         <Button

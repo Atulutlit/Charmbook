@@ -80,6 +80,7 @@ const Header = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.status) {
+        console.log(response.data,'student fetch')
         setTotalStudents(response.data.data.length);
       }
     } catch (error) {
@@ -139,7 +140,6 @@ const Header = () => {
     fetchTotalStudents();
     fetchTotalTeachers();
     fetchSchedule();
-    fetchHolidays();
   }, []);
 
   const formatTime = (time) => {
@@ -149,13 +149,7 @@ const Header = () => {
     return format(date, 'hh:mm aa');
   };
 
-  const formatHolidayDate = (date) => {
-    return format(new Date(date), 'yyyy-MM-dd');
-  };
 
-  const holidayRange = holidays.length > 0 ? 
-    `${formatHolidayDate(holidays[0].date)} - ${formatHolidayDate(holidays[holidays.length - 1].date)}` 
-    : 'No holidays';
 
   return (
     <>
@@ -236,80 +230,12 @@ const Header = () => {
                   </CardBody>
                 </Card>
               </Col>
-              {/* <Col lg="6" xl="3">
-                <Card className="card-stats mb-4 py-3 mb-xl-0">
-                  <CardBody>
-                    <Row>
-                      <div className="col">
-                        <CardTitle
-                          tag="h5"
-                          className="text-uppercase text-muted mb-0"
-                        >
-                          Total No. of Holiday
-                        </CardTitle>
-                        <span className="h4 font-weight-bold mb-0">
-                          {holidays.length}
-                        </span>
-                      </div>
-                      <Col className="col-auto flex-column">
-                        <Button variant="primary" size="sm" onClick={handleShowCreate}>
-                          Edit <i className="fas fa-edit"></i>
-                        </Button>
-                      </Col>
-                    </Row>
-                  </CardBody>
-                </Card>
-              </Col> */}
             </Row>
           </div>
         </Container>
       </div>
-      {/* <Modal show={showCreate} onHide={handleCloseCreate} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Create Holiday</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="form-group">
-            <label htmlFor="holiday_name">Holiday Name:</label>
-            <input
-              type="text"
-              id="holiday_name"
-              className="form-control"
-              value={holidayName}
-              onChange={(e) => setHolidayName(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="holiday_start_date">Start Date:</label>
-            <input
-              type="date"
-              value={holidayStartDate}
-              onChange={date => setHolidayStartDate(date.target.value)}
-              dateFormat="yyyy-MM-dd"
-              className="form-control"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="holiday_end_date">End Date:</label>
-            <input
-              type="date"
-              value={holidayEndDate}
-              onChange={date => setHolidayEndDate(date.target.value)}
-              dateFormat="yyyy-MM-dd"
-              className="form-control"
-            />
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseCreate}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleSaveCreate}>
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal> */}
-
+      
+      {/* Edit schedule */}
       <Modal show={showEdit} onHide={handleCloseEdit} centered>
         <Modal.Header closeButton>
           <Modal.Title>Edit Schedule</Modal.Title>

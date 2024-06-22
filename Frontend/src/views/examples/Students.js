@@ -255,7 +255,7 @@ const debounce = (func, delay) => {
   useEffect(() => {
     const handleSearch = () => {
       if (!searchText) {
-        setData(students);
+        students.length>0 && setData(students);
       } else {
         const lowerCaseQuery = searchText.toLowerCase();
         const filteredItems = students.filter(item =>

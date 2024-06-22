@@ -164,9 +164,14 @@ const Homework = () => {
         });
       setFileUrl("");
       toggleModal();
-      console.log(response, 'response')
-      toast.success("Homework Created Successfully");
-      fetchHomeworks(selectedClass);
+      if(response.data.status){
+        console.log(response, 'response')
+        toast.success("Homework Created Successfully");
+        fetchHomeworks(selectedClass);
+      }else{
+        toast.error(response.data.message.message);
+      }
+     
     } catch (error) {
       console.error('Error creating homework:', error);
       toast.error(error);
