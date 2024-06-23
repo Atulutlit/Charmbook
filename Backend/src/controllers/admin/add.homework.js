@@ -20,7 +20,7 @@ try {
 
     if (!subject_id) throw error.VALIDATION_ERROR("Subject id is required");
 
-    if (!file_url) throw error.VALIDATION_ERROR("File url is required");
+    if (!file_url) throw error.VALIDATION_ERROR("Pdf is required");
 
     if(!teacher_id) throw error.VALIDATION_ERROR("Teacher id is required");
 

@@ -80,7 +80,13 @@ const Timetable = () => {
         fetchTimetable(response.data.data[0]?.id);
       }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Failed to fetch classes:', error);
+        toast.error('Failed to fetch classes');
+      }
     }
   };
   const fetchTeachers = async () => {
@@ -94,7 +100,13 @@ const Timetable = () => {
         setSelectedTeacher(response.data.data[0].id); // Select the first teacher by default
       }
     } catch (error) {
-      console.error('Error fetching teachers:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Failed to get teachers:', error);
+        toast.error('Failed to get teachers');
+      }
     }
   };
   const fetchSubjects = async () => {
@@ -108,7 +120,13 @@ const Timetable = () => {
         setSelectedSubject(response.data.data[0].id); // Select the first subject by default
       }
     } catch (error) {
-      console.error('Error fetching subjects:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Failed to fetch subjects:', error);
+        toast.error('Failed to fetch subjects');
+      }
     }
   };
   useEffect(() => {
@@ -132,7 +150,12 @@ const Timetable = () => {
         setTimetablelist([]);
       }
     } catch (error) {
-      console.error('Error fetching timetable:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Failed to fetch timetable:', error);
+      }
       setTimetablelist([]);
     }
   };
@@ -162,8 +185,13 @@ const Timetable = () => {
         console.error('Failed to update timetable:', data.message);
       }
     } catch (error) {
-      console.error('Error updating timetable:', error);
-      toast.error(error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Failed to update timetable:', error);
+        toast.error('Failed to update Timetable');
+      }
     }
   };
 
@@ -176,8 +204,13 @@ const Timetable = () => {
       toast.success("Deleted Successfully!!");
       fetchTimetable();
     } catch (error) {
-      console.error('Error fetching delete timetable:', error);
-      toast.error(error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Failed to delete timetable:', error);
+        toast.error('Failed to delete Timetable');
+      }
     }
   }
 
@@ -201,8 +234,13 @@ const Timetable = () => {
       toast.success("Timetable Created Successfully");
       fetchTimetable();
     } catch (error) {
-      console.error('Error creating timetable:', error);
-      toast.error(error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Error creating timetable:', error);
+        toast.error('Failed to Create Timetable');
+      }
     }
   };
 

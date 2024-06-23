@@ -22,6 +22,7 @@ import axios from 'axios';
 import { ADMIN_CREATE_CLASS, ADMIN_CLASS, ADMIN_DELETE_CLASS, ADMIN_UPDATE_CLASS } from './../../constant/Constant'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const Classes = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,6 +35,8 @@ const Classes = () => {
   const [selectedId, setSelectedId] = useState(-1);
   const [showDeleteBox, setShowDeleteBox] = useState(false);
   const [editData, setEditData] = useState(null)
+
+  const navigate = useNavigate();
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -52,7 +55,12 @@ const Classes = () => {
         setClasses(response.data.data.map(c => ({ id: c.id, name: c.class_name })));
       }
     } catch (error) {
-      toast.error('Failed to fetch class');
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch class', error);
+        toast.error('Failed to class class');
+      }
     }
   };
 
@@ -76,7 +84,12 @@ const Classes = () => {
       fetchClasses();
       toast.success('Class Created Successfully!!');
     } catch (error) {
-      toast.warn(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to create class', error);
+        toast.error('Failed to create class');
+      }
     }
   };
 
@@ -95,8 +108,12 @@ const Classes = () => {
       toast.success("successfully deleted class!!.")
       fetchClasses();
     } catch (error) {
-      console.log(error, 'error');
-      toast.error("Failed to Delete Class!!");
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to delete class', error);
+        toast.error('Failed to delete class');
+      }
     }
   }
 
@@ -114,7 +131,12 @@ const Classes = () => {
       toast.success("successfully updated class!!.")
       fetchClasses();
     } catch (error) {
-      toast.error('Failed to update class!!');
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to update class', error);
+        toast.error('Failed to update class');
+      }
     }
   }
 

@@ -27,22 +27,25 @@ import axios from 'axios';
 import { ADMIN_CLASS, ADMIN_GET_SUBJECT, ADMIN_TEACHER, ADMIN_GET_HOMEWORK, ADMIN_UPLOAD_DOC, ADMIN_CREATE_HOMEWORK, ADMIN_DELETE_HOMEWORK } from './../../constant/Constant'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const Homework = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(1);
-  const [selectedModalClass, setSelectedModalClass] = useState(1);
+  const [selectedModalClass, setSelectedModalClass] = useState(-1);
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedSubject, setSelectedSubject] = useState(-1);
   const [teachers, setTeachers] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState(-1);
   const [fileUrl, setFileUrl] = useState("");
   const [newClassName, setNewClassName] = useState("");
   const [error, setError] = useState("");
   const [homeworks, setHomeworks] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deleteBox, setDeleteBox] = useState(false);
+
+  const navigate = useNavigate();
 
 
   const toggleModal = () => {
@@ -64,10 +67,15 @@ const Homework = () => {
       if (response.data.status) {
         setClasses(response.data.data);
         setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
-        setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
+        // setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
       }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch class', error);
+        toast.error('Failed to fetch class');
+      }
     }
   };
 
@@ -80,10 +88,15 @@ const Homework = () => {
       });
       if (response.data.status) {
         setSubjects(response.data.data);
-        setSelectedSubject(response.data.data[0].id); // Select the first subject by default
+        // setSelectedSubject(response.data.data[0].id); // Select the first subject by default
       }
     } catch (error) {
-      console.error('Error fetching subjects:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch subject', error);
+        toast.error('Failed to fetch subject');
+      }
     }
   };
 
@@ -96,10 +109,15 @@ const Homework = () => {
       });
       if (response.data.status) {
         setTeachers(response.data.data);
-        setSelectedTeacher(response.data.data[0].id); // Select the first teacher by default
+        // setSelectedTeacher(response.data.data[0].id); // Select the first teacher by default
       }
     } catch (error) {
-      console.error('Error fetching teachers:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch teachers', error);
+        toast.error('Failed to fetch teachers');
+      }
     }
   };
 
@@ -116,7 +134,12 @@ const Homework = () => {
         setHomeworks(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching homeworks:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to get homeworks', error);
+        toast.error('Failed to get homeworks');
+      }
     }
   };
 
@@ -143,7 +166,12 @@ const Homework = () => {
       });
       setFileUrl(response.data.data);
     } catch (error) {
-      console.error('Error uploading file:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to upload file', error);
+        toast.error('Failed to upload file');
+      }
     }
   };
 
@@ -164,17 +192,24 @@ const Homework = () => {
         });
       setFileUrl("");
       toggleModal();
-      if(response.data.status){
+      setSelectedModalClass(-1);
+      setSelectedTeacher(-1);
+      setSelectedSubject(-1);
+      if (response.data.status) {
         console.log(response, 'response')
         toast.success("Homework Created Successfully");
         fetchHomeworks(selectedClass);
-      }else{
+      } else {
         toast.error(response.data.message.message);
       }
-     
+
     } catch (error) {
-      console.error('Error creating homework:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to create homework', error);
+        toast.error('Failed to create homework');
+      }
     }
   };
 
@@ -193,8 +228,12 @@ const Homework = () => {
       toast.success("Homework Deleted Successfully!!");
       fetchHomeworks(selectedClass);
     } catch (error) {
-      console.error('Error deleting homework:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to delete homework', error);
+        toast.error('Failed to delete homework');
+      }
     }
   };
 

@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import StudentExcel from 'Excel/StudentExcel';
 import { ADMIN_UPDATE_USER } from 'constant/Constant';
 import "./DeleteModal.css"
+import { useNavigate } from 'react-router-dom';
+
 const Students = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [students, setStudents] = useState([]);
@@ -36,6 +38,8 @@ const Students = () => {
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [editData, setEditData] = useState(null);
 
+  const navigate = useNavigate();
+
 
   const fetchStudents = async (classId) => {
     try {
@@ -59,7 +63,13 @@ const Students = () => {
         console.error('Failed to fetch students:', data.message);
       }
     } catch (error) {
-      console.error('Error fetching students:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.log('Failed to fetch student',error);
+        toast.error('Failed to fetch student');
+      }
     }
   };
 
@@ -74,13 +84,19 @@ const Students = () => {
       const data = await response.json();
       if (data.status) {
         setClassOptions(data.data);
-        setSelectedClassId(data?.data[0]?.id);
-        fetchStudents(data?.data[0]?.id);
+        // setSelectedClassId(data?.data[0]?.id);
+        fetchStudents();
       } else {
         console.error('Failed to fetch classes:', data.message);
       }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.log('Failed to fetch class',error);
+        toast.error('Failed to fetch class');
+      }
     }
   };
 
@@ -147,7 +163,13 @@ const Students = () => {
         console.error('Failed to create student:', data.message);
       }
     } catch (error) {
-      console.error('Error creating student:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.log('Failed to create student',error);
+        toast.error('Failed to create student');
+      }
     }
   };
 
@@ -169,7 +191,13 @@ const Students = () => {
       setDeleteBox(false);
       toast("Student Deleted Successfully!!");
     } catch (error) {
-      console.error('Error deleting student:', error);
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.log('Failed to remove student',error);
+        toast.error('Failed to remove student');
+      }
       setDeleteBox(false);
     }
   };
@@ -227,8 +255,13 @@ const Students = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.error('Error updating student:', error);
-      toast.error('An error occurred while updating the student.');
+      if(error.response.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.log('Failed to update students',error);
+        toast.error('Failed to update students');
+      }
     }
   };
 
@@ -351,7 +384,7 @@ const debounce = (func, delay) => {
                       </td>
                       <td>{student?.enrollment_no}</td>
                       <td>{student?.first_name}{student?.last_name}</td>
-                      <td>{student.class.class_name}</td>
+                      <td>{student?.class?.class_name}</td>
                       <td>{student?.phone_no}</td>
                       <td>{student?.email}</td>
                       <td>{student?.status}</td>

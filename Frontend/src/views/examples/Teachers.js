@@ -8,12 +8,13 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TeacherExcel from 'Excel/TeacherExcel';
 import { ADMIN_UPDATE_USER, ADMIN_CLASS } from 'constant/Constant';
-
+import { useNavigate } from 'react-router-dom';
 
 const Teachers = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [teachers, setTeachers] = useState([]);
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   // class
   const [selectedClass, setSelectedClass] = useState(null);
@@ -55,8 +56,13 @@ const Teachers = () => {
         console.error('Failed to fetch teachers:', data.message);
       }
     } catch (error) {
-      toast.error(error);
-      console.error('Error fetching teachers:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch teacher', error);
+        toast.error('Failed to fetch teacher');
+      }
+
     }
   };
 
@@ -84,7 +90,12 @@ const Teachers = () => {
         console.error('Failed to fetch classes:', data.message);
       }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch class', error);
+        toast.error('Failed to fetch class');
+      }
     }
   };
 
@@ -128,8 +139,12 @@ const Teachers = () => {
         console.error('Failed to create teacher:', data.message);
       }
     } catch (error) {
-      toast(error);
-      console.error('Error creating teacher:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to create teacher', error);
+        toast.error('Failed to create teacher');
+      }
     }
   };
 
@@ -153,8 +168,12 @@ const Teachers = () => {
       }
       setDeleteBox(false);
     } catch (error) {
-      console.error('Error deleting teacher:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to delete teacher', error);
+        toast.error('Failed to delete teacher');
+      }
       setDeleteBox(false);
     }
   };
@@ -189,12 +208,16 @@ const Teachers = () => {
         fetchTeachers();
         setModalEditOpen(false); // Close the modal
       } else {
-        console.error('Failed to update student:', data.message);
+        console.error('Failed to update teacher:', data.message);
         toast.error(data.message);
       }
     } catch (error) {
-      console.error('Error updating student:', error);
-      toast.error('An error occurred while updating the student.');
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to update teacher', error);
+        toast.error('Failed to update teacher');
+      }
     }
   }
 
@@ -202,7 +225,7 @@ const Teachers = () => {
   useEffect(() => {
     setNumberBox(Array(parseInt(teachers.length / pageSize + 1)).fill(1))
     let data = teachers.slice(parseInt(indexNumber) * parseInt(pageSize), min(parseInt(teachers.length), (parseInt(indexNumber) + 1) * parseInt(pageSize)));
-    console.log(data,'data')
+    console.log(data, 'data')
     setData(data);
   }, [JSON.stringify(teachers), indexNumber])
 
@@ -221,8 +244,8 @@ const Teachers = () => {
 
   useEffect(() => {
     const handleSearch = () => {
-      if (!searchText || searchText=="") {
-        teachers.length>0 && setData(teachers);
+      if (!searchText || searchText == "") {
+        teachers.length > 0 && setData(teachers);
       } else {
         const lowerCaseQuery = searchText.toLowerCase();
         const filteredItems = teachers.filter(item =>

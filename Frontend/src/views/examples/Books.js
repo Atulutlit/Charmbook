@@ -90,7 +90,12 @@ const Books = () => {
         setClasses(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch class', error);
+        toast.error('Failed to fetch class');
+      }
     }
   };
 
@@ -104,7 +109,12 @@ const Books = () => {
         setSubjects(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching subjects:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch subjects', error);
+        toast.error('Failed to fetch subjects');
+      }
     }
   };
 
@@ -120,7 +130,12 @@ const Books = () => {
         setBooks([]);
       }
     } catch (error) {
-      console.error('Error fetching books:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch books', error);
+        toast.error('Failed to fetch books');
+      }
       setBooks([]);
     }
   };
@@ -137,7 +152,12 @@ const Books = () => {
       console.log(response.data.data, 'handle image upload')
       setNewBook({ ...newBook, cover_url: response.data.data });
     } catch (error) {
-      console.error('Error uploading image:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to upload image', error);
+        toast.error('Failed to upload image');
+      }
     }
   };
 
@@ -150,10 +170,15 @@ const Books = () => {
       const response = await axios.post(url, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      console.log(response,'respponse')
+      console.log(response, 'respponse')
       setNewBook({ ...newBook, file_url: response.data.data });
     } catch (error) {
-      console.error('Error uploading file:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to upload file', error);
+        toast.error('Failed to upload file');
+      }
     }
   };
 
@@ -185,7 +210,7 @@ const Books = () => {
         cover_image_url: newBook.cover_url,
         file_url: newBook.file_url
       };
-      console.log(newBookData,'new book data')
+      console.log(newBookData, 'new book data')
       const isValid = validateUrl(newBook.cover_url, newBook.file_url);
       if (!isValid.status) {
         toast.error(isValid['message']);
@@ -212,8 +237,12 @@ const Books = () => {
       });
       toggleModal();
     } catch (error) {
-      console.error('Error adding new book:', error);
-      toast.error(error)
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to add books', error);
+        toast.error('Failed to add books');
+      }
     }
   };
 
@@ -229,8 +258,12 @@ const Books = () => {
         setDeleteBox(false);
       }
     } catch (error) {
-      console.error('Error at Deleting Book:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to delete book', error);
+        toast.error('Failed to delete book');
+      }
     }
   };
 
@@ -246,8 +279,12 @@ const Books = () => {
         toggleEditModal();
       }
     } catch (error) {
-      console.error('Error at Deleting Book:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to delete book', error);
+        toast.error('Failed to delete book');
+      }
     }
   };
 

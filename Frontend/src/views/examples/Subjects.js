@@ -6,6 +6,7 @@ import { ADMIN_GET_SUBJECT, ADMIN_CREATE_SUBJECT, ADMIN_DELETE_SUBJECT } from 'c
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 
 const Subjects = () => {
@@ -22,6 +23,7 @@ const Subjects = () => {
   const [deletedId, setDeletedId] = useState(-1);
 
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   const fetchSubjects = async () => {
     try {
@@ -38,7 +40,12 @@ const Subjects = () => {
         console.error('Failed to fetch subjects:', data.message);
       }
     } catch (error) {
-      console.error('Error fetching subjects:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.error('Failed to fetch Subjects:', error);
+        toast.error('Failed to fetch subjects');
+      }
     }
   };
 
@@ -79,8 +86,12 @@ const Subjects = () => {
       }
 
     } catch (error) {
-      console.error('Error creating subject:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.error('Failed to create Subject:', error);
+        toast.error('Failed to fetch subjects');
+      }
     }
   };
 
@@ -104,8 +115,12 @@ const Subjects = () => {
       }
       setDeleteBox(false);
     } catch (error) {
-      console.error('Error deleting subject:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to delete subject', error);
+        toast.error('Failed to delete subject');
+      }
       setDeleteBox(false);
     }
   };
@@ -143,8 +158,12 @@ const Subjects = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.error('Error updating subject:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to update subject', error);
+        toast.error('Failed to update subject');
+      }
       toggleEditModal();
     }
   };

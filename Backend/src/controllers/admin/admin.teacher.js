@@ -96,7 +96,7 @@ exports.getTeachers = asyncHandler(async (req, res) => {
 exports.getStudents = asyncHandler(async (req, res) => {
     const {class_id}=req.query;
     let students=[]
-    if(class_id){
+    if(class_id && class_id>0){
         students = await User.findAll({
             where: { role: "STUDENT", status: "ACTIVE" ,class_id:class_id },
             include: [

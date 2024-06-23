@@ -39,7 +39,7 @@ exports.login = asyncHandler(async (req, res) => {
     admin.update({
         token: token
     })
-
+    
     delete admin.dataValues.password;
 
     return res.send({ status: true, statusCode: 200, message: "Admin login Successfully", admin });

@@ -29,6 +29,7 @@ import { ADMIN_CLASS } from 'constant/Constant';
 import AttendanceExcel from 'Excel/AttendanceExcel';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
@@ -60,7 +61,9 @@ const Attendance = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const [selectedDate,setSelectedDate]=useState(getFormattedDate());
+  const [selectedDate, setSelectedDate] = useState(getFormattedDate());
+
+  const navigate = useNavigate();
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -90,7 +93,12 @@ const Attendance = () => {
         setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
       }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch class', error);
+        toast.error('Failed to fetch class');
+      }
     }
   };
   useEffect(() => {
@@ -101,11 +109,11 @@ const Attendance = () => {
   const fetchAttendance = async () => {
     try {
       const url = `${ADMIN_GET_ATTENDANCE}?date=${selectedDate}&&class_id=${selectedClass}`
-      console.log(url,'url')
+      console.log(url, 'url')
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      console.log(response,'fetch attendance')
+      console.log(response, 'fetch attendance')
       if (response.data.status) {
         setAttendance(response.data.data);
         setData(response.data.data);
@@ -114,7 +122,12 @@ const Attendance = () => {
         setData([]);
       }
     } catch (error) {
-      console.error('Error fetching attendance:', error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to get attendance', error);
+        toast.error('Failed to get attendance');
+      }
       setAttendance([]);
     }
   };
@@ -134,13 +147,17 @@ const Attendance = () => {
       }
       toggleModal();
     } catch (error) {
-      console.error('Error marking attendance:', error);
-      toast.error(error);
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to mark attendance', error);
+        toast.error('Failed to mark attendance');
+      }
     }
   };
   useEffect(() => {
     fetchAttendance();
-  }, [selectedClass,selectedDate])
+  }, [selectedClass, selectedDate])
 
 
   const handleDeleteAttendance = () => {
@@ -163,7 +180,7 @@ const Attendance = () => {
   useEffect(() => {
     const handleSearch = () => {
       if (!searchText) {
-        attendance.length>0 && setData(attendance);
+        attendance.length > 0 && setData(attendance);
       } else {
         const lowerCaseQuery = searchText.toLowerCase();
         const filteredItems = attendance.filter(item =>
@@ -226,7 +243,7 @@ const Attendance = () => {
                     </Dropdown>
                   </div>
                   <div size="sm" color="primary">
-                    <input type="date" id="date-input" value={selectedDate} onChange={(e)=>{setSelectedDate(e.target.value);}}/>
+                    <input type="date" id="date-input" value={selectedDate} onChange={(e) => { setSelectedDate(e.target.value); }} />
                   </div>
                 </Row>
               </CardHeader>
@@ -249,7 +266,7 @@ const Attendance = () => {
                       <td>{item?.user.enrollment_no}</td>
                       <td>{item?.user.first_name}&nbsp;{item?.user?.last_name}</td>
                       <td>{item?.date?.slice(0, 10)}</td>
-                      <td>{item?.date?.slice(11,16)}</td>
+                      <td>{item?.date?.slice(11, 16)}</td>
                       <td>{item?.status}</td>
                       <td>
                         <Button
