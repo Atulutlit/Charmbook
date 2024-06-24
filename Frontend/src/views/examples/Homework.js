@@ -32,7 +32,7 @@ import { useNavigate } from 'react-router-dom';
 const Homework = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(1);
+  const [selectedClass, setSelectedClass] = useState(-1);
   const [selectedModalClass, setSelectedModalClass] = useState(-1);
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(-1);
@@ -66,7 +66,7 @@ const Homework = () => {
       });
       if (response.data.status) {
         setClasses(response.data.data);
-        setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
+        // setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
         // setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
       }
     } catch (error) {

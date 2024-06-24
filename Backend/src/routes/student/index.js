@@ -10,6 +10,9 @@ router.get("/homework",userAuthMiddleware, studentController.getHomework);
 router.get("/attendance",userAuthMiddleware, studentController.getAttendance);
 router.get("/book", userAuthMiddleware, studentController.getBooks);
 router.get("/test", userAuthMiddleware, studentController.getMockTest);
+// notification
+router.get("/notification/:id",userAuthMiddleware,studentController.getNotification);
+router.post("/notification",userAuthMiddleware,studentController.createNotification);
 
 
 module.exports = router;

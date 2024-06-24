@@ -111,10 +111,9 @@ exports.getMockTest = asyncHandler(async (req, res) => {
 
 
 exports.getAttendance = asyncHandler(async (req, res) => {
-   try {
-    // const studentId = req.user.id;
-  const studentId = 1;
-
+   
+  const studentId = req.user.id;
+  
   const { target_date } = req.query;
 
   if ( !target_date ) throw error.VALIDATION_ERROR("Target date is required");
@@ -131,7 +130,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
     },
     raw: true
   });
-  console.log(records,'records')
+  
   let presentCount = 0;
   let absentCount = 0;
 
@@ -150,7 +149,8 @@ exports.getAttendance = asyncHandler(async (req, res) => {
   const data = {
     present_count: presentCount,
     absent_count: absentCount,
-    present_percentage: presentPercentage.toFixed(2) + "%"
+    present_percentage: presentPercentage.toFixed(2) + "%",
+    holiday_count : 0   // count holiday for a given month remained(24/06/2024)
   };
 
 
@@ -163,16 +163,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
 
   });
 
-   } catch (error) {
-    return res.send({
-      status: true,
-      statusCode: 500,
-      message: error
-  
-    });
-   }
-  
-});
+   });
 
 
 exports.getBooks = asyncHandler(async (req, res) => {
@@ -262,4 +253,44 @@ exports.getTimeTable = asyncHandler(async (req, res) => {
 
   return res.send({ status: true, statusCode: 200, message: "Time table has fetched successfully.", data: timeTable });
 
+});
+
+
+// Fetch notifications
+exports.getNotification = asyncHandler(async (req, res) => {
+  const { id } = req.params; // Using `req.params` for path variables or `req.query` if passed as a query parameter
+
+  const notifications = await Notification.findAll({
+    where: { user_id: id },
+  });
+
+  return res.status(200).json({ 
+    status: true, 
+    statusCode: 200, 
+    message: "Notifications fetched successfully.", 
+    data: notifications 
+  });
+});
+
+// Create a notification
+exports.createNotification = asyncHandler(async (req, res) => {
+  const { message, user_id } = req.body;
+
+  // Validate input
+  if (!message || !user_id) {
+    return res.status(400).json({
+      status: false,
+      statusCode: 400,
+      message: "Message and user_id are required."
+    });
+  }
+
+  const notification = await Notification.create({ message, user_id });
+
+  return res.status(201).json({ 
+    status: true, 
+    statusCode: 201, 
+    message: "Notification created successfully.", 
+    data: notification 
+  });
 });

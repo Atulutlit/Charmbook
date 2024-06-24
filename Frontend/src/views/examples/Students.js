@@ -37,6 +37,7 @@ const Students = () => {
   // Edit
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [editId, setEditId] = useState(-1);
 
   const navigate = useNavigate();
 
@@ -52,16 +53,11 @@ const Students = () => {
       const data = await response.json();
       console.log(data, "fetch students", selectedClassId);
       if (data.status) {
-        if (classId == -1) {
           setStudents(data.data);
           setData(data.data);
         } else {
-          setStudents(data.data.filter(student => student.class_id == classId));
-          setData(data.data.filter(student => student.class_id == classId));
-        }
-      } else {
-        console.error('Failed to fetch students:', data.message);
-      }
+          toast(data.msg);
+    }
     } catch (error) {
       if(error.response.status==401)
       {
@@ -228,7 +224,6 @@ const Students = () => {
   }
 
 
-  const [editId, setEditId] = useState(-1);
 
   const handleEditStudent = async (event) => {
     event.preventDefault(); // Prevent default form submission

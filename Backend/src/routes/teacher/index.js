@@ -47,8 +47,10 @@ router.get("/privacy", teacherController.privacy);
 // about us
 router.get("/about", teacherController.aboutUs)
 
-// notification
 
+// notification
+router.get('/notification', userAuthMiddleware, teacherController.getNotification);
+router.post('/notification', userAuthMiddleware, teacherController.createNotification);
 
 
 

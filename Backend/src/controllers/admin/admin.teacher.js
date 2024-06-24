@@ -110,6 +110,13 @@ exports.getStudents = asyncHandler(async (req, res) => {
     }else{
         students = await User.findAll({
             where: { role: "STUDENT", status: "ACTIVE" },
+            include: [
+                {
+                  model: Class,
+                  as: 'class',
+                  attributes: ['id', 'class_name'] // Specify required class attributes
+                }
+              ],
         });
     }
    

@@ -31,7 +31,7 @@ const Test = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(-1);
-  const [selectedModalClass, setSelectedModalClass] = useState(1);
+  const [selectedModalClass, setSelectedModalClass] = useState(-1);
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(-1);
   const [teachers, setTeachers] = useState([]);
@@ -63,8 +63,8 @@ const Test = () => {
       });
       if (response.data.status) {
         setClasses(response.data.data);
-        setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
-        setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
+        // setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
+        // setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -215,7 +215,7 @@ const Test = () => {
                     >
                       Create <i className="fas fa-plus"></i>
                     </Button>
-                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} size='sm' color="primary">
                       <DropdownToggle caret>
                         {classes.find(c => c.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>

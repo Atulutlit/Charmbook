@@ -231,31 +231,56 @@ exports.getHomework = asyncHandler(async (req, res) => {
         
     if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
     
-    
-    const homework = await tables.Homework.findAll({
-        where: {
-            class_id: class_id,
-        },
-        attributes: ['id', 'file_url','date'],
-        include: [
-            {
-                model: tables.Book,
-                attributes: ['cover_image_url'],
-                include: {
-                    model: tables.Subject,
-                    attributes: ['id', 'subject_name']
+    if(class_id && class_id>0){
+        const homework = await tables.Homework.findAll({
+            where: {
+                class_id: class_id,
+            },
+            attributes: ['id', 'file_url','date'],
+            include: [
+                {
+                    model: tables.Book,
+                    attributes: ['cover_image_url'],
+                    include: {
+                        model: tables.Subject,
+                        attributes: ['id', 'subject_name']
+                    }
                 }
-            }
-        ]
-    });
-
-
-    return res.send({
-        status: true,
-        statusCode: 200,
-        message: "Homework fetched successfully.",
-        data: homework
-    })
+            ]
+        });
+    
+    
+        return res.send({
+            status: true,
+            statusCode: 200,
+            message: "Homework fetched successfully.",
+            data: homework
+        })
+        
+    }else{
+        const homework = await tables.Homework.findAll({
+            attributes: ['id', 'file_url','date'],
+            include: [
+                {
+                    model: tables.Book,
+                    attributes: ['cover_image_url'],
+                    include: {
+                        model: tables.Subject,
+                        attributes: ['id', 'subject_name']
+                    }
+                }
+            ]
+        });
+    
+    
+        return res.send({
+            status: true,
+            statusCode: 200,
+            message: "Homework fetched successfully.",
+            data: homework
+        })
+        
+    }
     
 
 });
@@ -354,37 +379,67 @@ exports.getTests = asyncHandler(async (req, res) => {
         const { class_id } = req.params;
 
         if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
-    
-        const data = await tables.Test.findAll({
-            where: {
-                class_id : class_id
-            },
-            attributes: ['id', 'test_file_url', 'date','class_id','teacher_id'],
-            include: [
-                {
-                    model: tables.Subject,
-                    attributes: ['id', 'subject_name']
-                    
+        if(class_id && class_id>=0){
+            const data = await tables.Test.findAll({
+                where: {
+                    class_id : class_id
                 },
-                {
-                    model: tables.Class,
-                    attributes: ['id', 'class_name']
-                    
-                },
-                {
-                    model: tables.User,
-                    attributes: ['id', 'first_name','last_name']
-                    
-                }
-            ]
-        });
-    
-        return res.send({
-            status: true,
-            statusCode: 200,
-            message: "Test fetched successfully.",
-            data: data
-        }),200
+                attributes: ['id', 'test_file_url', 'date','class_id','teacher_id'],
+                include: [
+                    {
+                        model: tables.Subject,
+                        attributes: ['id', 'subject_name']
+                        
+                    },
+                    {
+                        model: tables.Class,
+                        attributes: ['id', 'class_name']
+                        
+                    },
+                    {
+                        model: tables.User,
+                        attributes: ['id', 'first_name','last_name']
+                        
+                    }
+                ]
+            });
+        
+            return res.send({
+                status: true,
+                statusCode: 200,
+                message: "Test fetched successfully.",
+                data: data
+            }),200
+        }else{
+            const data = await tables.Test.findAll({
+                attributes: ['id', 'test_file_url', 'date','class_id','teacher_id'],
+                include: [
+                    {
+                        model: tables.Subject,
+                        attributes: ['id', 'subject_name']
+                        
+                    },
+                    {
+                        model: tables.Class,
+                        attributes: ['id', 'class_name']
+                        
+                    },
+                    {
+                        model: tables.User,
+                        attributes: ['id', 'first_name','last_name']
+                        
+                    }
+                ]
+            });
+        
+            return res.send({
+                status: true,
+                statusCode: 200,
+                message: "Test fetched successfully.",
+                data: data
+            }),200
+        }
+        
     } catch (error) {
         console.log(error,'error')
         return res.send({
@@ -641,23 +696,41 @@ exports.getAllBooks = asyncHandler(async (req, res) => {
     const { class_id } = req.params;
 
     if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
-
-    const books = await tables.Book.findAll({
-        where: { class_id },
-        attributes: { exclude: ['created_at', 'updated_at'] },
-        include: [
-            {
-                model: tables.Class,
-                attributes: { exclude: ['created_at', 'updated_at'] }
-            },
-            {
-                model: tables.Subject,
-                attributes: { exclude: ['created_at', 'updated_at'] }
-            }
-        ]
-    });
-
-    return res.send({ status: true, statusCode: 200, data: books });
+    if(class_id && class_id>0){
+        const books = await tables.Book.findAll({
+            where: { class_id },
+            attributes: { exclude: ['created_at', 'updated_at'] },
+            include: [
+                {
+                    model: tables.Class,
+                    attributes: { exclude: ['created_at', 'updated_at'] }
+                },
+                {
+                    model: tables.Subject,
+                    attributes: { exclude: ['created_at', 'updated_at'] }
+                }
+            ]
+        });
+    
+        return res.send({ status: true, statusCode: 200, data: books });
+    }else{
+        const books = await tables.Book.findAll({
+            attributes: { exclude: ['created_at', 'updated_at'] },
+            include: [
+                {
+                    model: tables.Class,
+                    attributes: { exclude: ['created_at', 'updated_at'] }
+                },
+                {
+                    model: tables.Subject,
+                    attributes: { exclude: ['created_at', 'updated_at'] }
+                }
+            ]
+        });
+    
+        return res.send({ status: true, statusCode: 200, data: books });
+    }
+    
 });
 
 exports.termsAndCondition = asyncHandler(async (req, res) => {
@@ -830,3 +903,44 @@ exports.aboutUs = asyncHandler(async (req, res) => {
     return res.send({ status: true, statusCode: 200, data: htmlContent });
 
 });
+
+// Fetch notifications
+exports.getNotification = asyncHandler(async (req, res) => {
+    const { id } = req.params; // Using `req.params` for path variables or `req.query` if passed as a query parameter
+  
+    const notifications = await Notification.findAll({
+      where: { user_id: id },
+    });
+  
+    return res.status(200).json({ 
+      status: true, 
+      statusCode: 200, 
+      message: "Notifications fetched successfully.", 
+      data: notifications 
+    });
+  });
+  
+  // Create a notification
+  exports.createNotification = asyncHandler(async (req, res) => {
+    const { message, user_id } = req.body;
+  
+    // Validate input
+    if (!message || !user_id) {
+      return res.status(400).json({
+        status: false,
+        statusCode: 400,
+        message: "Message and user_id are required."
+      });
+    }
+  
+    const notification = await Notification.create({ message, user_id });
+  
+    return res.status(201).json({ 
+      status: true, 
+      statusCode: 201, 
+      message: "Notification created successfully.", 
+      data: notification 
+    });
+  });
+
+  

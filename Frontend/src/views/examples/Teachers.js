@@ -17,7 +17,7 @@ const Teachers = () => {
   const navigate = useNavigate();
 
   // class
-  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(-1);
   const [classOptions, setClassOptions] = useState([])
 
   // handle delete
