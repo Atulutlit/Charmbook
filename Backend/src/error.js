@@ -14,8 +14,18 @@ const AUTH_ERROR = function(errorMessage) {
   };
 };
 
+const ERROR = function(message,statusCode){
+  return {
+    status: false,
+    statusCode: statusCode,
+    message: message,
+  };
+};
+
+
 
 module.exports = {
   VALIDATION_ERROR,
-  AUTH_ERROR
+  AUTH_ERROR,
+  ERROR
 }

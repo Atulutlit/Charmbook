@@ -15,7 +15,7 @@ exports.login = asyncHandler(async (req, res) => {
 
   const { password, enrollment_no, fcm_token } = body;
 
-  if(!enrollment_no) throw error.VALIDATION_ERROR("Enrollment number is required");
+  if(!enrollment_no) throw error.ERROR("Enrollment number is required",200);
 
   if(!fcm_token) throw error.VALIDATION_ERROR("FCM token is required");
 
@@ -33,11 +33,11 @@ exports.login = asyncHandler(async (req, res) => {
       nest: true
     });
 
-    if (!user) throw error.VALIDATION_ERROR("No user found with the provided enrollment number.");
+    if (!user) throw error.ERROR("No user found with the provided enrollment number.",200);
 
     const isValidPassword = await bcrypt.compare(password, user.password);
 
-    if (!isValidPassword) throw error.AUTH_ERROR("Login failed!");
+    if (!isValidPassword) throw error.ERROR("Login failed!",200);
 
   await tables.Fcm_token.upsert({ fcm_token, user_id: user.id, created_at: Date.now(), updated_at: Date.now() }, { where: { user_id: user.id } });
 

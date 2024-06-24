@@ -134,11 +134,17 @@ exports. addHomework = asyncHandler(async (req, res) => {
 
     if (!subject_id) throw error.VALIDATION_ERROR("Subject id is required");
 
-    if (!file_url) throw error.VALIDATION_ERROR("File url is required");
+    if (!file_url) throw error.VALIDATION_ERROR("Pdf is required");
 
     const book = await tables.Book.findOne({ where: { subject_id, class_id }, raw: true });
 
-    if (!book) throw error.VALIDATION_ERROR("Book not found");
+    if (!book){
+        return res.send({
+            status: true,
+            statusCode: 200,
+            message: "Book not found"
+        });
+    }
 
     const bookId = book.id;
 
@@ -271,7 +277,13 @@ exports.createTest = asyncHandler(async (req, res) => {
     
     const book = await tables.Book.findOne({ where: { subject_id, class_id }, raw: true });
 
-    if (!book) throw error.VALIDATION_ERROR("Book not found");
+    if (!book){
+        return res.send({
+            status: true,
+            statusCode: 200,
+            message: "Book not found."
+        });
+    }
     
     const testData = {
         teacher_id: teacherId,
@@ -470,7 +482,9 @@ exports.getAttendance = asyncHandler(async (req, res) => {
     });
 
 
-    if (!classTeacher) throw error.VALIDATION_ERROR("You are not class teacher for this class");
+    if (!classTeacher){
+        return res.send({ status: true, statusCode: 200, message:"You are not class teacher for this class" });
+    }
 
     const classId = classTeacher.class_id;
 
@@ -646,6 +660,173 @@ exports.getAllBooks = asyncHandler(async (req, res) => {
     return res.send({ status: true, statusCode: 200, data: books });
 });
 
+exports.termsAndCondition = asyncHandler(async (req, res) => {
+    
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Charmbook Terms and Conditions</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 20px;
+            }
+            h1 {
+                text-align: center;
+            }
+            h2 {
+                margin-top: 20px;
+                color: #333;
+            }
+            p {
+                margin: 10px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Charmbook Terms and Conditions</h1>
+        <div>
+            <h2>Acceptance of Terms</h2>
+            <p>By accessing or using Charmbook, you agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree, please do not use our products or services.</p>
+        </div>
+        <div>
+            <h2>Use of Product</h2>
+            <p>Charmbook is intended for educational purposes for children. Users must comply with all applicable laws and regulations when using Charmbook.</p>
+        </div>
+        <div>
+            <h2>Account Responsibility</h2>
+            <p>Parents or guardians are responsible for setting up and maintaining user accounts for children. Ensure that all information provided is accurate and up to date.</p>
+        </div>
+        <div>
+            <h2>Intellectual Property</h2>
+            <p>All content, software, and materials available on Charmbook are the intellectual property of Charmbook or its licensors. Unauthorized use of any materials is prohibited.</p>
+        </div>
+        <div>
+            <h2>User Conduct</h2>
+            <p>Users must use Charmbook responsibly and not engage in any activity that could harm the product, other users, or third parties. Prohibited activities include hacking, distributing malware, or posting offensive content.</p>
+        </div>
+        <div>
+            <h2>Limitation of Liability</h2>
+            <p>Charmbook is provided "as is" without any warranties. We are not liable for any damages arising from the use or inability to use our product.</p>
+        </div>
+        <div>
+            <h2>Modification of Terms</h2>
+            <p>We reserve the right to modify these Terms and Conditions at any time. Changes will be effective immediately upon posting. Continued use of Charmbook signifies acceptance of the revised terms.</p>
+        </div>
+        <div>
+            <h2>Termination</h2>
+            <p>We may terminate or suspend access to Charmbook without notice if these Terms and Conditions are violated.</p>
+        </div>
+        <div>
+            <h2>Governing Law</h2>
+            <p>These terms are governed by and construed in accordance with the laws of India. Any disputes will be resolved in the courts of India.</p>
+        </div>
+    </body>
+    </html>
+  `
 
+    return res.send({ status: true, statusCode: 200, data: data });
+});
 
+exports.privacy = asyncHandler(async (req, res) => {
+   
+    const htmlContent = `
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charmbook Privacy Policy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Privacy Policy</h1>
+    <h2>Charmbook Privacy Policy</h2>
+    <p>Charmbook is committed to protecting the privacy of our users. This Privacy Policy explains how we collect, use, and safeguard your information.</p>
+    
+    <h2>Information We Collect</h2>
+    <p><strong>Personal Information:</strong> Information provided by parents or guardians during account creation (e.g., name, email).</p>
+    <p><strong>Usage Data:</strong> Information on how Charmbook is used, including interactions and preferences.</p>
+    
+    <h2>How We Use Information</h2>
+    <p>To provide and improve our services.</p>
+    <p>To communicate with users about updates and support.</p>
+    <p>To analyze usage patterns and enhance user experience.</p>
+    
+    <h2>Data Security</h2>
+    <p>We implement robust security measures to protect your data from unauthorized access, disclosure, or alteration.</p>
+    
+    <h2>Sharing Information</h2>
+    <p>We do not sell or share personal information with third parties, except as required by law or to protect our rights.</p>
+    
+    <h2>Children’s Privacy</h2>
+    <p>We take special care to protect the privacy of children using Charmbook. Personal information is only collected from parents or guardians, and we comply with applicable child privacy laws.</p>
+    
+    <h2>Your Rights</h2>
+    <p>Parents or guardians can access, update, or delete their personal information at any time. To exercise these rights, contact us at [Contact Information].</p>
+    
+    <h2>Changes to Privacy Policy</h2>
+    <p>We may update this Privacy Policy periodically. Any changes will be posted on this page. Continued use of Charmbook signifies acceptance of the updated policy.</p>
+</body>
+</html>`
+    
+      
 
+    return res.send({ status: true, statusCode: 200, data: htmlContent });
+});
+
+exports.aboutUs = asyncHandler(async (req, res) => {
+
+    const htmlContent = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>About Charmbook</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 20px;
+            }
+            h1, h2 {
+                color: #333;
+            }
+            p {
+                margin: 10px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>About Us</h1>
+        <h2>About Charmbook</h2>
+        <p>Charmbook is an innovative educational technology product designed to enhance the learning experience for children. Our tablet combines interactive lessons, engaging activities, and a user-friendly interface to make education fun and effective.</p>
+        
+        <h2>Our Mission</h2>
+        <p>Our mission is to provide children with the tools they need to succeed academically while fostering a love for learning. We aim to create a safe and stimulating environment where children can explore, discover, and grow.</p>
+        
+        <h2>Our Team</h2>
+        <p>Charmbook is developed by a dedicated team of educators, technologists, and child development experts. We are passionate about creating high-quality educational content that is both informative and entertaining.</p>
+    </body>
+    </html>`
+      
+
+    return res.send({ status: true, statusCode: 200, data: htmlContent });
+
+});

@@ -38,4 +38,18 @@ router.delete("/test",userAuthMiddleware, teacherController.removeTest);
 router.get("/tests/:class_id",userAuthMiddleware, teacherController.getTests);
 
 
+// get terms and condition api
+router.get("/terms/condition",userAuthMiddleware, teacherController.termsAndCondition);
+
+// get privacy policy
+router.get("/privacy",userAuthMiddleware,teacherController.privacy);
+
+// about us
+router.get("/about",userAuthMiddleware,teacherController.aboutUs)
+
+// notification
+
+
+
+
 module.exports = router;
