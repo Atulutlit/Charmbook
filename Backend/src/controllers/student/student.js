@@ -111,8 +111,9 @@ exports.getMockTest = asyncHandler(async (req, res) => {
 
 
 exports.getAttendance = asyncHandler(async (req, res) => {
-
-  const studentId = req.user.id;
+   try {
+    // const studentId = req.user.id;
+  const studentId = 1;
 
   const { target_date } = req.query;
 
@@ -130,7 +131,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
     },
     raw: true
   });
-
+  console.log(records,'records')
   let presentCount = 0;
   let absentCount = 0;
 
@@ -162,38 +163,81 @@ exports.getAttendance = asyncHandler(async (req, res) => {
 
   });
 
+   } catch (error) {
+    return res.send({
+      status: true,
+      statusCode: 500,
+      message: error
+  
+    });
+   }
+  
 });
 
 
 exports.getBooks = asyncHandler(async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    
+    // Find the user
+    const user = await tables.User.findOne({
+      where: { id: studentId },
+      raw: true
+    });
 
-  const studentId = req.user.id;
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found." });
+    }
 
-  const user = await tables.User.findOne({
-    where: { id: studentId },
-    raw: true
-  });
+    const classId = user.class_id;
 
-  const classId = user.class_id;
+    // Fetch the timetable for the user's class
+    const timeTable = await tables.TimeTable.findAll({
+      where: { class_id: classId },
+      raw: true
+    });
 
-  const books = await tables.Book.findAll({
-    where: { class_id: classId },
-    attributes: { exclude: ['created_at', 'updated_at'] },
-    include: [
-      {
-        model: tables.Subject,
-        attributes: { exclude: ['created_at', 'updated_at'] }
-      },
-      {
-        model: tables.Class,
-        attributes: { exclude: ['created_at', 'updated_at'] }
+    let current_time = new Date();
+    let subjectId = null;
+
+    // Compare current time with timetable entries
+    for (let i = 0; i < timeTable.length; i++) {
+      const startTime = new Date(timeTable[i].start_time);
+      const endTime = new Date(timeTable[i].end_time);
+
+      if (current_time >= startTime && current_time <= endTime) {
+        subjectId = timeTable[i].subject_id;
+        break;
       }
-    ]
-  });
+    }
 
-  return res.send({ status: true, statusCode: 200, message: "Books has fetched successfully.", data: books });
+    if (!subjectId) {
+      return res.status(404).json({ status: false, message: "No subject found for the current time." });
+    }
 
+    // Fetch books for the determined subject
+    const books = await tables.Book.findAll({
+      where: { class_id: classId, subject_id: subjectId },
+      attributes: { exclude: ['created_at', 'updated_at'] },
+      include: [
+        {
+          model: tables.Subject,
+          attributes: { exclude: ['created_at', 'updated_at'] }
+        },
+        {
+          model: tables.Class,
+          attributes: { exclude: ['created_at', 'updated_at'] }
+        }
+      ]
+    });
+
+    return res.json({ status: true, statusCode: 200, message: "Books fetched successfully.", data: books });
+
+  } catch (error) {
+    return res.status(500).json({ status: false, message: error.message });
+  }
 });
+
 
 
 exports.getTimeTable = asyncHandler(async (req, res) => {

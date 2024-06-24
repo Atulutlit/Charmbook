@@ -18,7 +18,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER
     },
     date:{
-      type: DataTypes.STRING
+      type: DataTypes.DATE
     },
     time:{
       type: DataTypes.STRING

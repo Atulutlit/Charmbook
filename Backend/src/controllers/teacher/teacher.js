@@ -729,7 +729,7 @@ exports.termsAndCondition = asyncHandler(async (req, res) => {
     </html>
   `
 
-    return res.send({ status: true, statusCode: 200, data: data });
+    return res.send({ status: true, statusCode: 200, data: htmlContent });
 });
 
 exports.privacy = asyncHandler(async (req, res) => {

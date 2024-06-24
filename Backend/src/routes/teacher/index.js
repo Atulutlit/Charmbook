@@ -39,13 +39,13 @@ router.get("/tests/:class_id",userAuthMiddleware, teacherController.getTests);
 
 
 // get terms and condition api
-router.get("/terms/condition",userAuthMiddleware, teacherController.termsAndCondition);
+router.get("/terms/condition", teacherController.termsAndCondition);
 
 // get privacy policy
-router.get("/privacy",userAuthMiddleware,teacherController.privacy);
+router.get("/privacy", teacherController.privacy);
 
 // about us
-router.get("/about",userAuthMiddleware,teacherController.aboutUs)
+router.get("/about", teacherController.aboutUs)
 
 // notification
 
