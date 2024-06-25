@@ -1,18 +1,66 @@
 const { timestampHook } = require("../hooks");
 
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('Notification', {
-    message: {
-      type: DataTypes.STRING,
-      allowNull: false, // It's good to ensure that a message cannot be empty
+  const Notification = sequelize.define('notification', {
+    id: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
     },
-    user_id: {
+    type: {
       type: DataTypes.STRING,
-      allowNull: false, // Ensure user_id is not null
+      allowNull: false,
+      validate: {
+        isIn: [['Teacher to Student', 'Admin to Teacher', 'Admin to Student']],
+      },
+    },
+    sender_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    receiver_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    receiver_type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isIn: [['Teacher', 'Student']],
+      },
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    message: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'unread',
+      validate: {
+        isIn: [['unread', 'read']],
+      },
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   }, {
-    tableName: 'notification', // This specifies the exact table name in the database
-    timestamps: false, // If you have custom timestamp hooks, ensure they are correctly defined in the hook
-    hooks: timestampHook,
+    tableName: 'notifications',
+    timestamps: true,
+    underscored: true,
   });
+
+  return Notification;
 };

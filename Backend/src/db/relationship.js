@@ -14,6 +14,7 @@ const Subject = sequelize.import("./subject");
 const Test = sequelize.import("./tests");
 const Holiday = sequelize.import("./holiday");
 const Fcm_token = sequelize.import("./fcm_token");
+const Notification = sequelize.import("./notification")
 
 
 User.hasOne(Otp, { foreignKey: 'user_id' });
@@ -73,5 +74,6 @@ module.exports = {
     Subject,
     Test,
     Holiday,
-    Fcm_token
+    Fcm_token,
+    Notification
 }

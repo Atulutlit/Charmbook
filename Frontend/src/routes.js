@@ -15,6 +15,7 @@ import Test from "views/examples/Test";
 import Timetable from "views/examples/Timetable";
 import Attendance from "views/examples/Attendance";
 import Holiday from "views/examples/Holiday";
+import Notification from "views/examples/Notification";
 
 
 var routes = [
@@ -96,6 +97,13 @@ var routes = [
     name: "Attendance",
     icon: "ni ni-calendar-grid-58 text-info",
     component: <Attendance />,
+    layout: "/admin",
+  },
+  {
+    path: "/notification",
+    name: "Notification",
+    icon: "ni ni-circle-08 text-info",
+    component: <Notification />,
     layout: "/admin",
   },
   {

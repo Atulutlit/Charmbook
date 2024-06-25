@@ -49,8 +49,8 @@ router.get("/about", teacherController.aboutUs)
 
 
 // notification
-router.get('/notification', userAuthMiddleware, teacherController.getNotification);
-router.post('/notification', userAuthMiddleware, teacherController.createNotification);
+router.get('/notification/:id', teacherController.getNotification);
+router.post('/notification', teacherController.createNotification);
 
 
 

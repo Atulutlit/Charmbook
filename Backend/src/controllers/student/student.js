@@ -260,8 +260,8 @@ exports.getTimeTable = asyncHandler(async (req, res) => {
 exports.getNotification = asyncHandler(async (req, res) => {
   const { id } = req.params; // Using `req.params` for path variables or `req.query` if passed as a query parameter
 
-  const notifications = await Notification.findAll({
-    where: { user_id: id },
+  const notifications = await tables.Notification.findAll({
+    where: { receiver_id: id },
   });
 
   return res.status(200).json({ 
@@ -269,28 +269,5 @@ exports.getNotification = asyncHandler(async (req, res) => {
     statusCode: 200, 
     message: "Notifications fetched successfully.", 
     data: notifications 
-  });
-});
-
-// Create a notification
-exports.createNotification = asyncHandler(async (req, res) => {
-  const { message, user_id } = req.body;
-
-  // Validate input
-  if (!message || !user_id) {
-    return res.status(400).json({
-      status: false,
-      statusCode: 400,
-      message: "Message and user_id are required."
-    });
-  }
-
-  const notification = await Notification.create({ message, user_id });
-
-  return res.status(201).json({ 
-    status: true, 
-    statusCode: 201, 
-    message: "Notification created successfully.", 
-    data: notification 
   });
 });
