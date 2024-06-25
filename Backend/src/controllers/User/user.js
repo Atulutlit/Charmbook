@@ -163,6 +163,126 @@ exports.logout = asyncHandler(async (req, res) => {
 
   await tables.User.update({ token: null }, { where: { id: userId }, raw: true });
 
+  try {
+       // Find the student
+       const student = await tables.User.findOne({ 
+        where: { 
+          id: userId,
+          role: 'STUDENT' 
+        }
+      });
+  
+      if (!student) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: 'Student not found'
+        });
+      }
+  
+      // Find the teacher of the same class
+      const teacher = await tables.User.findOne({ 
+        where: { 
+          class_id: student.class_id,
+          role: 'TEACHER' 
+        }
+      });
+  
+      if (!teacher) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: 'Teacher not found'
+        });
+      }
+  
+      // Create the notification data
+      const data = {
+        type: 'Teacher to Student',
+        title: 'Logout',
+        message: `${student.first_name} logged out at ${new Date().toISOString()}`,
+        sender_id: userId,
+        receiver_id: teacher.id,
+        receiver_type: 'Teacher',
+        status: 'unread'
+      };
+  
+      // Create the notification
+      const notification = await tables.Notification.create(data);
+  } catch (error) {
+      console.log(error,'error')
+  }
+ 
   return res.send({ status: true, statusCode: 200, message: "User logged out successfully" });
 
+});
+
+
+exports.normal = asyncHandler(async (req, res) => {
+  // User ID of the student who logged out
+  const userId = 1;
+
+  try {
+    // Find the student
+    const student = await tables.User.findOne({ 
+      where: { 
+        id: userId,
+        role: 'STUDENT' 
+      }
+    });
+
+    if (!student) {
+      return res.status(404).json({
+        status: false,
+        statusCode: 404,
+        message: 'Student not found'
+      });
+    }
+
+    // Find the teacher of the same class
+    const teacher = await tables.User.findOne({ 
+      where: { 
+        class_id: student.class_id,
+        role: 'TEACHER' 
+      }
+    });
+
+    if (!teacher) {
+      return res.status(404).json({
+        status: false,
+        statusCode: 404,
+        message: 'Teacher not found'
+      });
+    }
+
+    // Create the notification data
+    const data = {
+      type: 'Teacher to Student',
+      title: 'Logout',
+      message: `${student.first_name} logged out at ${new Date().toISOString()}`,
+      sender_id: userId,
+      receiver_id: teacher.id,
+      receiver_type: 'Teacher',
+      status: 'unread'
+    };
+
+    // Create the notification
+    const notification = await tables.Notification.create(data);
+    console.log(notification, 'notification');
+
+    return res.status(201).json({
+      status: true,
+      statusCode: 201,
+      message: 'Notification created successfully',
+      data: notification
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: false,
+      statusCode: 500,
+      message: 'Failed to create notification. Please try again later.'
+    });
+  }
 });

@@ -50,8 +50,6 @@ router.get("/about", teacherController.aboutUs)
 
 // notification
 router.get('/notification/:id', teacherController.getNotification);
-router.post('/notification', teacherController.createNotification);
-
 
 
 module.exports = router;

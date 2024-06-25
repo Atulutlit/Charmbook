@@ -531,6 +531,7 @@ exports.addHomework = asyncHandler(async (req, res) => {
     if (date) homeworkData.date = new Date(date);
 
     await tables.Homework.create(homeworkData);
+    await notification('Homework','Homework has been uploaded',class_id);
 
     return res.send({
         status: true,
@@ -576,12 +577,19 @@ exports.createTest = asyncHandler(async (req, res) => {
 
     if (!subject_id) throw error.VALIDATION_ERROR("Subject id is required");
 
+    const book = await tables.Book.findOne({ where: { subject_id, class_id }, raw: true });
+    
+    if (!book) throw error.VALIDATION_ERROR("Book not found");
+
+
     const testData = {
+        book_id: book.id,
         ...body
     }
     if (date) testData.date = new Date(date);
 
-    const detail=await tables.Test.create(testData);
+    await tables.Test.create(testData);
+    await notification('Test','Test has been uploaded',class_id);
         
     return res.send({
         status: true,
@@ -589,3 +597,149 @@ exports.createTest = asyncHandler(async (req, res) => {
         message: "Test has created successfully."
     });
 });
+
+// Fetch notifications
+exports.getNotification = asyncHandler(async (req, res) => {
+
+    const notifications = await tables.Notification.findAll({});
+  
+    return res.status(200).json({ 
+      status: true, 
+      statusCode: 200, 
+      message: "Notifications fetched successfully.", 
+      data: notifications 
+    });
+  });
+  
+  // Create a notification
+//   exports.createNotification = asyncHandler(async (req, res) => {
+//     try {
+//       const notification = await tables.Notification.create(req.body
+//       );
+//     //   const notification = []
+//       return res.status(201).json({
+//         status: true,
+//         statusCode: 201,
+//         message: "Notification created successfully.",
+//         data: notification
+//       });
+//     } catch (error) {
+//       console.error("Error creating notification:", error);
+//       return res.status(500).json({
+//         status: false,
+//         statusCode: 500,
+//         message: "Failed to create notification. Please try again later."
+//       });
+//     }
+//   });
+
+// Create Notification
+exports.createNotification = asyncHandler(async (req, res) => {
+    const {title,message,class_id}=req.body;
+  
+    try {
+      // Find all students in the same class
+      const classmates = await tables.User.findAll({ 
+        where: { 
+          class_id: class_id,
+          role: 'STUDENT',
+        //   id: { [tables.Sequelize.Op.ne]: userId } // Exclude the student who logged out
+        }
+      });
+
+      console.log(classmates,'classmates');
+
+      if (!classmates || classmates.length === 0) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: 'No classmates found in the class'
+        });
+      }
+  
+      // Create notifications for each classmate
+      const notifications = await Promise.all(classmates.map(classmate => {
+        return tables.Notification.create({
+          type: 'Admin to Student',
+          title: title,
+          message: message,
+          sender_id: 987654,
+          receiver_id: classmate.id,
+          receiver_type: 'Student',
+          status: 'unread'
+        });
+      }));
+  
+  
+      return res.status(201).json({
+        status: true,
+        statusCode: 201,
+        message: 'Notifications created successfully.',
+        data: notifications
+      });
+  
+    } catch (error) {
+      console.error("Error creating notifications:", error);
+      return res.status(500).json({
+        status: false,
+        statusCode: 500,
+        message: 'Failed to create notifications. Please try again later.'
+      });
+    }
+  });
+  
+
+  const notification=async(title,message,class_id)=>{
+  
+    try {
+      // Find all students in the same class
+      const classmates = await tables.User.findAll({ 
+        where: { 
+          class_id: class_id,
+          role: 'STUDENT',
+        //   id: { [tables.Sequelize.Op.ne]: userId } // Exclude the student who logged out
+        }
+      });
+
+      console.log(classmates,'classmates');
+
+      if (!classmates || classmates.length === 0) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: 'No classmates found in the class'
+        });
+      }
+  
+      // Create notifications for each classmate
+      const notifications = await Promise.all(classmates.map(classmate => {
+        return tables.Notification.create({
+          type: 'Admin to Student',
+          title: title,
+          message: message,
+          sender_id: 987654,
+          receiver_id: classmate.id,
+          receiver_type: 'Student',
+          status: 'unread'
+        });
+      }));
+  
+  
+      return res.status(201).json({
+        status: true,
+        statusCode: 201,
+        message: 'Notifications created successfully.',
+        data: notifications
+      });
+  
+    } catch (error) {
+      console.error("Error creating notifications:", error);
+      return res.status(500).json({
+        status: false,
+        statusCode: 500,
+        message: 'Failed to create notifications. Please try again later.'
+      });
+    }
+  }
+
+  

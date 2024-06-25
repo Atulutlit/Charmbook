@@ -72,6 +72,10 @@ export const ADMIN_UPLOAD_IMAGE = BASE_URL + "/api/admin/image";
 export const ADMIN_UPLOAD_DOC = BASE_URL + "/api/admin/doc";
 export const ADMIN_FILE_DELETE = BASE_URL + "/api/admin/file/delete";
 
+// notification
+export const ADMIN_GET_NOTIFICATION = BASE_URL + "/api/admin/notification"
+export const ADMIN_ADD_NOTIFICATION = BASE_URL + "/api/admin/notification"
+
 //-------------------------------User API ---------------------------------------
 // USER API
 

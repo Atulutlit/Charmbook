@@ -19,7 +19,7 @@ import {
 
 import Header from "components/Headers/Header.js";
 import axios from 'axios';
-import { ADMIN_CREATE_CLASS, ADMIN_CLASS, ADMIN_DELETE_CLASS, ADMIN_UPDATE_CLASS } from './../../constant/Constant'
+import { ADMIN_CLASS, ADMIN_GET_NOTIFICATION, ADMIN_ADD_NOTIFICATION } from './../../constant/Constant'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
@@ -27,19 +27,63 @@ import { useNavigate } from 'react-router-dom';
 const Notification = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [classes, setClasses] = useState([]);
-  const [newClassName, setNewClassName] = useState("");
   const [error, setError] = useState("");
-
-  // Delete and Edit State
-  const [showEditBox, setShowEditBox] = useState(false)
-  const [selectedId, setSelectedId] = useState(-1);
-  const [showDeleteBox, setShowDeleteBox] = useState(false);
-  const [editData, setEditData] = useState(null)
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [selectedClassId, setSelectedClassId] = useState(-1);
+  // notification
+  const [notification, setNotification] = useState([])
 
   const navigate = useNavigate();
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const url = ADMIN_ADD_NOTIFICATION;
+      await axios.post(url,
+        { title: title, message: message, class_id: selectedClassId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+      toggleModal();
+      toast.success('Notification Created Successfully!!');
+    } catch (error) {
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to create notification', error);
+        toast.error('Failed to create notification');
+      }
+    }
+  };
+
+
+  const fetchNotificaiton = async () => {
+    try {
+      const url = ADMIN_GET_NOTIFICATION;
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.data.status) {
+        console.log(response.data.data, 'data')
+        setNotification(response.data.data);
+      }
+    } catch (error) {
+      if (error.response.status == 401) {
+        navigate('/auth/login');
+      } else {
+        console.log('Failed to fetch notification', error);
+        toast.error('Failed to class notification');
+      }
+    }
   };
 
   const fetchClasses = async () => {
@@ -52,7 +96,7 @@ const Notification = () => {
       });
       if (response.data.status) {
         console.log(response.data.data, 'data')
-        setClasses(response.data.data.map(c => ({ id: c.id, name: c.class_name })));
+        setClasses(response.data.data)
       }
     } catch (error) {
       if (error.response.status == 401) {
@@ -65,92 +109,12 @@ const Notification = () => {
   };
 
   useEffect(() => {
+    fetchNotificaiton();
     fetchClasses();
+
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const url = ADMIN_CREATE_CLASS;
-      await axios.post(url,
-        { class_name: newClassName },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-      setNewClassName("");
-      toggleModal();
-      fetchClasses();
-      toast.success('Class Created Successfully!!');
-    } catch (error) {
-      if (error.response.status == 401) {
-        navigate('/auth/login');
-      } else {
-        console.log('Failed to create class', error);
-        toast.error('Failed to create class');
-      }
-    }
-  };
 
-
-  // delete class 
-  const deleteClass = async () => {
-    try {
-      console.log(selectedId, 'selected id');
-      const url = `${ADMIN_DELETE_CLASS}/${selectedId}`;
-      await axios.delete(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      setShowDeleteBox(false);
-      toast.success("successfully deleted class!!.")
-      fetchClasses();
-    } catch (error) {
-      if (error.response.status == 401) {
-        navigate('/auth/login');
-      } else {
-        console.log('Failed to delete class', error);
-        toast.error('Failed to delete class');
-      }
-    }
-  }
-
-  // update class logic
-  const updateClass = async (e) => {
-    e.preventDefault();
-    try {
-      const url = `${ADMIN_UPDATE_CLASS}/${selectedId}`;
-      await axios.put(url, editData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      setShowEditBox(false);
-      toast.success("successfully updated class!!.")
-      fetchClasses();
-    } catch (error) {
-      if (error.response.status == 401) {
-        navigate('/auth/login');
-      } else {
-        console.log('Failed to update class', error);
-        toast.error('Failed to update class');
-      }
-    }
-  }
-
-  const handleEdit = (item) => {
-    setShowEditBox(true);
-    setSelectedId(item.id);
-    setEditData(item);
-  }
-
-  const handleDelete = (id) => {
-    setShowDeleteBox(true);
-    setSelectedId(id);
-    console.log(id, 'id')
-  }
 
 
   return (
@@ -183,21 +147,18 @@ const Notification = () => {
                 <thead className="thead-light">
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Class Name</th>
-                    <th scope='col'>Actions</th>
+                    <th scope="col">Title</th>
+                    <th scope='col'>Message</th>
+                    <th scope='col'>Type</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {classes.map((clazz, index) => (
-                    <tr key={clazz.id}>
+                  {notification.map((item, index) => (
+                    <tr key={item.id}>
                       <td>{index + 1}</td>
-                      <td>{clazz.name}</td>
-                      <td>
-                        <div className="d-flex">
-                          <i className="fas fa-edit text-info mr-3" title="Edit" onClick={() => handleEdit(clazz)} style={{ cursor: 'pointer' }}></i>
-                          <i className="fas fa-trash-alt text-danger" title="Delete" onClick={() => { handleDelete(clazz.id); }} style={{ cursor: 'pointer' }}></i>
-                        </div>
-                      </td>
+                      <td>{item.title}</td>
+                      <td>{item.message}</td>
+                      <td>{item.type}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -207,68 +168,47 @@ const Notification = () => {
         </Row>
       </Container>
 
-      {/* ------------ create class --------------- */}
+      {/* ------------ create notification--------------- */}
       <Modal isOpen={modalOpen} toggle={toggleModal} centered>
-        <ModalHeader toggle={toggleModal}>Create Class</ModalHeader>
+        <ModalHeader toggle={toggleModal}>Create Notification</ModalHeader>
         <ModalBody className='p-4'>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
-              <Label for="className">Class Name</Label>
+              <Label for="className">Title</Label>
               <Input
                 type="text"
                 name="className"
                 id="className"
-                value={newClassName}
-                onChange={(e) => setNewClassName(e.target.value)}
-                placeholder="Enter Class Name"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter Notification"
                 required
               />
             </FormGroup>
-            <Button type="submit" color="primary">Submit</Button>
-          </Form>
-        </ModalBody>
-      </Modal>
-
-
-      {/* ------------------- Update Class ------------------------- */}
-
-      <Modal isOpen={showEditBox} toggle={() => { setShowEditBox(false); }} centered>
-        <ModalHeader toggle={() => { setShowEditBox(false); }}>Edit Class</ModalHeader>
-        <ModalBody className='p-4'>
-          <Form onSubmit={updateClass}>
             <FormGroup>
-              <Label for="className">Class Name</Label>
+              <Label for="className">Message</Label>
               <Input
                 type="text"
                 name="className"
                 id="className"
-                value={editData?.name}
-                onChange={(e) => { setEditData((prevResult) => { const inputdata = { ...prevResult }; inputdata['name'] = e.target.value; return inputdata }) }}
-                placeholder="Enter Class Name"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Enter Message"
                 required
               />
+            </FormGroup>
+            <FormGroup>
+              <Label for="class">Class</Label>
+              <Input type="select" name="class" id="class" value={selectedClassId} onChange={(e) => { console.log(e.target.value); setSelectedClassId(e.target.value) }}>
+                <option value={-1}>Select Class</option>
+                {classes.map((option) => (
+                  <option key={option._id} value={option.id}>{option.class_name} {option._id}</option>
+                ))}
+              </Input>
             </FormGroup>
             <Button type="submit" color="primary">Submit</Button>
           </Form>
         </ModalBody>
-      </Modal>
-
-      {/* Delete Box */}
-      <Modal isOpen={showDeleteBox} toggle={() => { setShowDeleteBox(false); }} centered className="custom-delete-modal w-auto">
-        <ModalHeader toggle={() => { setShowDeleteBox(false); }} className='custom-header'>Delete Class</ModalHeader>
-        <ModalBody>
-          <div className='text-center'>
-            <p className=' '>Are you sure you want to delete this class?</p>
-          </div>
-        </ModalBody>
-        <ModalFooter className="d-flex justify-end custom-footer">
-          <Button color="btn btn-secondary" size='sm' onClick={() => { setShowDeleteBox(false); }}>
-            Cancel
-          </Button>
-          <Button color="btn btn-danger" size='sm' onClick={deleteClass}>
-            Delete
-          </Button>
-        </ModalFooter>
       </Modal>
 
       {error && (
