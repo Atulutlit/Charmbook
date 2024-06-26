@@ -169,12 +169,12 @@ const Timetable = () => {
       const url = ADMIN_UPDATE_TIMETABLE;
       const token = localStorage.getItem('token')
       const response = await fetch(url, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(editData)
+        body: {time_table_id:editData.id,start_time:editData.start_time,end_time:editData.end_time}
       });
       const data = await response.json();
       if (data?.status) {

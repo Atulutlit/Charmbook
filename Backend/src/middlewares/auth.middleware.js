@@ -6,11 +6,10 @@ const asyncHandler = require("../utils/asyncHandler.js");
 
 
 exports.userAuthMiddleware = asyncHandler(async (req, _res, next) => {
-  
   const token = req.header('Authorization', 'Bearer Token');
 
   if (!token) throw error.VALIDATION_ERROR('Missing required token in request');
-
+  
   let validToken = token.split(' ')
 
   const decodeToken = jwt.verify(validToken[1], config.USER_TOKEN_KEY);
@@ -18,7 +17,7 @@ exports.userAuthMiddleware = asyncHandler(async (req, _res, next) => {
   if (!decodeToken) throw error.VALIDATION_ERROR('Unauthorised');
 
   const user = await tables.User.findOne({where: { id: decodeToken.id }, attributes: { exclude: ['password'] }, raw: true});
-
+  
   if (!user) throw error.VALIDATION_ERROR('Unauthorised');
 
   if(user.token !== validToken[1]) throw error.AUTH_ERROR('Unauthorised');

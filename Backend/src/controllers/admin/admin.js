@@ -707,7 +707,7 @@ exports.createNotification = asyncHandler(async (req, res) => {
 
 
       if (!classmates || classmates.length === 0) {
-        return 'No classmates found in the class';
+        return 'No classmates found in';
       }
   
       // Create notifications for each classmate

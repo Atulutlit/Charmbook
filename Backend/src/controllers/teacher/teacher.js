@@ -331,46 +331,26 @@ exports.createTest = asyncHandler(async (req, res) => {
 
 exports.removeTest = asyncHandler(async (req, res) => {
 
-    // old code
+    const body = req.query;
 
-    // const body = req.query;
+    const { test_id } = body;
 
-    // const { test_id } = body;
-
-    // const teacherId = req.user.id;
+    const teacherId = req.user.id;
     
 
-    // if (!test_id) throw error.VALIDATION_ERROR("Homework id is required");
+    if (!test_id) throw error.VALIDATION_ERROR("Homework id is required");
 
-    // const test = await tables.Test.findOne({ where: { id: test_id, teacher_id: teacherId } });
-
-    // if (!test) throw error.VALIDATION_ERROR("Test not found");
-
-    // await tables.Test.destroy({ where: { id: test_id } });
-
-    // return res.send({
-    //     status: true,
-    //     statusCode: 201,
-    //     message: "Test has removed successfully."
-    // });
-
-    const { id } = req.params;
-    console.log(id,'deleted the data');    
-
-    if (!id) throw error.VALIDATION_ERROR("valid test id is required");
-
-    const test = await tables.Test.findOne({ where: { id: id } });
+    const test = await tables.Test.findOne({ where: { id: test_id, teacher_id: teacherId } });
 
     if (!test) throw error.VALIDATION_ERROR("Test not found");
 
-    await tables.Test.destroy({ where: { id: id } });
+    await tables.Test.destroy({ where: { id: test_id } });
 
     return res.send({
         status: true,
         statusCode: 201,
         message: "Test has removed successfully."
     });
-
 
 });
 
