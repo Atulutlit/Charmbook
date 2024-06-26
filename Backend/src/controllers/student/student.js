@@ -85,26 +85,33 @@ exports.getMockTest = asyncHandler(async (req, res) => {
   const classId = req.user.class_id;
 
   const test = await tables.Test.findAll({
-    where: {
-      book_id: classId,
-    },
-    attributes: ['id', 'title', 'test_file_url', 'description', 'date'],
-    include: [
-      {
-        model: tables.Book,
-        attributes: ['cover_image_url'],
-        include: {
-          model: tables.Subject,
-          attributes: ['id', 'subject_name']
-        }
-      }
-    ]
+            where: {
+              class_id : classId
+          },
+          attributes: ['id', 'test_file_url', 'date','class_id','teacher_id'],
+          include: [
+              {
+                  model: tables.Subject,
+                  attributes: ['id', 'subject_name']
+                  
+              },
+              {
+                  model: tables.Class,
+                  attributes: ['id', 'class_name']
+                  
+              },
+              {
+                  model: tables.User,
+                  attributes: ['id', 'first_name','last_name']
+                  
+              }
+          ]
   });
 
   res.send({
     status: true,
     statusCode: 200,
-    message: "Homework fetched successfully.",
+    message: "Test fetched successfully.",
     data: test
   });
 });

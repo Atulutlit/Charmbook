@@ -81,7 +81,7 @@ const Notification = () => {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch notification', error);
-        toast.error('Failed to class notification');
+        toast.error('Failed to notification');
       }
     }
   };

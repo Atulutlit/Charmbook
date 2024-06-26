@@ -38,8 +38,8 @@ Book.belongsTo(Subject, { foreignKey: 'subject_id' });
 Book.hasMany(Homework, { foreignKey: 'book_id' });
 Homework.belongsTo(Book, { foreignKey: 'book_id' });
 
-Book.hasMany(Test, { foreignKey: 'book_id' });
-Test.belongsTo(Book, { foreignKey: 'book_id' });
+// Book.hasMany(Test, { foreignKey: 'book_id' });
+// Test.belongsTo(Book, { foreignKey: 'book_id' });
 Test.belongsTo(Class, { foreignKey: 'class_id' });
 Test.belongsTo(User, { foreignKey: 'teacher_id' });
 Test.belongsTo(Subject , { foreignKey: 'subject_id' })

@@ -107,8 +107,8 @@ router.post("/doc", adminAuthMiddleware, uploadDocumentsS3.single('doc'), upload
 router.post("/file/delete", adminAuthMiddleware, deleteFile);
 
 // notification
-router.get('/notification', adminAuthMiddleware, teacherController.getNotification);
-router.post('/notification', adminAuthMiddleware, teacherController.createNotification);
+router.get('/notification', adminAuthMiddleware, adminController.getNotification);
+router.post('/notification', adminAuthMiddleware, adminController.createNotification);
 
 
 module.exports = router;

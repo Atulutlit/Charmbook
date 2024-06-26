@@ -72,15 +72,15 @@ const Timetable = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      if (response.data.status) {
-        setClasses(response.data.data);
+      if (response?.data?.status) {
+        setClasses(response?.data?.data);
         console.log(response.data.data[0]?.id, 'response');
-        setSelectedClass(response.data.data[0]?.id); // Select the first class by default or ID 1
-        setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
-        fetchTimetable(response.data.data[0]?.id);
+        setSelectedClass(response?.data?.data[0]?.id); // Select the first class by default or ID 1
+        setSelectedModalClass(response?.data?.data[0]?.id || 1); // Set modal class default
+        fetchTimetable(response?.data?.data[0]?.id);
       }
     } catch (error) {
-      if(error.response.status==401)
+      if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
@@ -95,12 +95,12 @@ const Timetable = () => {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
-        setTeachers(response.data.data);
-        setSelectedTeacher(response.data.data[0].id); // Select the first teacher by default
+      if (response?.data?.status) {
+        setTeachers(response?.data?.data);
+        setSelectedTeacher(response?.data?.data[0].id); // Select the first teacher by default
       }
     } catch (error) {
-      if(error.response.status==401)
+      if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
@@ -115,12 +115,12 @@ const Timetable = () => {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
-        setSubjects(response.data.data);
-        setSelectedSubject(response.data.data[0].id); // Select the first subject by default
+      if (response?.data?.status) {
+        setSubjects(response?.data?.data);
+        setSelectedSubject(response?.data?.data[0]?.id); // Select the first subject by default
       }
     } catch (error) {
-      if(error.response.status==401)
+      if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
@@ -142,7 +142,7 @@ const Timetable = () => {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         console.log(response.data.data, 'timetable......')
         setTimeTable(response.data.data);
 
@@ -150,7 +150,7 @@ const Timetable = () => {
         setTimetablelist([]);
       }
     } catch (error) {
-      if(error.response.status==401)
+      if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
@@ -177,15 +177,15 @@ const Timetable = () => {
         body: JSON.stringify(editData)
       });
       const data = await response.json();
-      if (data.status) {
+      if (data?.status) {
         toast.success("Timetable updated Successfully!!");
         console.log('Timetable updated successfully:', data.message);
       } else {
-        toast.error(data.message);
+        toast.error(data?.message);
         console.error('Failed to update timetable:', data.message);
       }
     } catch (error) {
-      if(error.response.status==401)
+      if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
@@ -204,7 +204,7 @@ const Timetable = () => {
       toast.success("Deleted Successfully!!");
       fetchTimetable();
     } catch (error) {
-      if(error.response.status==401)
+      if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
@@ -232,14 +232,15 @@ const Timetable = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       toast.success("Timetable Created Successfully");
+      toggleModal();
       fetchTimetable();
     } catch (error) {
-      if(error.response.status==401)
+      if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
-        console.error('Error creating timetable:', error);
-        toast.error('Failed to Create Timetable');
+        console.error('Error creating timetable:', );
+        toast.error(error?.response?.data?.message)
       }
     }
   };
