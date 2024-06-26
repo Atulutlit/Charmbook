@@ -86,11 +86,11 @@ const Books = () => {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         setClasses(response.data.data);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch class', error);
@@ -105,11 +105,11 @@ const Books = () => {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         setSubjects(response.data.data);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch subjects', error);
@@ -124,13 +124,13 @@ const Books = () => {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         setBooks(response.data.data);
       } else {
         setBooks([]);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch books', error);
@@ -152,7 +152,7 @@ const Books = () => {
       console.log(response.data.data, 'handle image upload')
       setNewBook({ ...newBook, cover_url: response.data.data });
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to upload image', error);
@@ -173,7 +173,7 @@ const Books = () => {
       console.log(response, 'respponse')
       setNewBook({ ...newBook, file_url: response.data.data });
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to upload file', error);
@@ -237,7 +237,7 @@ const Books = () => {
       });
       toggleModal();
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to add books', error);
@@ -252,13 +252,13 @@ const Books = () => {
       const response = await axios.delete(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         setBooks(books.filter(book => book.id !== deletedId));
         toast.success('Book Deleted Successfully!!');
         setDeleteBox(false);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to delete book', error);
@@ -274,12 +274,12 @@ const Books = () => {
       const response = await axios.put(url, editedBook, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         toast.success('Book Edited Successfully!!');
         toggleEditModal();
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to delete book', error);

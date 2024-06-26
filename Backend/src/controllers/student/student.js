@@ -175,7 +175,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
 
 exports.getBooks = asyncHandler(async (req, res) => {
   try {
-    const studentId = req.user.id;
+    const studentId = 5;
     
     // Find the user
     const user = await tables.User.findOne({
@@ -193,7 +193,6 @@ exports.getBooks = asyncHandler(async (req, res) => {
     // Fetch the timetable for the user's class
     const timeTable = await tables.TimeTable.findAll({
       where: { class_id: classId },
-      raw: true
     });
 
         // Get current time in HH:MM:SS format
@@ -210,7 +209,7 @@ exports.getBooks = asyncHandler(async (req, res) => {
           const startTime = timeTable[i].start_time;
           const endTime = timeTable[i].end_time;
     
-          console.log(startTime, 'start time', endTime, 'end time');
+          console.log(startTime, 'start time', endTime, 'end time',currentTimeString);
           console.log(currentTimeString >= startTime && currentTimeString <= endTime);
     
           if (currentTimeString >= startTime && currentTimeString <= endTime) {
@@ -218,7 +217,7 @@ exports.getBooks = asyncHandler(async (req, res) => {
             break;
           }
         }
-
+    console.log(subjectId,'subjectId')
     if (!subjectId) {
       return res.status(404).json({ status: false, message: "No subject found for the current time." });
     }

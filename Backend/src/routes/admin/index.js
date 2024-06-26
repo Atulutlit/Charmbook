@@ -32,6 +32,9 @@ router.put("/class/:id",adminAuthMiddleware,adminController.updateClass)
 //teacher
 router.get("/teachers", adminAuthMiddleware, adminTeacherController.getTeachers);
 router.get("/students", adminAuthMiddleware, adminTeacherController.getStudents);
+
+// class teacher create
+router.get("/class/teacher", adminAuthMiddleware, adminTeacherController.getClassTeacher);
 router.post("/class/teacher/create", adminAuthMiddleware, adminTeacherController.createClassTeacher);
 router.put("/class/teacher/remove", adminAuthMiddleware, adminTeacherController.removeClassTeacher);
 

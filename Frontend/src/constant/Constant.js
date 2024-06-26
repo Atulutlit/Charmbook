@@ -15,7 +15,10 @@ export const ADMIN_UPDATE_CLASS = BASE_URL + "/api/admin/class";
 
 // teacher api
 export const ADMIN_TEACHER = BASE_URL + '/api/admin/teachers';
-export const ADMIN_REMOVE_TEACHER = BASE_URL + '/api/admin/teacher'; 
+export const ADMIN_REMOVE_TEACHER = BASE_URL + '/api/admin/teacher';
+
+// class teacher api
+export const ADMIN_CLASS_TEACHER = BASE_URL + '/api/admin/class/teacher';
 export const ADMIN_CREATE_CLASS_TEACHER = BASE_URL + '/api/admin/class/teacher/create';
 export const ADMIN_REMOVE_CLASS_TEACHER = BASE_URL + "/api/admin/class/teacher/remove";
 

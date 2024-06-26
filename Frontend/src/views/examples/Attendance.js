@@ -87,13 +87,13 @@ const Attendance = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         setClasses(response.data.data);
         setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
         setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch class', error);
@@ -114,15 +114,15 @@ const Attendance = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       console.log(response, 'fetch attendance')
-      if (response.data.status) {
-        setAttendance(response.data.data);
-        setData(response.data.data);
+      if (response?.data?.status) {
+        setAttendance(response?.data?.data);
+        setData(response?.data?.data);
       } else {
         setAttendance([]);
         setData([]);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to get attendance', error);
@@ -141,13 +141,13 @@ const Attendance = () => {
       const response = await axios.post(url, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      if (response.data.status) {
+      if (response?.data?.status) {
         toast.success("successfully mark the attendance!!");
         fetchAttendance();
       }
       toggleModal();
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to mark attendance', error);

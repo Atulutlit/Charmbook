@@ -168,13 +168,14 @@ const Timetable = () => {
     try {
       const url = ADMIN_UPDATE_TIMETABLE;
       const token = localStorage.getItem('token')
-      const response = await axios.patch(url, editData, {
+      const response = await axios.patch(url, {time_table_id:editData.id,start_time:editData.start_time,end_time:editData.end_time}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response?.data?.status) {
         toast.success("Timetable updated Successfully!!");
+        setShowEdit(false);
         console.log('Timetable updated successfully:', response?.data.message);
       } else {
         toast.error(response.data?.message);
@@ -227,9 +228,9 @@ const Timetable = () => {
       await axios.post(url, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
+      fetchTimetable();
       toast.success("Timetable Created Successfully");
       toggleModal();
-      fetchTimetable();
     } catch (error) {
       if(error?.response?.status==401)
       {

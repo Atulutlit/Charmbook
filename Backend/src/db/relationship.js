@@ -25,6 +25,7 @@ User.belongsTo(Class, { foreignKey: 'class_id' });
 
 User.hasOne(ClassTeacher, { foreignKey: 'teacher_id' });
 ClassTeacher.belongsTo(User, { foreignKey: 'teacher_id' });
+ClassTeacher.belongsTo(Class,{ foreignKey: 'class_id'});
 
 User.hasMany(Attendance, { foreignKey: 'student_id' });
 Attendance.belongsTo(User, { foreignKey: 'student_id' });

@@ -45,11 +45,35 @@ exports.createClassTeacher = asyncHandler(async (req, res) => {
     });
 });
 
+exports.getClassTeacher = asyncHandler(async (req,res)=>{
+    
+    const teachers = await ClassTeacher.findAll({
+        include: [
+            {
+              model: Class,
+              as: 'class',
+              attributes: ['id', 'class_name'] // Specify required class attributes
+            },
+            {
+                model: User,
+                as: 'user',
+                attributes: ['id', 'first_name', 'last_name'] // Specify required class attributes
+            }
+          ],
+        //  below line comment for now 
+        // attributes: ["id", "first_name", "last_name", "email"],
+    });
+
+    return res.send({ status: true, statusCode: 200, message: "Teachers fetched successfully.", data: teachers });
+})
+
 
 exports.removeClassTeacher = asyncHandler(async (req, res) => {
 
+    console.log(req.body,'request body')
     const { class_id, teacher_id } = req.body;
 
+    console.log(class_id, teacher_id)
     if (!class_id) {
         throw error.VALIDATION_ERROR("Class id is required");
     }

@@ -96,7 +96,7 @@ exports.deleteTimeTable = asyncHandler(async (req, res) => {
 
 exports.updateTimeTable = asyncHandler(async (req, res) => {
 
-   const time_table_id = req.body.id;
+   const time_table_id = req.body.time_table_id;
    const start_time = req.body.start_time;
    const end_time = req.body.end_time;
 
