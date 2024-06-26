@@ -589,7 +589,11 @@ exports.createTest = asyncHandler(async (req, res) => {
     if (date) testData.date = new Date(date);
 
     await tables.Test.create(testData);
-    await notification('Test','Test has been uploaded',class_id);
+    try {
+        await notification('Test','Test has been uploaded',class_id);
+    } catch (error) {
+        console.log('notification not send,please check it')
+    }
         
     return res.send({
         status: true,
@@ -701,14 +705,9 @@ exports.createNotification = asyncHandler(async (req, res) => {
         }
       });
 
-      console.log(classmates,'classmates');
 
       if (!classmates || classmates.length === 0) {
-        return res.status(404).json({
-          status: false,
-          statusCode: 404,
-          message: 'No classmates found in the class'
-        });
+        return 'No classmates found in the class';
       }
   
       // Create notifications for each classmate
@@ -723,22 +722,12 @@ exports.createNotification = asyncHandler(async (req, res) => {
           status: 'unread'
         });
       }));
-  
-  
-      return res.status(201).json({
-        status: true,
-        statusCode: 201,
-        message: 'Notifications created successfully.',
-        data: notifications
-      });
+
+    return 'Notification Create Successfully';
   
     } catch (error) {
       console.error("Error creating notifications:", error);
-      return res.status(500).json({
-        status: false,
-        statusCode: 500,
-        message: 'Failed to create notifications. Please try again later.'
-      });
+      return 'Failed to create notifications';
     }
   }
 
