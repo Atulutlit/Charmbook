@@ -16,6 +16,7 @@ import Timetable from "views/examples/Timetable";
 import Attendance from "views/examples/Attendance";
 import Holiday from "views/examples/Holiday";
 import Notification from "views/examples/Notification";
+import ClassTeacher from "views/examples/ClassTeacher";
 
 
 var routes = [
@@ -47,7 +48,13 @@ var routes = [
     component: <Teachers />,
     layout: "/admin", 
   },
-  ,
+  {
+    path: "/class_teacher",
+    name: "ClassTeachers",
+    icon: "fa fa-users text-blue",
+    component: <ClassTeacher />,
+    layout: "/admin", 
+  },
   {
     path: "/subjects",
     name: "Subjects",

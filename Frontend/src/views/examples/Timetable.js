@@ -168,28 +168,24 @@ const Timetable = () => {
     try {
       const url = ADMIN_UPDATE_TIMETABLE;
       const token = localStorage.getItem('token')
-      const response = await fetch(url, {
-        method: 'PATCH',
+      const response = await axios.patch(url, editData, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: {time_table_id:editData.id,start_time:editData.start_time,end_time:editData.end_time}
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       });
-      const data = await response.json();
-      if (data?.status) {
+      if (response?.data?.status) {
         toast.success("Timetable updated Successfully!!");
-        console.log('Timetable updated successfully:', data.message);
+        console.log('Timetable updated successfully:', response?.data.message);
       } else {
-        toast.error(data?.message);
-        console.error('Failed to update timetable:', data.message);
+        toast.error(response.data?.message);
+        console.error('Failed to update timetable:', response?.data.message);
       }
     } catch (error) {
       if(error?.response?.status==401)
       {
         navigate('/auth/login');
       }else{
-        console.error('Failed to update timetable:', error);
+        console.log(error,'error')
         toast.error('Failed to update Timetable');
       }
     }
@@ -428,7 +424,7 @@ const Timetable = () => {
         <ModalHeader toggle={() => { setShowEdit(false) }}>Edit Timetable</ModalHeader>
         <ModalBody className='p-4'>
           <Form onSubmit={updateTimetable}>
-            <FormGroup>
+            {/* <FormGroup>
               <Label for="class">Class</Label>
               <Input
                 type="select"
@@ -460,7 +456,7 @@ const Timetable = () => {
                   </option>
                 ))}
               </Input>
-            </FormGroup>
+            </FormGroup> */}
 
             <FormGroup>
               <Label for="subject">Start Time</Label>

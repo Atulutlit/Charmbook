@@ -96,7 +96,9 @@ exports.deleteTimeTable = asyncHandler(async (req, res) => {
 
 exports.updateTimeTable = asyncHandler(async (req, res) => {
 
-    const { time_table_id, start_time, end_time } = req.body;
+   const time_table_id = req.body.id;
+   const start_time = req.body.start_time;
+   const end_time = req.body.end_time;
 
     if (!time_table_id) throw error.VALIDATION_ERROR("Time table id is required");
 
@@ -117,7 +119,7 @@ exports.updateTimeTable = asyncHandler(async (req, res) => {
         status: true,
         status_code: 201,
         message: "Time table updated successfully",
-    })
+    }),200
 });
 
 

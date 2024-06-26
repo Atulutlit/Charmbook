@@ -189,25 +189,35 @@ exports.getBooks = asyncHandler(async (req, res) => {
 
     const classId = user.class_id;
 
+
     // Fetch the timetable for the user's class
     const timeTable = await tables.TimeTable.findAll({
       where: { class_id: classId },
       raw: true
     });
 
-    let current_time = new Date();
-    let subjectId = null;
-
-    // Compare current time with timetable entries
-    for (let i = 0; i < timeTable.length; i++) {
-      const startTime = new Date(timeTable[i].start_time);
-      const endTime = new Date(timeTable[i].end_time);
-
-      if (current_time >= startTime && current_time <= endTime) {
-        subjectId = timeTable[i].subject_id;
-        break;
-      }
-    }
+        // Get current time in HH:MM:SS format
+        const current_time = new Date();
+        const currentHours = String(current_time.getHours()).padStart(2, '0');
+        const currentMinutes = String(current_time.getMinutes()).padStart(2, '0');
+        const currentSeconds = String(current_time.getSeconds()).padStart(2, '0');
+        const currentTimeString = `${currentHours}:${currentMinutes}:${currentSeconds}`;
+    
+        let subjectId = null;
+    
+        // Compare current time with timetable entries
+        for (let i = 0; i < timeTable.length; i++) {
+          const startTime = timeTable[i].start_time;
+          const endTime = timeTable[i].end_time;
+    
+          console.log(startTime, 'start time', endTime, 'end time');
+          console.log(currentTimeString >= startTime && currentTimeString <= endTime);
+    
+          if (currentTimeString >= startTime && currentTimeString <= endTime) {
+            subjectId = timeTable[i].subject_id;
+            break;
+          }
+        }
 
     if (!subjectId) {
       return res.status(404).json({ status: false, message: "No subject found for the current time." });
