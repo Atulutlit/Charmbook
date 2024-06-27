@@ -1,4 +1,4 @@
-const { tables } = require("../db/index.js");
+const { tables, sequelize } = require('../db/index.js');
 const { Op } = require("sequelize");
 const {findDatesBetween, isSunday} = require("../utils/common.js")
 const cron = require("node-cron");
@@ -16,6 +16,8 @@ cron.schedule("0 0 * * *", async() => {
       },
       raw:true
     })
+
+    console.log(students,'cronn schedulin');
 
     const sunday = isSunday(date);
 
@@ -60,6 +62,7 @@ cron.schedule("0 0 * * *", async() => {
 
   } catch (error) {
     console.error("Error:", error.message);
+    console.log("cron scheduler error");
   }
 
 });

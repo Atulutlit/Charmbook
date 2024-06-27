@@ -171,7 +171,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
      });
      holiday_count=posts.length;
   } catch (error) {
-    
+    console.log(error,'error');
   }
 
   const data = {
