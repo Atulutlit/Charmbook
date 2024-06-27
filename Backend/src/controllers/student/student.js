@@ -163,7 +163,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
      const endDate = new Date(startDate);
      endDate.setMonth(endDate.getMonth() + 1);
  
-     const posts = await tables.Holiday.find({
+     const posts = await tables.Holiday.findAll({
         date: {
          $gte: startDate,
          $lt: endDate
