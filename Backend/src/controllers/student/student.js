@@ -153,11 +153,32 @@ exports.getAttendance = asyncHandler(async (req, res) => {
 
   const presentPercentage = (presentCount / totalCount) * 100;
 
+  // holiday count
+  let holiday_count=0;
+  try {
+    const {target_date}=req.query;
+     // Parse the provided date
+     const [year, month] = target_date.split('-');
+     const startDate = new Date(`${year}-${month}-01T00:00:00.000Z`);
+     const endDate = new Date(startDate);
+     endDate.setMonth(endDate.getMonth() + 1);
+ 
+     const posts = await tables.Holiday.find({
+        date: {
+         $gte: startDate,
+         $lt: endDate
+       }
+     });
+     holiday_count=posts.length;
+  } catch (error) {
+    
+  }
+
   const data = {
     present_count: presentCount,
     absent_count: absentCount,
     present_percentage: presentPercentage.toFixed(2) + "%",
-    holiday_count : 0   // count holiday for a given month remained(24/06/2024)
+    holiday_count : holiday_count  // count holiday for a given month remained(24/06/2024)
   };
 
 
