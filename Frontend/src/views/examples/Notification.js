@@ -53,6 +53,9 @@ const Notification = () => {
         });
       toggleModal();
       toast.success('Notification Created Successfully!!');
+      setSelectedClassId(-1);
+      setTitle("");
+      setMessage("");
     } catch (error) {
       if (error.response.status == 401) {
         navigate('/auth/login');

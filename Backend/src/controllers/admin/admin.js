@@ -422,10 +422,25 @@ exports.getAttendance = asyncHandler(async (req, res) => {
 
     if (!date) throw error.VALIDATION_ERROR("Date is required");
 
-    console.log( 
-             {
+    if (class_id==-1)
+    {
+        
+    const attendances = await tables.Attendance.findAll({
+        where: {
+            status: ['ABSENT', 'PRESENT', 'PENDING'],
+            date: {
                 [Op.between]: [`${date}T00:00:00Z`, `${date}T23:59:59Z`],
-            })
+            }
+        },
+        include: {
+            model: tables.User,
+            attributes: ['id', 'first_name', 'last_name', 'profile_url','enrollment_no']
+        }
+    });
+
+    return res.send({ status: true, statusCode: 200, data: attendances });
+    }
+
     const attendances = await tables.Attendance.findAll({
         where: {
             class_id: class_id,

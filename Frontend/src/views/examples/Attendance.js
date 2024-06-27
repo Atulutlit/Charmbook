@@ -41,8 +41,8 @@ const Attendance = () => {
   const [attendanceId, setAttendanceId] = useState("");
   const [status, setStatus] = useState("PRESENT");
 
-  const [selectedClass, setSelectedClass] = useState(1);
-  const [selectedModalClass, setSelectedModalClass] = useState(1);
+  const [selectedClass, setSelectedClass] = useState(-1);
+  const [selectedModalClass, setSelectedModalClass] = useState(-1);
 
   // handle delete
   const [deleteBox, setDeleteBox] = useState(false);
@@ -89,8 +89,6 @@ const Attendance = () => {
       });
       if (response?.data?.status) {
         setClasses(response.data.data);
-        setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
-        setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
       }
     } catch (error) {
       if (error?.response?.status == 401) {
@@ -234,6 +232,9 @@ const Attendance = () => {
                         {classes.find(c => c.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
                       <DropdownMenu>
+                      <DropdownItem key={-1} onClick={() => handleClassChange(-1)}>
+                            select class
+                        </DropdownItem>
                         {classes.map(c => (
                           <DropdownItem key={c.id} onClick={() => handleClassChange(c.id)}>
                             {c.class_name}

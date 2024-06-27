@@ -50,7 +50,7 @@ const Timetable = () => {
   const [endTime, setEndTime] = useState("");
 
   const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedSubject, setSelectedSubject] = useState(-1);
 
   const [period, setPeriod] = useState(1);
   const navigate = useNavigate();
@@ -75,8 +75,6 @@ const Timetable = () => {
       if (response?.data?.status) {
         setClasses(response?.data?.data);
         console.log(response.data.data[0]?.id, 'response');
-        setSelectedClass(response?.data?.data[0]?.id); // Select the first class by default or ID 1
-        setSelectedModalClass(response?.data?.data[0]?.id || 1); // Set modal class default
         fetchTimetable(response?.data?.data[0]?.id);
       }
     } catch (error) {
@@ -97,7 +95,6 @@ const Timetable = () => {
       });
       if (response?.data?.status) {
         setTeachers(response?.data?.data);
-        setSelectedTeacher(response?.data?.data[0].id); // Select the first teacher by default
       }
     } catch (error) {
       if(error?.response?.status==401)
@@ -117,7 +114,6 @@ const Timetable = () => {
       });
       if (response?.data?.status) {
         setSubjects(response?.data?.data);
-        setSelectedSubject(response?.data?.data[0]?.id); // Select the first subject by default
       }
     } catch (error) {
       if(error?.response?.status==401)
@@ -281,7 +277,9 @@ const Timetable = () => {
                         {classes.find(c => c.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
                       <DropdownMenu>
-                        {classes.map(c => (
+                      <DropdownItem key={-1} onClick={() => setSelectedClass(-1)}>
+                            select class
+                          </DropdownItem>                        {classes.map(c => (
                           <DropdownItem key={c.id} onClick={() => setSelectedClass(c.id)}>
                             {c.class_name}
                           </DropdownItem>

@@ -185,8 +185,6 @@ const Holiday = () => {
                     <th scope="col">#</th>
                     <th scope='col'>Holiday_Name</th>
                     <th scope="col">Date</th>
-                    <th scope="col">Created At</th>
-                    <th scope="col">Updated At</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -196,8 +194,7 @@ const Holiday = () => {
                       <td>{(indexNumber) * pageSize + index}</td>
                       <td>{item?.holiday_name}</td>
                       <td>{item?.date?.slice(0, 10)}</td>
-                      <td>{item?.created_at}</td>
-                      <td>{item?.updated_at}</td>
+  
 
                       <td>
                         <Button color="primary" size="sm" onClick={() => { setHolidayId(item.id); console.log("delete holiday"); setShowDeleteBox(true); }}>

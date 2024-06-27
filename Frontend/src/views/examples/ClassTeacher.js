@@ -272,7 +272,7 @@ const ClassTeacher = () => {
               <Input type="select" name="class" id="class" value={selectedTeacher} onChange={(e) => { console.log(e.target.value); setSelectedTeacher(e.target.value) }}>
                 <option value={-1}>Select Class</option>
                 {teachers.map((option) => (
-                  <option key={option._id} value={option.id}>{option.first_name}</option>
+                  <option key={option._id} value={option.id}>{option?.first_name}&nbsp;{option?.last_name}</option>
                 ))}
               </Input>
             </FormGroup>

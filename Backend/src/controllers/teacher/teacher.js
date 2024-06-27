@@ -46,7 +46,7 @@ exports.getTimeTable = asyncHandler(async (req, res) => {
     const { class_id } = req.params;
 
     if (!class_id) throw error.VALIDATION_ERROR("Class id is required");
-
+    if(class_id && class_id>=0){
     const timeTable = await tables.TimeTable.findAll({
         where: { class_id },
         order: [['period_no', 'ASC']],
@@ -68,6 +68,27 @@ exports.getTimeTable = asyncHandler(async (req, res) => {
         message: "Time table fetched successfully",
         data: timeTable
     });
+   }
+   const timeTable = await tables.TimeTable.findAll({
+    order: [['period_no', 'ASC']],
+    attributes: ['id', 'period_no', 'start_time', 'end_time','teacher_id'],
+    include: [
+        {
+            model: tables.Subject,
+            attributes: ['id', 'subject_name'],
+        },
+        {
+            model: tables.Class,
+            attributes: ['id', 'class_name'],
+        }
+    ]
+});
+
+return res.send({
+    status: true,
+    message: "Time table fetched successfully",
+    data: timeTable
+});
 });
 
 exports.deleteTimeTable = asyncHandler(async (req, res) => {
