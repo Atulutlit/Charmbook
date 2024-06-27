@@ -46,17 +46,17 @@ const Teachers = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      if (data.status) {
+      if (data?.status) {
         console.log(data, 'teacher data');
-        setTeachers(data.data);
-        setData(data.data);
+        setTeachers(data?.data);
+        setData(data?.data);
         toast.success("Successfully fetch the data");
       } else {
-        toast.error(data.message);
-        console.error('Failed to fetch teachers:', data.message);
+        toast.error(data?.message);
+        console.error('Failed to fetch teachers:', data?.message);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch teacher', error);
@@ -84,13 +84,13 @@ const Teachers = () => {
         }
       });
       const data = await response.json();
-      if (data.status) {
-        setClassOptions(data.data);
+      if (data?.status) {
+        setClassOptions(data?.data);
       } else {
-        console.error('Failed to fetch classes:', data.message);
+        console.error('Failed to fetch classes:', data?.message);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch class', error);
@@ -129,17 +129,17 @@ const Teachers = () => {
         body: JSON.stringify(newTeacher)
       });
       const data = await response.json();
-      if (data.status) {
+      if (data?.status) {
         console.log('Teacher created successfully:', data.message);
         toggleModal();
         toast.success("Teacher Created Successfully");
         fetchTeachers();
       } else {
-        toast.error(data.message);
+        toast.error(data?.message);
         console.error('Failed to create teacher:', data.message);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to create teacher', error);
@@ -168,7 +168,7 @@ const Teachers = () => {
       }
       setDeleteBox(false);
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to delete teacher', error);
@@ -212,7 +212,7 @@ const Teachers = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to update teacher', error);

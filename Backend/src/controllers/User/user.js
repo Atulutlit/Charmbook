@@ -144,7 +144,12 @@ exports.getProfile = asyncHandler(async (req, res) => {
 
   const user = await tables.User.findOne({
     where: { id: userId },
-    attributes: { exclude: ['created_at', 'updated_at', 'password'] }
+    attributes: { exclude: ['created_at', 'updated_at', 'password'] },
+    include: [
+      {
+        model: tables.Class,
+      }
+    ],
   })
 
   return res.send({
