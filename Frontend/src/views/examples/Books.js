@@ -342,6 +342,7 @@ const Books = () => {
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
                   <tr>
+                  <th scope="col">#</th>
                     <th scope="col">Cover</th>
                     <th scope="col">Subject</th>
                     <th scope="col">Class</th>
@@ -349,8 +350,9 @@ const Books = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {books.map((book) => (
+                  {books.map((book,key) => (
                     <tr key={book.id}>
+                      <td>{key+1}</td>
                       <td>
                         <a href={book.file_url} target="_blank" rel="noopener noreferrer">
                           <img

@@ -494,7 +494,7 @@ const debounce = (func, delay) => {
             </FormGroup>
             <FormGroup>
               <Label for="phoneNumber">Mobile Number</Label>
-              <Input type="text" name="phoneNumber" id="phoneNumber" placeholder="Enter Phone Number" />
+              <Input type="number" name="phoneNumber" id="phoneNumber" placeholder="Enter Phone Number" />
             </FormGroup>
             <FormGroup>
               <Label for="email">Email Address</Label>

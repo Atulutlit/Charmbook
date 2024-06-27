@@ -55,16 +55,13 @@ const Test = () => {
   const fetchClasses = async () => {
     try {
       const url = ADMIN_CLASS;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/class'
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      if (response.data.status) {
-        setClasses(response.data.data);
-        // setSelectedClass(response.data.data[0]?.id || 1); // Select the first class by default or ID 1
-        // setSelectedModalClass(response.data.data[0]?.id || 1); // Set modal class default
+      if (response?.data?.status) {
+        setClasses(response?.data?.data);
       }
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -74,13 +71,11 @@ const Test = () => {
   const fetchSubjects = async () => {
     try {
       const url = ADMIN_GET_SUBJECT;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/subject'
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.status) {
         setSubjects(response.data.data);
-        setSelectedSubject(response.data.data[0].id); // Select the first subject by default
       }
     } catch (error) {
       console.error('Error fetching subjects:', error);
@@ -90,13 +85,11 @@ const Test = () => {
   const fetchTeachers = async () => {
     try {
       const url = ADMIN_TEACHER
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/teachers'
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.status) {
         setTeachers(response.data.data);
-        setSelectedTeacher(response.data.data[0].id); // Select the first teacher by default
       }
     } catch (error) {
       console.error('Error fetching teachers:', error);
@@ -151,7 +144,6 @@ const Test = () => {
     e.preventDefault();
     try {
       const url = ADMIN_CREATE_TEST;
-      // const url = 'https://rrxts0qg-5000.inc1.devtunnels.ms/api/admin/add/test'
       await axios.post(url,
         {
           class_id: selectedModalClass,
@@ -167,6 +159,9 @@ const Test = () => {
       toggleModal();
       toast.success('Test Created Successfully!!');
       fetchTests(selectedClass);
+      setSelectedClass(-1);
+      setSelectedSubject(-1);
+      setSelectedTeacher(-1);
     } catch (error) {
       console.error('Error creating test:', error);
       toast.error(error);

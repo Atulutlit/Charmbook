@@ -296,10 +296,11 @@ const Attendance = () => {
             <FormGroup>
               <Label for="class">Enrollment No</Label>
               <Input
-                type="number"
+                type="text"
                 name="class"
                 id="class"
-                value={editData?.enrollment_no}
+                value={editData?.user?.enrollment_no}
+                disabled
               >
               </Input>
             </FormGroup>
