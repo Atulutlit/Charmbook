@@ -175,7 +175,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
 
 exports.getBooks = asyncHandler(async (req, res) => {
   try {
-    const studentId = 5;
+    const studentId = req.user.id;
     
     // Find the user
     const user = await tables.User.findOne({

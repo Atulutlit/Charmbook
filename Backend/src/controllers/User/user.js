@@ -173,11 +173,7 @@ exports.logout = asyncHandler(async (req, res) => {
       });
   
       if (!student) {
-        return res.status(404).json({
-          status: false,
-          statusCode: 404,
-          message: 'Student not found'
-        });
+        return res.send({ status: true, statusCode: 200, message: "User logged out successfully" });
       }
   
       // Find the teacher of the same class
@@ -189,11 +185,7 @@ exports.logout = asyncHandler(async (req, res) => {
       });
   
       if (!teacher) {
-        return res.status(404).json({
-          status: false,
-          statusCode: 404,
-          message: 'Teacher not found'
-        });
+         return res.send({ status: true, statusCode: 200, message: "User logged out successfully" });
       }
   
       // Create the notification data
