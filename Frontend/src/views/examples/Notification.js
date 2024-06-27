@@ -57,7 +57,7 @@ const Notification = () => {
       setTitle("");
       setMessage("");
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to create notification', error);
@@ -75,12 +75,12 @@ const Notification = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      if (response.data.status) {
-        console.log(response.data.data, 'data')
-        setNotification(response.data.data);
+      if (response?.data?.status) {
+        console.log(response?.data?.data, 'data')
+        setNotification(response?.data?.data);
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch notification', error);
@@ -97,12 +97,12 @@ const Notification = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      if (response.data.status) {
-        console.log(response.data.data, 'data')
-        setClasses(response.data.data)
+      if (response?.data?.status) {
+        console.log(response?.data?.data, 'data')
+        setClasses(response?.data?.data)
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch class', error);
