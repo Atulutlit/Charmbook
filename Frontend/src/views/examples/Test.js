@@ -215,6 +215,9 @@ const Test = () => {
                         {classes.find(c => c.id === selectedClass)?.class_name || 'Select Class'}
                       </DropdownToggle>
                       <DropdownMenu>
+                          <DropdownItem key={-1} onClick={() => handleClassChange(-1)}>
+                            select class
+                          </DropdownItem>
                         {classes.map(c => (
                           <DropdownItem key={c.id} onClick={() => handleClassChange(c.id)}>
                             {c.class_name}
