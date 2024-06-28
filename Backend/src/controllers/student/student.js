@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const error = require("../../error.js");
 const asyncHandler = require("../../utils/asyncHandler.js");
 const logSchedulers = require("./../../../log.js")
+const moment = require('moment-timezone');
 
 
 exports.createTimeTable = asyncHandler(async (req, res) => {
@@ -138,6 +139,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
     },
     raw: true
   });
+
   
   let presentCount = 0;
   let absentCount = 0;
@@ -211,17 +213,24 @@ exports.getBooks = asyncHandler(async (req, res) => {
 
     const classId = user.class_id;
 
-
     // Fetch the timetable for the user's class
     const timeTable = await tables.TimeTable.findAll({
       where: { class_id: classId },
     });
 
         // Get current time in HH:MM:SS format
-        const current_time = new Date();
-        const currentHours = String(current_time.getHours()).padStart(2, '0');
-        const currentMinutes = String(current_time.getMinutes()).padStart(2, '0');
-        const currentSeconds = String(current_time.getSeconds()).padStart(2, '0');
+        // const current_time = new Date();
+        // const currentHours = String(current_time.getHours()).padStart(2, '0');
+        // const currentMinutes = String(current_time.getMinutes()).padStart(2, '0');
+        // const currentSeconds = String(current_time.getSeconds()).padStart(2, '0');
+        // let currentTimeString = `${currentHours}:${currentMinutes}:${currentSeconds}`;
+        const timezone = 'Asia/Kolkata'; // India timezone
+
+        const current_time = moment.tz(timezone);
+        const currentHours = current_time.format('HH');
+        const currentMinutes = current_time.format('mm');
+        const currentSeconds = current_time.format('ss');
+
         let currentTimeString = `${currentHours}:${currentMinutes}:${currentSeconds}`;
     
         let subjectId = null;
