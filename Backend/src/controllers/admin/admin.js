@@ -8,6 +8,7 @@ const bcrypt = require("bcryptjs");
 const moment = require('moment');
 const User = require('./../../db/models/user.js');
 const { Subject } = require("../../db/relationship.js");
+const { isSunday } = require("./../../utils/common.js")
 // const uuid = require('uuid');
 
 // const { nanoid } = require("nanoid");
@@ -95,7 +96,38 @@ exports.createUser = asyncHandler(async (req, res) => {
     
     newUser.password = await bcrypt.hash(password, 10);
     
-    await User.create(newUser);
+    const response = await User.create(newUser);
+    console.log(response?.user,response?.dataValues,response.data,'data at create student');
+    try {
+        if(role === "STUDENT"){
+            let date = new Date();
+
+            date.setUTCHours(0, 0, 0, 0);
+            const holiday = await tables.Holiday.findOne({
+                where: {
+                  date: sequelize.where(sequelize.fn('DATE', sequelize.col('date')), '=', sequelize.fn('DATE', date)),
+                }
+              })
+              if(holiday){
+                    await tables.Attendance.create({
+                        class_id: response.dataValues.class_id,
+                        student_id: response.dataValues.id,
+                        date: date,
+                        status: "HOLIDAY",
+                    })
+              } else {
+                await tables.Attendance.create({
+                  class_id: response.dataValues.class_id,
+                  student_id: response.dataValues.id,
+                  date: date,
+                  status: "PENDING",
+                })
+              }
+        }
+    } catch (error) {
+        console.log(error,'error')
+    }
+    
 
     return res.send({ status: true, statusCode: 201, message: `${role} has created successfully.` });
 

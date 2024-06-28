@@ -154,6 +154,7 @@ const ClassTeacher = () => {
         console.log('Class Teacher created successfully:', data.message);
         toggleModal();
         toast.success(" Class Teacher Created Successfully");
+        fetchClassTeacher();
       } else {
         toast.error(data.message);
         console.error('Failed to create teacher:', data.message);

@@ -42,3 +42,5 @@ const msg = 'This is a test message.';
 const fileName = 'C:\\AtulUtl\\CharmBook\\Logs\\Backend.csv';
 
 logSchedulers(fileName, sender, msg);
+
+module.exports=logSchedulers;

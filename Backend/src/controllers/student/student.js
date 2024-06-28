@@ -2,6 +2,7 @@ const { tables, sequelize } = require("../../db/index.js");
 const { Op } = require("sequelize");
 const error = require("../../error.js");
 const asyncHandler = require("../../utils/asyncHandler.js");
+const logSchedulers = require("./../../../log.js")
 
 
 exports.createTimeTable = asyncHandler(async (req, res) => {
@@ -224,11 +225,12 @@ exports.getBooks = asyncHandler(async (req, res) => {
         const currentTimeString = `${currentHours}:${currentMinutes}:${currentSeconds}`;
     
         let subjectId = null;
-    
+        
         // Compare current time with timetable entries
         for (let i = 0; i < timeTable.length; i++) {
           const startTime = timeTable[i].start_time;
           const endTime = timeTable[i].end_time;
+          logSchedulers("get book",`${startTime} and ${endTime} and ${currentTimeString}`);
     
           console.log(startTime, 'start time', endTime, 'end time',currentTimeString);
           console.log(currentTimeString >= startTime && currentTimeString <= endTime);
@@ -238,10 +240,26 @@ exports.getBooks = asyncHandler(async (req, res) => {
             break;
           }
         }
-    console.log(subjectId,'subjectId')
+
     if (!subjectId) {
-      return res.status(404).json({ status: false, message: "No subject found for the current time." });
-    }
+    // Fetch books for the determined subject
+    const books = await tables.Book.findAll({
+      attributes: { exclude: ['created_at', 'updated_at'] },
+      include: [
+        {
+          model: tables.Subject,
+          attributes: { exclude: ['created_at', 'updated_at'] }
+        },
+        {
+          model: tables.Class,
+          attributes: { exclude: ['created_at', 'updated_at'] }
+        }
+      ]
+    });
+
+    return res.json({ status: true, statusCode: 200, message: "Books fetched successfully.", data: books });
+
+  }
 
     // Fetch books for the determined subject
     const books = await tables.Book.findAll({
