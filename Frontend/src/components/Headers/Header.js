@@ -14,6 +14,9 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { ADMIN_CREATE_SCHEDULE,ADMIN_GET_SCHEDULE} from "constant/Constant";
 import { ADMIN_TEACHER,ADMIN_HOLIDAY,ADMIN_STUDENTS} from "constant/Constant";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [showCreate, setShowCreate] = useState(false);
@@ -36,24 +39,7 @@ const Header = () => {
   const handleCloseEdit = () => setShowEdit(false);
   const handleShowEdit = () => setShowEdit(true);
 
-  const handleSaveCreate = async () => {
-    try {
-      const url = ADMIN_HOLIDAY
-      await axios.post(url, 
-      {
-        holiday_name: holidayName,
-        start_date: new Date(holidayStartDate).toISOString(),
-        end_date: new Date(holidayEndDate).toISOString()
-      }, 
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      fetchHolidays();
-      handleCloseCreate();
-    } catch (error) {
-      console.error('Error creating holiday:', error);
-    }
-  };
+  const navigate = useNavigate();
 
   const handleSaveEdit = async () => {
     try {
@@ -84,6 +70,12 @@ const Header = () => {
         setTotalStudents(response.data.data.length);
       }
     } catch (error) {
+      if(error?.response?.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Error fetching teachers:', error);
+      }
       console.error('Error fetching students:', error);
     }
   };
@@ -98,7 +90,12 @@ const Header = () => {
         setTotalTeachers(response.data.data.length);
       }
     } catch (error) {
-      console.error('Error fetching teachers:', error);
+      if(error?.response?.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Error fetching teachers:', error);
+      }
     }
   };
 
@@ -117,22 +114,12 @@ const Header = () => {
         setEditEndTime(data.end_time);
       }
     } catch (error) {
-      console.error('Error fetching schedule:', error);
-    }
-  };
-
-  const fetchHolidays = async () => {
-    try {
-      const url = ADMIN_HOLIDAY;
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (response.data.status) {
-        console.log(response.data.data,'fetch holidays...')
-        setHolidays(response.data.data);
+      if(error?.response?.status==401)
+      {
+        navigate('/auth/login');
+      }else{
+        console.error('Error fetching schedule:', error);
       }
-    } catch (error) {
-      console.error('Error fetching holidays:', error);
     }
   };
 
@@ -153,6 +140,7 @@ const Header = () => {
 
   return (
     <>
+      <ToastContainer/>
       <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
         <Container fluid>
           <div className="header-body">

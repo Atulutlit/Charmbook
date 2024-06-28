@@ -34,6 +34,20 @@ const Notification = () => {
   // notification
   const [notification, setNotification] = useState([])
 
+   // only for pagination
+   const [pageSize, setPageSize] = useState(10);
+   const [NumberBox, setNumberBox] = useState([]);
+   const [indexNumber, setIndexNumber] = useState(0);
+   const [activeColor, setActiveColor] = useState(0);
+   const [data, setData] = useState([]);
+
+   
+  // minimum function
+  const min = (a, b) => {
+    if (a < b) return a;
+    else return b;
+  }
+
   const navigate = useNavigate();
 
   const toggleModal = () => {
@@ -117,6 +131,13 @@ const Notification = () => {
 
   }, []);
 
+    // all logic of pagination
+    useEffect(() => {
+      setNumberBox(Array(parseInt(notification.length / pageSize + 1)).fill(1))
+      let data = notification.slice(parseInt(indexNumber) * parseInt(pageSize), min(parseInt(notification.length), (parseInt(indexNumber) + 1) * parseInt(pageSize)));
+      setData(data);
+    }, [JSON.stringify(notification), indexNumber])
+  
 
 
 
@@ -156,7 +177,7 @@ const Notification = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {notification.map((item, index) => (
+                  {data && data.map((item, index) => (
                     <tr key={item.id}>
                       <td>{index + 1}</td>
                       <td>{item.title}</td>
@@ -213,6 +234,50 @@ const Notification = () => {
           </Form>
         </ModalBody>
       </Modal>
+
+      {/* Pagination */}
+      <div className="container" style={{ "margin": "40px" }}>
+        <div className="row align-items-center">
+          {/* Left part */}
+          <div className="col-md-4 d-flex flex-row align-items-center">
+            <div className="fw-bold ms-3 p-2" style={{ fontSize: '16px' }}>Page&nbsp;Size</div>
+            <select className="form-select ms-3" value={pageSize} onChange={(e) => { setPageSize(e.target.value); }} style={{ height: '2rem', width: 'auto' }}>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={75}>75</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
+
+          {/* Bottom part */}
+          <div className="col-md-4 d-flex justify-content-center mt-3 mt-md-0">
+            {/* Showing 0 to 10 of 246 entries */}
+          </div>
+
+          {/* Right part */}
+          <div className="col-md-4 d-flex justify-content-end align-items-center mt-3 mt-md-0">
+            <div className="d-flex flex-row gap-2">
+              <div className="rounded-circle border border-2 bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
+                <i className="fas fa-arrow-left"></i>
+              </div>
+              {NumberBox.map((item, key) => (
+                <div
+                  key={key}
+                  className={`rounded-circle border text-center d-flex align-items-center justify-content-center ${activeColor === key ? 'bg-white border-primary' : 'bg-light border-light'} cursor-pointer`}
+                  style={{ width: '32px', height: '32px', fontFamily: 'Ubuntu', fontWeight: 700, fontSize: '16px', color: '#2D5BFF', cursor: "pointer" }}
+                  onClick={() => { setIndexNumber(key); setActiveColor(key); }}
+                >
+                  {key + 1}
+                </div>
+              ))}
+              <div className="rounded-circle border border-2 bg-primary text-white d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
+                <i className="fas fa-arrow-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {error && (
         <div className="alert alert-danger" role="alert">

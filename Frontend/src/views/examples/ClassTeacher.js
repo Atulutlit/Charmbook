@@ -182,6 +182,7 @@ const ClassTeacher = () => {
       if (response?.data?.status) {
         toast.success("class teacher remove Successfully!!");
         console.log('Timetable updated successfully:', response?.data.message);
+        fetchClassTeacher();
       } else {
         toast.error(response.data?.message);
         console.error('Failed to update timetable:', response?.data.message);

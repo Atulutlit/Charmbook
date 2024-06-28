@@ -55,7 +55,7 @@ const Classes = () => {
         setClasses(response.data.data.map(c => ({ id: c.id, name: c.class_name })));
       }
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to fetch class', error);
@@ -84,7 +84,7 @@ const Classes = () => {
       fetchClasses();
       toast.success('Class Created Successfully!!');
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to create class', error);
@@ -108,7 +108,7 @@ const Classes = () => {
       toast.success("successfully deleted class!!.")
       fetchClasses();
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to delete class', error);
@@ -131,7 +131,7 @@ const Classes = () => {
       toast.success("successfully updated class!!.")
       fetchClasses();
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error?.response?.status == 401) {
         navigate('/auth/login');
       } else {
         console.log('Failed to update class', error);

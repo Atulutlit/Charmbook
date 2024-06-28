@@ -2,7 +2,6 @@ const { tables, sequelize } = require("../../db/index.js");
 const { Op } = require("sequelize");
 const error = require("../../error.js");
 const asyncHandler = require("../../utils/asyncHandler.js");
-const logSchedulers = require("./../../../log.js")
 const moment = require('moment-timezone');
 
 
@@ -157,6 +156,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
   const presentPercentage = (presentCount / totalCount) * 100;
 
   // holiday count
+  let posts=[];
   let holiday_count=0;
   try {
     const {target_date}=req.query;
@@ -173,6 +173,7 @@ exports.getAttendance = asyncHandler(async (req, res) => {
        }
      });
      holiday_count=posts.length;
+     
   } catch (error) {
     console.log(error,'error');
   }
@@ -181,15 +182,19 @@ exports.getAttendance = asyncHandler(async (req, res) => {
     present_count: presentCount,
     absent_count: absentCount,
     present_percentage: presentPercentage.toFixed(2) + "%",
-    holiday_count : holiday_count  // count holiday for a given month remained(24/06/2024)
+    holiday_count : holiday_count , // count holiday for a given month remained(24/06/2024)
+    holiday : posts
   };
 
-
+  for(let i=0;i<posts.length;i++)
+  {
+    posts[i].dataValues['status']='HOLIDAY';
+  }
   return res.send({
     status: true,
     statusCode: 200,
     message: "Attendance has fetched successfully.",
-    data: records,
+    data: [...records,...posts],
     extra_data: data
 
   });
@@ -240,7 +245,6 @@ exports.getBooks = asyncHandler(async (req, res) => {
           const startTime = timeTable[i].start_time.replace(/:/g, "");
           const endTime = timeTable[i].end_time.replace(/:/g, "");
           currentTimeString = currentTimeString.replace(/:/g, "");
-          logSchedulers("get book",`${startTime} and ${endTime} and ${currentTimeString}`);
     
           console.log(startTime, 'start time', endTime, 'end time',currentTimeString);
           console.log(currentTimeString >= startTime && currentTimeString <= endTime);
