@@ -222,14 +222,15 @@ exports.getBooks = asyncHandler(async (req, res) => {
         const currentHours = String(current_time.getHours()).padStart(2, '0');
         const currentMinutes = String(current_time.getMinutes()).padStart(2, '0');
         const currentSeconds = String(current_time.getSeconds()).padStart(2, '0');
-        const currentTimeString = `${currentHours}:${currentMinutes}:${currentSeconds}`;
+        let currentTimeString = `${currentHours}:${currentMinutes}:${currentSeconds}`;
     
         let subjectId = null;
         
         // Compare current time with timetable entries
         for (let i = 0; i < timeTable.length; i++) {
-          const startTime = timeTable[i].start_time;
-          const endTime = timeTable[i].end_time;
+          const startTime = timeTable[i].start_time.replace(/:/g, "");
+          const endTime = timeTable[i].end_time.replace(/:/g, "");
+          currentTimeString = currentTimeString.replace(/:/g, "");
           logSchedulers("get book",`${startTime} and ${endTime} and ${currentTimeString}`);
     
           console.log(startTime, 'start time', endTime, 'end time',currentTimeString);
@@ -237,6 +238,7 @@ exports.getBooks = asyncHandler(async (req, res) => {
     
           if (currentTimeString >= startTime && currentTimeString <= endTime) {
             subjectId = timeTable[i].subject_id;
+            console.log(subjectId,'subjectId',timeTable[i],'timetable')
             break;
           }
         }
@@ -244,6 +246,7 @@ exports.getBooks = asyncHandler(async (req, res) => {
     if (!subjectId) {
     // Fetch books for the determined subject
     const books = await tables.Book.findAll({
+      where: { class_id: classId},
       attributes: { exclude: ['created_at', 'updated_at'] },
       include: [
         {

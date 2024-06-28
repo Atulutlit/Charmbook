@@ -225,6 +225,8 @@ const Timetable = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       fetchTimetable();
+      setSelectedClass(-1);
+      setSelectedModalClass(-1);
       toast.success("Timetable Created Successfully");
       toggleModal();
     } catch (error) {
