@@ -140,10 +140,7 @@ const Timetable = () => {
       });
       if (response?.data?.status) {
         console.log(response.data.data, 'timetable......')
-        setTimeTable(response.data.data);
-
-      } else {
-        setTimetablelist([]);
+        setTimeTable(response?.data?.data);
       }
     } catch (error) {
       if(error?.response?.status==401)
@@ -152,7 +149,6 @@ const Timetable = () => {
       }else{
         console.error('Failed to fetch timetable:', error);
       }
-      setTimetablelist([]);
     }
   };
   useEffect(() => {
@@ -300,6 +296,7 @@ const Timetable = () => {
                     <th scope="col">Start Time</th>
                     <th scope='col'>End Time</th>
                     <th scope='col'>Period</th>
+                    {/* <th scope='col'>Day</th> */}
                     <th scope='col'>Teacher Id</th>
                     <th scope='col'>Action</th>
                   </tr>
@@ -314,6 +311,7 @@ const Timetable = () => {
                       <td>{item?.start_time}</td>
                       <td>{item?.end_time}</td>
                       <td>{item?.period_no}</td>
+                      {/* <td>{item?.day}</td> */}
                       <td>{item?.teacher_id}</td>
                       <td>
                         <Button
@@ -414,6 +412,24 @@ const Timetable = () => {
                 ))}
               </Input>
             </FormGroup>
+            {/* <FormGroup>
+              <Label for="day">Day</Label>
+              <Input
+                type="select"
+                name="day"
+                id="day"
+                value={day}
+                onChange={(e) => setDay(e.target.value)}
+              >
+                <option value={-1}>select day</option>
+                <option value="Mon">Mon</option>
+                <option value="Tue">Tue</option>
+                <option value="Wed">Wed</option>
+                <option value="Thu">Thu</option>
+                <option value="Fri">Fri</option>
+                <option value="Sat">Sat</option>
+              </Input>
+            </FormGroup> */}
 
             <Button type="submit" color="primary">Submit</Button>
           </Form>

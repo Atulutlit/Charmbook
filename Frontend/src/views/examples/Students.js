@@ -227,7 +227,7 @@ const Students = () => {
 
   const handleEditStudent = async (event) => {
     event.preventDefault(); // Prevent default form submission
-
+   console.log(editData,'data')
     try {
       const url = `${ADMIN_UPDATE_USER}/${editId}`;
       const response = await fetch(url, {
@@ -378,7 +378,7 @@ const debounce = (func, delay) => {
                       <td className='d-none'>
                       </td>
                       <td>{student?.enrollment_no}</td>
-                      <td>{student?.first_name}{student?.last_name}</td>
+                      <td>{student?.first_name}&nbsp;{student?.last_name}</td>
                       <td>{student?.class?.class_name}</td>
                       <td>{student?.phone_no}</td>
                       <td>{student?.email}</td>
@@ -532,7 +532,7 @@ const debounce = (func, delay) => {
                 onChange={(e) => setEditData((prevData) => ({ ...prevData, last_name: e.target.value }))}
               />
             </FormGroup>
-            <FormGroup>
+            {/* <FormGroup>
               <Label for="password">Password</Label>
               <Input
                 type="password"
@@ -542,7 +542,7 @@ const debounce = (func, delay) => {
                 value={editData?.password || ''}
                 onChange={(e) => setEditData((prevData) => ({ ...prevData, password: e.target.value }))}
               />
-            </FormGroup>
+            </FormGroup> */}
             <FormGroup>
               <Label for="class">Class</Label>
               <Input

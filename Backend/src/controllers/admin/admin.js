@@ -135,7 +135,7 @@ exports.createUser = asyncHandler(async (req, res) => {
 
 exports.updateUser = asyncHandler(async (req, res) => {
     try {
-        const { email, phone_no, password, confirm_password, role, class_id } = req.body;
+        const { first_name,last_name,email, phone_no, password, confirm_password, role, class_id } = req.body;
         const { User } = tables;
         const {id} = req.params;
         const user_id=id;
@@ -154,13 +154,15 @@ exports.updateUser = asyncHandler(async (req, res) => {
 
         // Update the user
         await User.update(
-            {
+            {   
+                first_name:first_name,
+                last_name:last_name,
                 email: email,
                 phone_no: phone_no,
                 role: role,
                 class_id: class_id,
-                password: password,  // Ensure password is hashed before storing
-                confirm_password: confirm_password // Ensure passwords match and are hashed
+               // password: password,  // Ensure password is hashed before storing
+               // confirm_password: confirm_password // Ensure passwords match and are hashed
             },
             { where: { id: user_id } }
         );

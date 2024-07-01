@@ -488,7 +488,7 @@ const Teachers = () => {
                 onChange={(e) => setEditData((prevData) => ({ ...prevData, last_name: e.target.value }))}
               />
             </FormGroup>
-            <FormGroup>
+            {/* <FormGroup>
               <Label for="password">Password</Label>
               <Input
                 type="password"
@@ -498,7 +498,7 @@ const Teachers = () => {
                 value={editData?.password || ''}
                 onChange={(e) => setEditData((prevData) => ({ ...prevData, password: e.target.value }))}
               />
-            </FormGroup>
+            </FormGroup> */}
             <FormGroup>
               <Label for="class">Class</Label>
               <Input

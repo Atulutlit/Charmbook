@@ -15,13 +15,13 @@ import './dashboarditems.css';
 
 const images = [
   { src: AttendanceImage, alt: 'Attendance', title: 'Attendance', path: '/attendance', hoverColor: '#FFE9D0' },
-  { src: BookImage, alt: 'Book', title: 'Book', path: '/book', hoverColor: '#FFFED3' },
-  { src: TeacherImage, alt: 'Teacher', title: 'Teacher', path: '/teacher', hoverColor: '#BBE9FF' },
+  { src: BookImage, alt: 'Book', title: 'Book', path: '/books', hoverColor: '#FFFED3' },
+  { src: TeacherImage, alt: 'Teacher', title: 'Teacher', path: '/teachers', hoverColor: '#BBE9FF' },
   { src: SubjectsImage, alt: 'Subjects', title: 'Subjects', path: '/subjects', hoverColor: '#B1AFFF' },
   { src: StudentsImage, alt: 'Students', title: 'Students', path: '/students', hoverColor: '#B7C9F2' },
   { src: TimetableImage, alt: 'Timetable', title: 'Timetable', path: '/timetable', hoverColor: '#94FFD8' },
   { src: TestImage, alt: 'Test', title: 'Test', path: '/test', hoverColor: '#FFA27F' },
-  { src: HolidaysImage, alt: 'Holidays', title: 'Holidays', path: '/holidays', hoverColor: '#95D2B3' },
+  { src: HolidaysImage, alt: 'Holidays', title: 'Holidays', path: '/holiday', hoverColor: '#95D2B3' },
   { src: HomeworkImage, alt: 'Homework', title: 'Homework', path: '/homework', hoverColor: '#CAF4FF' },
   { src: ClassImage, alt: 'Class', title: 'Class', path: '/class', hoverColor: '#FFFFE8' },
 ];
@@ -30,8 +30,7 @@ const DashboardItems = () => {
   const navigate = useNavigate();
 
   const handleNavigation = (path) => {
-    console.log(path,'path')
-    navigate("/admin/book");
+    navigate(`/admin${path}`);
   };
 
   return (
