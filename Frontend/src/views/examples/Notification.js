@@ -143,7 +143,7 @@ const Notification = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer containerId="containerG"/>
       <Header />
       <Container className="mt--7 mb-5" fluid>
         <Row className="mt-5 justify-content-center">

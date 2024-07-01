@@ -155,7 +155,7 @@ const Classes = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer containerId="containerC"/>
       <Header />
       <Container className="mt--7 mb-5" fluid>
         <Row className="mt-5 justify-content-center">

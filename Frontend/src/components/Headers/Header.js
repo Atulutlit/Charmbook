@@ -14,8 +14,6 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { ADMIN_CREATE_SCHEDULE,ADMIN_GET_SCHEDULE} from "constant/Constant";
 import { ADMIN_TEACHER,ADMIN_HOLIDAY,ADMIN_STUDENTS} from "constant/Constant";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -140,7 +138,6 @@ const Header = () => {
 
   return (
     <>
-      <ToastContainer/>
       <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
         <Container fluid>
           <div className="header-body">

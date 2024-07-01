@@ -270,7 +270,7 @@ const Teachers = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer containerId="containerI"/>
       <Header />
 
       <Container className="mt--7" fluid>
